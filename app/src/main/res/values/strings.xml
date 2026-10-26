@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Dự Báo Thời Tiết</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Cài Đặt</string>
+
+    <!-- Temperature -->
+    <string name="settings_temp_unit">Đơn vị nhiệt độ</string>
+    <string name="settings_celsius">Độ C (Celsius)</string>
+    <string name="settings_fahrenheit">Độ F (Fahrenheit)</string>
+
+    <!-- Wind Speed -->
+    <string name="settings_wind_speed">Đơn vị tốc độ gió</string>
+    <string name="settings_kmh">km/h (Kilômét/giờ)</string>
+    <string name="settings_mph">mph (Dặm/giờ)</string>
+    <string name="settings_ms">m/s (Mét/giây)</string>
+
+    <!-- Pressure -->
+    <string name="settings_pressure">Đơn vị áp suất khí quyển</string>
+    <string name="settings_hpa">hPa (Hectopascal)</string>
+    <string name="settings_inhg">inHg (Inch thủy ngân)</string>
+    <string name="settings_mbar">mbar (Millibar)</string>
+
+    <!-- Theme -->
+    <string name="settings_theme">Giao diện</string>
+    <string name="settings_light_theme">Sáng</string>
+    <string name="settings_dark_theme">Tối</string>
+    <string name="settings_system_theme">Theo hệ thống</string>
+
+    <!-- Language -->
+    <string name="settings_language">Ngôn ngữ</string>
+    <string name="settings_vietnamese">Tiếng Việt</string>
+    <string name="settings_english">English</string>
+
+    <!-- Buttons -->
+    <string name="settings_save">Lưu</string>
+    <string name="settings_cancel">Hủy</string>
+    <string name="settings_saved">Đã lưu cài đặt</string>
+    <string name="settings_restart_message">Ứng dụng sẽ khởi động lại để áp dụng ngôn ngữ mới</string>
+
+    <!-- Menu -->
+    <string name="menu_settings">Cài đặt</string>
+
+    <!-- Common -->
+    <string name="back">Quay lại</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Hủy</string>
+</resources>

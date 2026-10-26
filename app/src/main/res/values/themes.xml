@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DuBaoThoiTiet" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:fitsSystemWindows">true</item>
+    </style>
+
+    <style name="Theme.DuBaoThoiTiet" parent="Base.Theme.DuBaoThoiTiet" />
+</resources>

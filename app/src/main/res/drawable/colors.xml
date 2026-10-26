@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FF5722</color>
+
+    <!-- Background Colors -->
+    <color name="backgroundColor">#F5F5F5</color>
+    <color name="cardBackground">#FFFFFF</color>
+
+    <!-- Text Colors -->
+    <color name="textPrimary">#212121</color>
+    <color name="textSecondary">#757575</color>
+
+    <!-- Status Colors -->
+    <color name="statusGreen">#4CAF50</color>
+    <color name="statusYellow">#FFC107</color>
+    <color name="statusRed">#F44336</color>
+
+    <!-- Temperature Icon -->
+    <color name="tempColor">#FF6B6B</color>
+
+    <!-- Wind Icon -->
+    <color name="windColor">#4ECDC4</color>
+
+    <!-- Pressure Icon -->
+    <color name="pressureColor">#FFA07A</color>
+
+    <!-- Theme Icon -->
+    <color name="themeColor">#FFD93D</color>
+
+    <!-- Language Icon -->
+    <color name="languageColor">#95E1D3</color>
+</resources>

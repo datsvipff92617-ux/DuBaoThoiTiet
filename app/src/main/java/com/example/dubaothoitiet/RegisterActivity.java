@@ -1,0 +1,95 @@
+package com.example.dubaothoitiet;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+/**
+ * Màn hình Đăng Ký Tài Khoản (Member 1)
+ * Lưu trữ thông tin người dùng mới vào SQLite
+ */
+public class RegisterActivity extends BaseActivity {
+
+    private EditText etRegUsername, etRegFullName, etRegEmail, etRegPhone, etRegLocation, etRegPassword, etRegConfirmPassword;
+    private Button btnSubmitRegister;
+    private TextView tvBackToLogin;
+    private DatabaseHelper databaseHelper;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_register);
+
+        databaseHelper = new DatabaseHelper(this);
+
+        initViews();
+        setupListeners();
+    }
+
+    private void initViews() {
+        etRegUsername = findViewById(R.id.etRegUsername);
+        etRegFullName = findViewById(R.id.etRegFullName);
+        etRegEmail = findViewById(R.id.etRegEmail);
+        etRegPhone = findViewById(R.id.etRegPhone);
+        etRegLocation = findViewById(R.id.etRegLocation);
+        etRegPassword = findViewById(R.id.etRegPassword);
+        etRegConfirmPassword = findViewById(R.id.etRegConfirmPassword);
+        btnSubmitRegister = findViewById(R.id.btnSubmitRegister);
+        tvBackToLogin = findViewById(R.id.tvBackToLogin);
+    }
+
+    private void setupListeners() {
+        btnSubmitRegister.setOnClickListener(v -> processRegister());
+        tvBackToLogin.setOnClickListener(v -> finish());
+    }
+
+    private void processRegister() {
+        String username = etRegUsername.getText().toString().trim();
+        String fullName = etRegFullName.getText().toString().trim();
+        String email = etRegEmail.getText().toString().trim();
+        String phone = etRegPhone.getText().toString().trim();
+        String location = etRegLocation.getText().toString().trim();
+        String password = etRegPassword.getText().toString().trim();
+        String confirmPassword = etRegConfirmPassword.getText().toString().trim();
+
+        // Validate dữ liệu
+        if (username.isEmpty() || fullName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ các thông tin bắt buộc (*)", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (username.length() < 3) {
+            Toast.makeText(this, "Tên đăng nhập phải có ít nhất 3 ký tự", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (password.length() < 6) {
+            Toast.makeText(this, "Mật khẩu phải có độ dài tối thiểu 6 ký tự", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Mật khẩu xác nhận không khớp!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra tên đăng nhập đã có trong SQLite chưa
+        if (databaseHelper.checkUsernameExists(username)) {
+            Toast.makeText(this, "Tên đăng nhập này đã được sử dụng! Vui lòng chọn tên khác.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Lưu vào CSDL SQLite
+        boolean success = databaseHelper.registerUser(username, password, fullName, email, phone, location);
+        if (success) {
+            Toast.makeText(this, "Đăng ký tài khoản thành công! Hãy đăng nhập.", Toast.LENGTH_LONG).show();
+            finish(); // Trở về màn hình Login
+        } else {
+            Toast.makeText(this, "Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
+        }
+    }
+}

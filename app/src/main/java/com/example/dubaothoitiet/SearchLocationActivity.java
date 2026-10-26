@@ -41,6 +41,8 @@ public class SearchLocationActivity extends BaseActivity {
     private LinearLayout layoutHistoryList;
     private TextView tvClearHistory, tvEmptyHistory;
 
+    private LinearLayout layoutSearchSuggestions, containerSuggestions;
+
     private DatabaseHelper databaseHelper;
     private final String API_KEY = "35d141f7fec24768b87114757252510";
     private String currentSelectedCity = "";
@@ -73,6 +75,9 @@ public class SearchLocationActivity extends BaseActivity {
         layoutHistoryList = findViewById(R.id.layoutHistoryList);
         tvClearHistory = findViewById(R.id.tvClearHistory);
         tvEmptyHistory = findViewById(R.id.tvEmptyHistory);
+
+        layoutSearchSuggestions = findViewById(R.id.layoutSearchSuggestions);
+        containerSuggestions = findViewById(R.id.containerSuggestions);
     }
 
     private void setupListeners() {
@@ -81,10 +86,25 @@ public class SearchLocationActivity extends BaseActivity {
         btnDoSearch.setOnClickListener(v -> {
             String q = etSearchQuery.getText().toString().trim();
             if (!q.isEmpty()) {
+                if (layoutSearchSuggestions != null) layoutSearchSuggestions.setVisibility(View.GONE);
                 performSearch(q);
             } else {
                 Toast.makeText(this, "Vui lòng nhập tên địa phương cần tìm", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        etSearchQuery.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int count, int after) {
+                String query = s.toString().trim();
+                showSuggestions(query);
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
         });
 
         tvClearHistory.setOnClickListener(v -> {
@@ -104,6 +124,47 @@ public class SearchLocationActivity extends BaseActivity {
         });
     }
 
+    private void showSuggestions(String query) {
+        if (query.isEmpty() || layoutSearchSuggestions == null || containerSuggestions == null) {
+            if (layoutSearchSuggestions != null) layoutSearchSuggestions.setVisibility(View.GONE);
+            return;
+        }
+
+        List<VietnamLocations.LocationItem> matches = VietnamLocations.search(query);
+        containerSuggestions.removeAllViews();
+
+        if (matches.isEmpty()) {
+            layoutSearchSuggestions.setVisibility(View.GONE);
+            return;
+        }
+
+        int count = Math.min(matches.size(), 6);
+        for (int i = 0; i < count; i++) {
+            VietnamLocations.LocationItem item = matches.get(i);
+            TextView tv = new TextView(this);
+            tv.setText("📍 " + item.getDisplayString());
+            tv.setTextColor(0xFFFFFFFF);
+            tv.setTextSize(14);
+            tv.setPadding(16, 12, 16, 12);
+            tv.setBackgroundResource(R.drawable.button_normal);
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 0, 0, 6);
+            tv.setLayoutParams(lp);
+
+            tv.setOnClickListener(v -> {
+                etSearchQuery.setText(item.name);
+                layoutSearchSuggestions.setVisibility(View.GONE);
+                performSearch(item.name);
+            });
+
+            containerSuggestions.addView(tv);
+        }
+
+        layoutSearchSuggestions.setVisibility(View.VISIBLE);
+    }
+
     private void setupPopularChips() {
         int[] chipIds = {
                 R.id.chipHanoi, R.id.chipHcm, R.id.chipDanang,
@@ -117,6 +178,7 @@ public class SearchLocationActivity extends BaseActivity {
                 btn.setOnClickListener(v -> {
                     String cityName = btn.getText().toString();
                     etSearchQuery.setText(cityName);
+                    if (layoutSearchSuggestions != null) layoutSearchSuggestions.setVisibility(View.GONE);
                     performSearch(cityName);
                 });
             }
@@ -126,7 +188,8 @@ public class SearchLocationActivity extends BaseActivity {
     private void performSearch(String query) {
         Toast.makeText(this, "Đang tra cứu: " + query + "...", Toast.LENGTH_SHORT).show();
 
-        String encoded = WeatherUtils.encodeQuery(query);
+        String resolved = VietnamLocations.resolveToWeatherQuery(query);
+        String encoded = WeatherUtils.encodeQuery(resolved);
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
                 "&q=" + encoded + "&aqi=no&lang=vi";
 
@@ -171,10 +234,12 @@ public class SearchLocationActivity extends BaseActivity {
             double wind = current.getDouble("wind_kph");
             double uv = current.getDouble("uv");
 
-            tvResultCityName.setText(name + ", " + country);
-            tvResultTemp.setText(String.format(Locale.getDefault(), "%.0f°C", temp));
+            String cleanName = WeatherUtils.cleanLocationName(name);
+            tvResultCityName.setText(cleanName + ", " + country);
+            tvResultTemp.setText(SettingsActivity.formatTemp(this, temp));
             tvResultCondition.setText("🌥️ " + condition);
-            tvResultDetails.setText(String.format(Locale.getDefault(), "Độ ẩm: %d%% | Gió: %.1f km/h | UV: %.0f", humidity, wind, uv));
+            tvResultDetails.setText(String.format(Locale.getDefault(), "Độ ẩm: %d%% | Gió: %s | UV: %.0f",
+                    humidity, SettingsActivity.formatWindSpeed(this, wind), uv));
 
             cardSearchResult.setVisibility(View.VISIBLE);
 

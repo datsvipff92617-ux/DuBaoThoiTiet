@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather Forecast</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+
+    <!-- Temperature -->
+    <string name="settings_temp_unit">Temperature Unit</string>
+    <string name="settings_celsius">Celsius (°C)</string>
+    <string name="settings_fahrenheit">Fahrenheit (°F)</string>
+
+    <!-- Wind Speed -->
+    <string name="settings_wind_speed">Wind Speed Unit</string>
+    <string name="settings_kmh">km/h (Kilometers/hour)</string>
+    <string name="settings_mph">mph (Miles/hour)</string>
+    <string name="settings_ms">m/s (Meters/second)</string>
+
+    <!-- Pressure -->
+    <string name="settings_pressure">Atmospheric Pressure Unit</string>
+    <string name="settings_hpa">hPa (Hectopascal)</string>
+    <string name="settings_inhg">inHg (Inch of Mercury)</string>
+    <string name="settings_mbar">mbar (Millibar)</string>
+
+    <!-- Theme -->
+    <string name="settings_theme">Theme</string>
+    <string name="settings_light_theme">Light</string>
+    <string name="settings_dark_theme">Dark</string>
+    <string name="settings_system_theme">Follow System</string>
+
+    <!-- Language -->
+    <string name="settings_language">Language</string>
+    <string name="settings_vietnamese">Tiếng Việt</string>
+    <string name="settings_english">English</string>
+
+    <!-- Buttons -->
+    <string name="settings_save">Save Settings</string>
+    <string name="settings_cancel">Cancel</string>
+    <string name="settings_saved">Settings saved successfully</string>
+    <string name="settings_restart_message">Applying new language...</string>
+
+    <!-- Menu -->
+    <string name="menu_settings">Settings</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+</resources>

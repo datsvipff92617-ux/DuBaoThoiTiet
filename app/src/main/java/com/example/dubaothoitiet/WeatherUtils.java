@@ -12,79 +12,16 @@ import java.util.regex.Pattern;
 public class WeatherUtils {
 
     /**
-     * Chuẩn hóa tên địa phương tìm kiếm:
-     * - Tránh lỗi WeatherAPI nhận "HCM" thành sân bay ở Somalia
-     * - Tránh lỗi WeatherAPI nhận "Đà Lạt" có dấu thành "Đà Nẵng"
+     * Chuẩn hóa tên địa phương tìm kiếm qua kho dữ liệu 63 Tỉnh/Thành Việt Nam
+     * Tránh tuyệt đối việc WeatherAPI map "Huế" sang Ethiopia hay "Nghệ An" sang Da Nghe.
      */
     public static String normalizeCityQuery(String input) {
         if (input == null || input.trim().isEmpty()) {
-            return "Ha Noi";
+            return "Ha Noi, Vietnam";
         }
-
-        String raw = input.trim();
-        String lower = raw.toLowerCase();
-
-        // 1. Xử lý trường hợp đặc biệt: TP. Hồ Chí Minh
-        if (lower.equals("hcm") || lower.equals("tp hcm") || lower.equals("tp.hcm")
-                || lower.equals("tphcm") || lower.contains("hồ chí minh") || lower.contains("ho chi minh")
-                || lower.contains("sài gòn") || lower.contains("saigon")) {
-            return "Ho Chi Minh City";
-        }
-
-        // 2. Xử lý Đà Lạt để không bị nhầm sang Đà Nẵng
-        if (lower.contains("đà lạt") || lower.contains("da lat") || lower.contains("dalat")) {
-            return "Da Lat";
-        }
-
-        // 3. Xử lý các tỉnh thành phổ biến khác
-        if (lower.contains("đà nẵng") || lower.contains("da nang") || lower.contains("danang")) {
-            return "Da Nang";
-        }
-        if (lower.contains("hà nội") || lower.contains("ha noi") || lower.contains("hanoi")) {
-            return "Ha Noi";
-        }
-        if (lower.contains("hải phòng") || lower.contains("hai phong")) {
-            return "Hai Phong";
-        }
-        if (lower.contains("cần thơ") || lower.contains("can tho")) {
-            return "Can Tho";
-        }
-        if (lower.contains("nha trang")) {
-            return "Nha Trang";
-        }
-        if (lower.contains("huế") || lower.contains("hue")) {
-            return "Hue";
-        }
-        if (lower.contains("vũng tàu") || lower.contains("vung tau")) {
-            return "Vung Tau";
-        }
-        if (lower.contains("phú quốc") || lower.contains("phu quoc")) {
-            return "Phu Quoc";
-        }
-        if (lower.contains("quy nhơn") || lower.contains("quy nhon")) {
-            return "Quy Nhon";
-        }
-        if (lower.contains("hạ long") || lower.contains("ha long") || lower.contains("quảng ninh") || lower.contains("quang ninh")) {
-            return "Ha Long";
-        }
-        if (lower.contains("sa pa") || lower.contains("sapa")) {
-            return "Sa Pa";
-        }
-        if (lower.contains("buôn ma thuột") || lower.contains("buon ma thuot") || lower.contains("đắk lắk")) {
-            return "Buon Ma Thuot";
-        }
-
-        // 4. Khử dấu tiếng Việt chuẩn cho các địa phương còn lại
-        String nfdNormalized = Normalizer.normalize(raw, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        String noAccents = pattern.matcher(nfdNormalized).replaceAll("")
-                .replace("đ", "d")
-                .replace("Đ", "D")
-                .replace("–", "-")
-                .replace("—", "-");
-
-        return noAccents.trim();
+        return VietnamLocations.resolveToWeatherQuery(input);
     }
+
 
     /**
      * Mã hóa URL UTF-8 an toàn
@@ -115,34 +52,16 @@ public class WeatherUtils {
         String trimmed = name.trim();
 
         // Xử lý lỗi mã hóa ký tự Latin-1 / UTF-8 đặc trưng từ WeatherAPI tại Việt Nam
-        if (trimmed.contains("Ã") || trimmed.contains("") || trimmed.contains("\u0081") || trimmed.contains("lnh Thon")) {
+        if (trimmed.contains("Ã") || trimmed.contains("\u0081") || trimmed.contains("lnh Thon")) {
             if (trimmed.toLowerCase().contains("thon") || trimmed.toLowerCase().contains("lnh")) {
                 return "Đình Thôn, Nam Từ Liêm, Hà Nội";
             }
             return "Hà Nội";
         }
 
-        if (trimmed.equalsIgnoreCase("Ho Chi Minh City") || trimmed.equalsIgnoreCase("Thanh Pho Ho Chi Minh")) {
-            return "TP. Hồ Chí Minh";
-        }
-        if (trimmed.equalsIgnoreCase("Ha Noi")) {
-            return "Hà Nội";
-        }
-        if (trimmed.equalsIgnoreCase("Da Nang")) {
-            return "Đà Nẵng";
-        }
-        if (trimmed.equalsIgnoreCase("Da Lat")) {
-            return "Đà Lạt";
-        }
-        if (trimmed.equalsIgnoreCase("Hai Phong")) {
-            return "Hải Phòng";
-        }
-        if (trimmed.equalsIgnoreCase("Can Tho")) {
-            return "Cần Thơ";
-        }
-
-        return trimmed;
+        return VietnamLocations.getDisplayNameForApiResult(trimmed);
     }
+
 
     /**
      * Dịch tuần trăng tiếng Anh sang tiếng Việt

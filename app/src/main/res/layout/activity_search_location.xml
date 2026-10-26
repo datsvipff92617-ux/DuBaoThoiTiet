@@ -76,6 +76,35 @@
                 android:paddingHorizontal="16dp"/>
         </LinearLayout>
 
+        <!-- Autocomplete Suggestions List for 63 Provinces -->
+        <LinearLayout
+            android:id="@+id/layoutSearchSuggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/suggestions_background"
+            android:padding="8dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvSuggestionHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 GỢI Ý ĐỊA PHƯƠNG PHÙ HỢP:"
+                android:textColor="#80FFFFFF"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"
+                android:layout_marginStart="4dp"/>
+
+            <LinearLayout
+                android:id="@+id/containerSuggestions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+        </LinearLayout>
+
         <!-- Quick Result Card (Ban đầu ẩn, tìm ra thì hiện) -->
         <LinearLayout
             android:id="@+id/cardSearchResult"

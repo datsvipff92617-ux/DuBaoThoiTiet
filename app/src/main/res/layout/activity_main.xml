@@ -171,6 +171,7 @@
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
+                                android:id="@+id/tvLabelFeelsLike"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Cảm giác"
@@ -193,6 +194,7 @@
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
+                                android:id="@+id/tvLabelHumidity"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Độ ẩm"
@@ -215,6 +217,7 @@
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
+                                android:id="@+id/tvLabelWind"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Tốc độ gió"
@@ -237,6 +240,7 @@
                             android:orientation="vertical"
                             android:gravity="center">
                             <TextView
+                                android:id="@+id/tvLabelUv"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Chỉ số UV"
@@ -264,6 +268,7 @@
                     android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/tvSection1Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌦️ DỰ BÁO &amp; XU HƯỚNG THỜI TIẾT"
@@ -359,6 +364,7 @@
                     android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/tvSection2Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌿 SỨC KHỎE, ĐỜI SỐNG &amp; AN TOÀN"
@@ -441,6 +447,7 @@
                     android:layout_marginBottom="12dp">
 
                     <TextView
+                        android:id="@+id/tvSection3Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🧭 VỊ TRÍ, TIỆN ÍCH &amp; CÁ NHÂN"
@@ -525,6 +532,7 @@
                     android:visibility="gone">
 
                     <TextView
+                        android:id="@+id/tvSection4Title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="👑 BẢNG ĐIỀU KHIỂN QUẢN TRỊ VIÊN (ADMIN ONLY)"
@@ -534,6 +542,7 @@
                         android:layout_marginBottom="4dp"/>
 
                     <TextView
+                        android:id="@+id/tvSection4Subtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Khu vực kiểm soát tài khoản người dùng và cơ sở dữ liệu SQLite."

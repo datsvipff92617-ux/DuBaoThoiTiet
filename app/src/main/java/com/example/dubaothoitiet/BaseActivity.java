@@ -18,8 +18,26 @@ import androidx.core.view.WindowInsetsCompat;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+
+    @Override
+    protected void attachBaseContext(android.content.Context newBase) {
+
+        android.content.SharedPreferences prefs = newBase.getSharedPreferences("AppSettings", android.content.Context.MODE_PRIVATE);
+        String language = prefs.getString("language", "vi");
+
+        java.util.Locale locale = new java.util.Locale(language);
+        java.util.Locale.setDefault(locale);
+
+        android.content.res.Configuration config = new android.content.res.Configuration();
+        config.setLocale(locale);
+        android.content.Context context = newBase.createConfigurationContext(config);
+
+        super.attachBaseContext(context);
+    }
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
+
         super.setContentView(layoutResID);
         applyEdgeToEdgeInsets();
     }

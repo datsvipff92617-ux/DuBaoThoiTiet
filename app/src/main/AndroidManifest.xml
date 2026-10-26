@@ -134,6 +134,20 @@
             android:screenOrientation="portrait"
             android:parentActivityName=".MainActivity"/>
 
+        <!-- 17. Sun and Moon Phase Activity (Astronomy) -->
+        <activity
+            android:name=".SunMoonActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
+
+        <!-- 18. Disaster Survival Guide Activity -->
+        <activity
+            android:name=".DisasterGuideActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
+
     </application>
 
 </manifest>

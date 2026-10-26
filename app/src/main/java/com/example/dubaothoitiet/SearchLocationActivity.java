@@ -126,8 +126,9 @@ public class SearchLocationActivity extends BaseActivity {
     private void performSearch(String query) {
         Toast.makeText(this, "Đang tra cứu: " + query + "...", Toast.LENGTH_SHORT).show();
 
+        String encoded = WeatherUtils.encodeQuery(query);
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
-                "&q=" + query + "&aqi=no&lang=vi";
+                "&q=" + encoded + "&aqi=no&lang=vi";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();

@@ -59,8 +59,9 @@ public class ForecastActivity extends BaseActivity {
     }
 
     private void loadForecastData() {
+        String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + cityName + "&days=7&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=7&aqi=no&alerts=no&lang=vi";
 
         Log.d("WeatherApp", "Forecast URL: " + weatherUrl);
 

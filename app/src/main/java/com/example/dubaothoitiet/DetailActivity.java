@@ -65,8 +65,9 @@ public class DetailActivity extends BaseActivity {
     }
 
     private void loadWeatherDetails() {
+        String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + cityName + "&days=1&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=1&aqi=no&alerts=no&lang=vi";
 
         Log.d("WeatherApp", "Details URL: " + weatherUrl);
 

@@ -104,8 +104,9 @@ public class WeatherCompareActivity extends BaseActivity {
     }
 
     private void fetchCityData(String query, int targetSlot) {
+        String encoded = WeatherUtils.encodeQuery(query);
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
-                "&q=" + query + "&aqi=no&lang=vi";
+                "&q=" + encoded + "&aqi=no&lang=vi";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();

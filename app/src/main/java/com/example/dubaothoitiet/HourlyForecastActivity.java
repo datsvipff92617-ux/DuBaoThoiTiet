@@ -59,8 +59,9 @@ public class HourlyForecastActivity extends BaseActivity {
     }
 
     private void loadHourlyForecast() {
+        String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + cityName + "&days=2&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=2&aqi=no&alerts=no&lang=vi";
 
         Log.d("WeatherApp", "Hourly Forecast URL: " + weatherUrl);
 

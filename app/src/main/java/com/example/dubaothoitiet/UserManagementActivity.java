@@ -41,6 +41,14 @@ public class UserManagementActivity extends BaseActivity {
         setContentView(R.layout.activity_user_management);
 
         databaseHelper = new DatabaseHelper(this);
+        SharedPreferences userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String role = userPrefs.getString("role", "user");
+        if (!"admin".equalsIgnoreCase(role)) {
+            Toast.makeText(this, "⚠️ Quyền truy cập bị từ chối! Chức năng này chỉ dành riêng cho Quản trị viên (Admin).", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
         currentLoggedInUsername = prefs.getString(LoginActivity.KEY_USERNAME, "admin");
 

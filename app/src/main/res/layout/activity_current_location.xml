@@ -50,7 +50,7 @@
             android:gravity="center"
             android:background="@drawable/search_background"
             android:padding="10dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="14dp">
 
             <TextView
                 android:id="@+id/tvGpsStatus"
@@ -69,7 +69,7 @@
             android:gravity="center"
             android:background="@drawable/card_background"
             android:padding="20dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="14dp">
 
             <TextView
                 android:id="@+id/tvCurrentLocCity"
@@ -118,6 +118,108 @@
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
 
+        <!-- Chọn nhanh tỉnh thành sinh sống -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="14dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏠 Chọn nhanh khu vực bạn đang sống:"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/chipLocHanoi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Hà Nội"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_normal"
+                        android:layout_marginEnd="6dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"/>
+
+                    <Button
+                        android:id="@+id/chipLocHcm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="TP. Hồ Chí Minh"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_normal"
+                        android:layout_marginEnd="6dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"/>
+
+                    <Button
+                        android:id="@+id/chipLocDanang"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Đà Nẵng"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_normal"
+                        android:layout_marginEnd="6dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"/>
+
+                    <Button
+                        android:id="@+id/chipLocDalat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Đà Lạt"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_normal"
+                        android:layout_marginEnd="6dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"/>
+
+                    <Button
+                        android:id="@+id/chipLocHaiphong"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Hải Phòng"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_normal"
+                        android:layout_marginEnd="6dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"/>
+
+                    <Button
+                        android:id="@+id/chipLocCantho"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Cần Thơ"
+                        android:textColor="@android:color/white"
+                        android:textSize="12sp"
+                        android:background="@drawable/button_normal"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"/>
+                </LinearLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+
         <!-- Grid Chi tiết khí tượng tại vị trí -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -125,7 +227,7 @@
             android:orientation="vertical"
             android:background="@drawable/card_background"
             android:padding="16dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="14dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -220,7 +322,7 @@
             android:id="@+id/btnRefreshLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🔄 Cập Nhật Vị Trí &amp; Thời Tiết Ngay"
+            android:text="🔄 Tự Động Định Vị Lại Bằng GPS"
             android:textColor="@android:color/white"
             android:textStyle="bold"
             android:background="@drawable/button_normal"

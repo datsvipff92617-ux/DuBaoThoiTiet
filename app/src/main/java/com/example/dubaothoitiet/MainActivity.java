@@ -49,6 +49,8 @@ public class MainActivity extends BaseActivity {
     private Button btnHourly, btnForecast, btnDetails, btnFullForecast;
     private Button btnForecast3Days, btnCurrentLocation, btnSearchLocation, btnCompareWeather;
     private Button btnAirQuality, btnWeatherAlerts, btnLifestyle, btnProfile, btnUserManagement;
+    private Button btnSunMoon, btnDisasterGuide;
+    private View cardAdminSection;
     private TextView tvUserName;
     private ImageView settingsButton;
     private ImageView btnLogout;
@@ -123,6 +125,9 @@ public class MainActivity extends BaseActivity {
         btnLifestyle = findViewById(R.id.btnLifestyle);
         btnProfile = findViewById(R.id.btnProfile);
         btnUserManagement = findViewById(R.id.btnUserManagement);
+        btnSunMoon = findViewById(R.id.btnSunMoon);
+        btnDisasterGuide = findViewById(R.id.btnDisasterGuide);
+        cardAdminSection = findViewById(R.id.cardAdminSection);
         settingsButton = findViewById(R.id.settingsButton);
         btnLogout = findViewById(R.id.btnLogout);
         tvUserName = findViewById(R.id.tvUserName);
@@ -264,6 +269,23 @@ public class MainActivity extends BaseActivity {
             });
         }
 
+        // 13. Thiên văn Mặt trời & Mặt trăng
+        if (btnSunMoon != null) {
+            btnSunMoon.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, SunMoonActivity.class);
+                intent.putExtra("city", currentCity);
+                startActivity(intent);
+            });
+        }
+
+        // 14. Cẩm nang sinh tồn thiên tai
+        if (btnDisasterGuide != null) {
+            btnDisasterGuide.setOnClickListener(v -> {
+                Intent intent = new Intent(MainActivity.this, DisasterGuideActivity.class);
+                startActivity(intent);
+            });
+        }
+
         // Cài đặt ứng dụng
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -322,8 +344,10 @@ public class MainActivity extends BaseActivity {
         String username = prefs.getString("username", "Khách");
         String role = prefs.getString("role", "user");
 
+        boolean isAdmin = "admin".equalsIgnoreCase(role);
+
         if (tvUserName != null) {
-            if ("admin".equalsIgnoreCase(role)) {
+            if (isAdmin) {
                 tvUserName.setText("👑 " + username + " (Admin)");
             } else if (isLoggedIn) {
                 tvUserName.setText("👤 " + username);
@@ -333,14 +357,12 @@ public class MainActivity extends BaseActivity {
             tvUserName.setVisibility(View.VISIBLE);
         }
 
-        // Nếu là admin thì làm nổi bật nút quản trị
+        // Quyền quản trị: CHỈ DÀNH RIÊNG CHO ADMIN - HOÀN TOÀN ẨN VỚI NGƯỜI DÙNG THƯỜNG
+        if (cardAdminSection != null) {
+            cardAdminSection.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
+        }
         if (btnUserManagement != null) {
-            if ("admin".equalsIgnoreCase(role)) {
-                btnUserManagement.setVisibility(View.VISIBLE);
-            } else {
-                // Vẫn để hiển thị cho sinh viên demo báo cáo với thầy
-                btnUserManagement.setVisibility(View.VISIBLE);
-            }
+            btnUserManagement.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -399,8 +421,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void searchLocations(String query) {
+        String encoded = WeatherUtils.encodeQuery(query);
         String searchUrl = "http://api.weatherapi.com/v1/search.json?key=" + API_KEY +
-                "&q=" + query + "&lang=vi";
+                "&q=" + encoded + "&lang=vi";
 
         callAPI(searchUrl, response -> {
             if (response != null) {
@@ -463,10 +486,12 @@ public class MainActivity extends BaseActivity {
     }
 
     private String translateCityName(String city) {
+        if (city == null) return "Hà Nội";
         switch (city.toLowerCase()) {
-            case "hanoi": return "Hà Nội";
-            case "ho chi minh city": case "saigon": return "Hồ Chí Minh";
+            case "hanoi": case "ha noi": return "Hà Nội";
+            case "ho chi minh city": case "saigon": case "hcm": return "Hồ Chí Minh";
             case "da nang": return "Đà Nẵng";
+            case "da lat": return "Đà Lạt";
             case "hai phong": return "Hải Phòng";
             case "can tho": return "Cần Thơ";
             case "bien hoa": return "Biên Hòa";
@@ -474,6 +499,9 @@ public class MainActivity extends BaseActivity {
             case "hue": return "Huế";
             case "buon ma thuot": return "Buôn Ma Thuột";
             case "vung tau": return "Vũng Tàu";
+            case "phu quoc": return "Phú Quốc";
+            case "ha long": return "Hạ Long";
+            case "sa pa": return "Sa Pa";
             default: return city;
         }
     }
@@ -497,8 +525,9 @@ public class MainActivity extends BaseActivity {
             Toast.makeText(this, "Đang tải thời tiết...", Toast.LENGTH_SHORT).show();
         });
 
+        String encodedCity = WeatherUtils.encodeQuery(city);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + city + "&days=1&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=1&aqi=no&alerts=no&lang=vi";
 
         Log.d("WeatherApp", "Weather URL: " + weatherUrl);
 

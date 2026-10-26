@@ -73,8 +73,9 @@ public class AirQualityActivity extends BaseActivity {
     }
 
     private void loadAirQualityData() {
+        String encodedCity = WeatherUtils.encodeQuery(cityName);
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
-                "&q=" + cityName + "&aqi=yes&lang=vi";
+                "&q=" + encodedCity + "&aqi=yes&lang=vi";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();

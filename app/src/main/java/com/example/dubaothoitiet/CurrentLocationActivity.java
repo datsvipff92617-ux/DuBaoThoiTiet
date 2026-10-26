@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -33,17 +32,20 @@ import okhttp3.Response;
 
 /**
  * Màn hình Thời Tiết Khu Vực Người Dùng Đang Sống (Member 3)
- * Tự động định vị vị trí qua GPS/Network và cập nhật thời tiết thực tế
+ * Tự động định vị vị trí qua GPS/Network và hỗ trợ chọn nhanh địa phương thực tế tại Việt Nam
  */
 public class CurrentLocationActivity extends BaseActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private static final String PREF_HOME_CITY = "home_living_city";
 
     private ImageButton btnBackCurrentLoc;
     private TextView tvGpsStatus;
     private TextView tvCurrentLocCity, tvCurrentLocCoords, tvCurrentLocTemp, tvCurrentLocCondition, tvCurrentLocFeelsLike;
     private TextView tvCurrentLocHumidity, tvCurrentLocWind, tvCurrentLocUV, tvCurrentLocPressure, tvCurrentLocVisibility, tvCurrentLocCloud;
     private Button btnRefreshLocation;
+
+    private Button chipLocHanoi, chipLocHcm, chipLocDanang, chipLocDalat, chipLocHaiphong, chipLocCantho;
 
     private LocationManager locationManager;
     private final String API_KEY = "35d141f7fec24768b87114757252510";
@@ -55,6 +57,7 @@ public class CurrentLocationActivity extends BaseActivity {
 
         initViews();
         setupListeners();
+        setupCityChips();
         checkAndRequestLocation();
     }
 
@@ -75,11 +78,36 @@ public class CurrentLocationActivity extends BaseActivity {
         tvCurrentLocCloud = findViewById(R.id.tvCurrentLocCloud);
 
         btnRefreshLocation = findViewById(R.id.btnRefreshLocation);
+
+        chipLocHanoi = findViewById(R.id.chipLocHanoi);
+        chipLocHcm = findViewById(R.id.chipLocHcm);
+        chipLocDanang = findViewById(R.id.chipLocDanang);
+        chipLocDalat = findViewById(R.id.chipLocDalat);
+        chipLocHaiphong = findViewById(R.id.chipLocHaiphong);
+        chipLocCantho = findViewById(R.id.chipLocCantho);
     }
 
     private void setupListeners() {
         btnBackCurrentLoc.setOnClickListener(v -> finish());
         btnRefreshLocation.setOnClickListener(v -> checkAndRequestLocation());
+    }
+
+    private void setupCityChips() {
+        if (chipLocHanoi != null) chipLocHanoi.setOnClickListener(v -> selectLivingCity("Hà Nội"));
+        if (chipLocHcm != null) chipLocHcm.setOnClickListener(v -> selectLivingCity("TP. Hồ Chí Minh"));
+        if (chipLocDanang != null) chipLocDanang.setOnClickListener(v -> selectLivingCity("Đà Nẵng"));
+        if (chipLocDalat != null) chipLocDalat.setOnClickListener(v -> selectLivingCity("Đà Lạt"));
+        if (chipLocHaiphong != null) chipLocHaiphong.setOnClickListener(v -> selectLivingCity("Hải Phòng"));
+        if (chipLocCantho != null) chipLocCantho.setOnClickListener(v -> selectLivingCity("Cần Thơ"));
+    }
+
+    private void selectLivingCity(String cityName) {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        prefs.edit().putString(PREF_HOME_CITY, cityName).apply();
+
+        tvGpsStatus.setText("📍 Vị trí bạn chọn: " + cityName);
+        tvCurrentLocCoords.setText("Đang tải dữ liệu thời tiết thực tế...");
+        loadWeatherByCityName(cityName);
     }
 
     private void checkAndRequestLocation() {
@@ -100,7 +128,7 @@ public class CurrentLocationActivity extends BaseActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 fetchDeviceLocation();
             } else {
-                tvGpsStatus.setText("⚠️ Chưa cấp quyền GPS. Đang sử dụng khu vực sinh sống mặc định.");
+                tvGpsStatus.setText("⚠️ Chưa cấp quyền GPS. Đang sử dụng khu vực sinh sống tại Việt Nam.");
                 loadFallbackLocation();
             }
         }
@@ -126,26 +154,17 @@ public class CurrentLocationActivity extends BaseActivity {
             else if (netLoc != null) bestLocation = netLoc;
             else bestLocation = passiveLoc;
         } catch (Exception e) {
-            Log.e("CurrentLocation", "Error getting last location: " + e.getMessage());
+            Log.e("CurrentLocation", "Error getting location: " + e.getMessage());
         }
 
         if (bestLocation != null) {
-            double lat = bestLocation.getLatitude();
-            double lon = bestLocation.getLongitude();
-            tvGpsStatus.setText("🟢 Đã định vị thành công bằng GPS!");
-            tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E", lat, lon));
-            loadWeatherByCoordinates(lat, lon);
+            handleLocationResult(bestLocation);
         } else {
-            // Đăng ký nhận cập nhật 1 lần
             try {
                 LocationListener locationListener = new LocationListener() {
                     @Override
                     public void onLocationChanged(@NonNull Location location) {
-                        double lat = location.getLatitude();
-                        double lon = location.getLongitude();
-                        tvGpsStatus.setText("🟢 Đã định vị thành công qua GPS!");
-                        tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E", lat, lon));
-                        loadWeatherByCoordinates(lat, lon);
+                        handleLocationResult(location);
                         locationManager.removeUpdates(this);
                     }
                 };
@@ -163,18 +182,40 @@ public class CurrentLocationActivity extends BaseActivity {
         }
     }
 
-    private void loadFallbackLocation() {
-        SharedPreferences prefs = getSharedPreferences(LoginActivity.PREFS_NAME, Context.MODE_PRIVATE);
-        String username = prefs.getString(LoginActivity.KEY_USERNAME, "sinhvien");
+    private void handleLocationResult(Location location) {
+        double lat = location.getLatitude();
+        double lon = location.getLongitude();
 
+        // Kiểm tra xem tọa độ có thuộc lãnh thổ Việt Nam không
+        if (WeatherUtils.isCoordinatesInVietnam(lat, lon)) {
+            tvGpsStatus.setText("🟢 Đã định vị thành công qua GPS vệ tinh!");
+            tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E (Việt Nam)", lat, lon));
+            loadWeatherByCoordinates(lat, lon);
+        } else {
+            // Máy ảo / Emulator (Appetize / Android Studio) thường có tọa độ US
+            tvGpsStatus.setText("💡 Máy ảo/Giả lập (Tọa độ Quốc tế). Tự động dùng vị trí tại Việt Nam.");
+            loadFallbackLocation();
+        }
+    }
+
+    private void loadFallbackLocation() {
+        SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String savedHomeCity = prefs.getString(PREF_HOME_CITY, "");
+
+        if (!savedHomeCity.isEmpty()) {
+            tvCurrentLocCoords.setText("Khu vực sinh sống: " + savedHomeCity);
+            loadWeatherByCityName(savedHomeCity);
+            return;
+        }
+
+        String username = prefs.getString("username", "sinhvien");
         DatabaseHelper db = new DatabaseHelper(this);
         User user = db.getUserByUsername(username);
 
         String targetLocation = (user != null && user.getLocation() != null && !user.getLocation().trim().isEmpty())
-                ? user.getLocation() : "Hanoi";
+                ? user.getLocation() : "Hà Nội";
 
-        tvGpsStatus.setText("📍 Khu vực cư trú trong hồ sơ: " + targetLocation);
-        tvCurrentLocCoords.setText("Định vị theo địa bàn đăng ký");
+        tvCurrentLocCoords.setText("Khu vực mặc định: " + targetLocation);
         loadWeatherByCityName(targetLocation);
     }
 
@@ -184,7 +225,8 @@ public class CurrentLocationActivity extends BaseActivity {
     }
 
     private void loadWeatherByCityName(String cityName) {
-        callWeatherApi(cityName);
+        String encoded = WeatherUtils.encodeQuery(cityName);
+        callWeatherApi(encoded);
     }
 
     private void callWeatherApi(String query) {
@@ -218,6 +260,17 @@ public class CurrentLocationActivity extends BaseActivity {
             String region = loc.optString("region", "");
             String country = loc.getString("country");
 
+            // Hiển thị tên đẹp tiếng Việt nếu là Ho Chi Minh City
+            if (name.equalsIgnoreCase("Ho Chi Minh City")) {
+                name = "TP. Hồ Chí Minh";
+            } else if (name.equalsIgnoreCase("Ha Noi")) {
+                name = "Hà Nội";
+            } else if (name.equalsIgnoreCase("Da Nang")) {
+                name = "Đà Nẵng";
+            } else if (name.equalsIgnoreCase("Da Lat")) {
+                name = "Đà Lạt";
+            }
+
             String fullLocation = name;
             if (!region.isEmpty()) fullLocation += ", " + region;
             fullLocation += " (" + country + ")";
@@ -246,7 +299,7 @@ public class CurrentLocationActivity extends BaseActivity {
             tvCurrentLocVisibility.setText(String.format(Locale.getDefault(), "👁️ Tầm nhìn: %.1f km", visKm));
             tvCurrentLocCloud.setText("☁️ Độ che phủ: " + cloud + "%");
 
-            Toast.makeText(this, "Đã cập nhật thời tiết tại vị trí của bạn!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã cập nhật vị trí & thời tiết thành công!", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             Log.e("CurrentLocation", "Lỗi phân tích: " + e.getMessage());

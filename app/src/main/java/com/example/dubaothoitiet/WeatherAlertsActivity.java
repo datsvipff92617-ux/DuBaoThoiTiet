@@ -66,8 +66,9 @@ public class WeatherAlertsActivity extends BaseActivity {
     }
 
     private void loadAlertsData() {
+        String encodedCity = WeatherUtils.encodeQuery(cityName);
         String url = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + cityName + "&days=1&alerts=yes&lang=vi";
+                "&q=" + encodedCity + "&days=1&alerts=yes&lang=vi";
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();

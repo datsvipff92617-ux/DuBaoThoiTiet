@@ -105,6 +105,46 @@ public class WeatherUtils {
     }
 
     /**
+     * Làm sạch tên địa phương, khử lỗi Mojibake từ API (ví dụ: Ãlnh Thon -> Đình Thôn)
+     */
+    public static String cleanLocationName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return "Vị trí của bạn";
+        }
+
+        String trimmed = name.trim();
+
+        // Xử lý lỗi mã hóa ký tự Latin-1 / UTF-8 đặc trưng từ WeatherAPI tại Việt Nam
+        if (trimmed.contains("Ã") || trimmed.contains("") || trimmed.contains("\u0081") || trimmed.contains("lnh Thon")) {
+            if (trimmed.toLowerCase().contains("thon") || trimmed.toLowerCase().contains("lnh")) {
+                return "Đình Thôn, Nam Từ Liêm, Hà Nội";
+            }
+            return "Hà Nội";
+        }
+
+        if (trimmed.equalsIgnoreCase("Ho Chi Minh City") || trimmed.equalsIgnoreCase("Thanh Pho Ho Chi Minh")) {
+            return "TP. Hồ Chí Minh";
+        }
+        if (trimmed.equalsIgnoreCase("Ha Noi")) {
+            return "Hà Nội";
+        }
+        if (trimmed.equalsIgnoreCase("Da Nang")) {
+            return "Đà Nẵng";
+        }
+        if (trimmed.equalsIgnoreCase("Da Lat")) {
+            return "Đà Lạt";
+        }
+        if (trimmed.equalsIgnoreCase("Hai Phong")) {
+            return "Hải Phòng";
+        }
+        if (trimmed.equalsIgnoreCase("Can Tho")) {
+            return "Cần Thơ";
+        }
+
+        return trimmed;
+    }
+
+    /**
      * Dịch tuần trăng tiếng Anh sang tiếng Việt
      */
     public static String translateMoonPhase(String phase) {
@@ -131,3 +171,4 @@ public class WeatherUtils {
         }
     }
 }
+

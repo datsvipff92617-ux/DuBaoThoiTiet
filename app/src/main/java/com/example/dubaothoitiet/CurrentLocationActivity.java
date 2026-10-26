@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,12 +24,14 @@ import androidx.core.content.ContextCompat;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+
 import okhttp3.Response;
 
 /**
@@ -49,6 +53,10 @@ public class CurrentLocationActivity extends BaseActivity {
 
     private LocationManager locationManager;
     private final String API_KEY = "35d141f7fec24768b87114757252510";
+    private String exactResolvedLocationName = "";
+    private String exactResolvedFullAddress = "";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,14 +196,84 @@ public class CurrentLocationActivity extends BaseActivity {
 
         // Kiểm tra xem tọa độ có thuộc lãnh thổ Việt Nam không
         if (WeatherUtils.isCoordinatesInVietnam(lat, lon)) {
-            tvGpsStatus.setText("🟢 Đã định vị thành công qua GPS vệ tinh!");
+            tvGpsStatus.setText("🟢 Đang đồng bộ vị trí vệ tinh GPS...");
             tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E (Việt Nam)", lat, lon));
+
+            // 1. Phân giải địa chỉ chuẩn Google Maps bằng Geocoder
+            resolveAddressFromCoordinates(lat, lon);
+
+            // 2. Tải dữ liệu thời tiết theo tọa độ
             loadWeatherByCoordinates(lat, lon);
         } else {
             // Máy ảo / Emulator (Appetize / Android Studio) thường có tọa độ US
             tvGpsStatus.setText("💡 Máy ảo/Giả lập (Tọa độ Quốc tế). Tự động dùng vị trí tại Việt Nam.");
             loadFallbackLocation();
         }
+    }
+
+    private void resolveAddressFromCoordinates(double lat, double lon) {
+        new Thread(() -> {
+            String shortName = null;
+            String fullAddr = null;
+            try {
+                if (Geocoder.isPresent()) {
+                    Geocoder geocoder = new Geocoder(CurrentLocationActivity.this, new Locale("vi", "VN"));
+                    List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
+                    if (addresses != null && !addresses.isEmpty()) {
+                        Address addr = addresses.get(0);
+                        fullAddr = addr.getAddressLine(0);
+
+                        StringBuilder sb = new StringBuilder();
+                        String street = addr.getThoroughfare();
+                        String ward = addr.getSubLocality();
+                        String district = addr.getSubAdminArea();
+                        String city = addr.getAdminArea();
+
+                        if (street != null && !street.isEmpty()) {
+                            sb.append(street);
+                        }
+                        if (ward != null && !ward.isEmpty() && (street == null || !ward.equalsIgnoreCase(street))) {
+                            if (sb.length() > 0) sb.append(", ");
+                            sb.append(ward);
+                        }
+                        if (district != null && !district.isEmpty()) {
+                            if (sb.length() > 0) sb.append(", ");
+                            sb.append(district);
+                        }
+                        if (city != null && !city.isEmpty()) {
+                            if (sb.length() > 0) sb.append(", ");
+                            sb.append(city);
+                        }
+
+                        shortName = sb.toString();
+                        if (shortName.isEmpty()) {
+                            shortName = fullAddr;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("CurrentLocation", "Geocoder error: " + e.getMessage());
+            }
+
+            final String resShort = shortName;
+            final String resFull = fullAddr;
+
+            runOnUiThread(() -> {
+                if (resShort != null && !resShort.isEmpty()) {
+                    exactResolvedLocationName = resShort;
+                    exactResolvedFullAddress = resFull;
+                    tvGpsStatus.setText("🟢 Định vị chuẩn xác theo GPS thực tế!");
+                    tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
+                    if (exactResolvedFullAddress != null && !exactResolvedFullAddress.isEmpty()) {
+                        tvCurrentLocCoords.setText(exactResolvedFullAddress + "\n(Tọa độ: " + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
+                    }
+
+                    // Lưu vào UserPrefs để MainActivity tự động nhận diện khu vực của bạn
+                    SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+                    prefs.edit().putString(PREF_HOME_CITY, exactResolvedLocationName).apply();
+                }
+            });
+        }).start();
     }
 
     private void loadFallbackLocation() {
@@ -260,21 +338,18 @@ public class CurrentLocationActivity extends BaseActivity {
             String region = loc.optString("region", "");
             String country = loc.getString("country");
 
-            // Hiển thị tên đẹp tiếng Việt nếu là Ho Chi Minh City
-            if (name.equalsIgnoreCase("Ho Chi Minh City")) {
-                name = "TP. Hồ Chí Minh";
-            } else if (name.equalsIgnoreCase("Ha Noi")) {
-                name = "Hà Nội";
-            } else if (name.equalsIgnoreCase("Da Nang")) {
-                name = "Đà Nẵng";
-            } else if (name.equalsIgnoreCase("Da Lat")) {
-                name = "Đà Lạt";
+            // Ưu tiên sử dụng tên địa chỉ chuẩn Google Maps nếu Geocoder đã tìm thấy
+            if (exactResolvedLocationName != null && !exactResolvedLocationName.trim().isEmpty()) {
+                tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
+            } else {
+                // Sử dụng hàm khử lỗi Mojibake từ API nếu chưa có Geocoder
+                String cleanName = WeatherUtils.cleanLocationName(name);
+                String fullLocation = cleanName;
+                if (!region.isEmpty() && !cleanName.contains(region)) fullLocation += ", " + region;
+                fullLocation += " (" + country + ")";
+                tvCurrentLocCity.setText("📍 " + fullLocation);
             }
 
-            String fullLocation = name;
-            if (!region.isEmpty()) fullLocation += ", " + region;
-            fullLocation += " (" + country + ")";
-            tvCurrentLocCity.setText(fullLocation);
 
             JSONObject current = json.getJSONObject("current");
             double tempC = current.getDouble("temp_c");

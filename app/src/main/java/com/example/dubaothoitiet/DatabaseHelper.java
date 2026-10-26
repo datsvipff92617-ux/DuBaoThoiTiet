@@ -116,9 +116,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Đăng ký người dùng mới
+     * Đăng ký người dùng mới với vai trò tùy chọn (Admin hoặc User)
      */
-    public boolean registerUser(String username, String password, String fullname, String email, String phone, String location) {
+    public boolean registerUser(String username, String password, String fullname, String email, String phone, String location, String role) {
         if (checkUsernameExists(username)) {
             return false;
         }
@@ -130,13 +130,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_EMAIL, email);
         values.put(COLUMN_PHONE, phone);
         values.put(COLUMN_LOCATION, location);
-        values.put(COLUMN_ROLE, "user");
+        values.put(COLUMN_ROLE, (role != null && !role.trim().isEmpty()) ? role.trim().toLowerCase() : "user");
         String currentDate = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
         values.put(COLUMN_CREATED_AT, currentDate);
 
         long result = db.insert(TABLE_USERS, null, values);
         return result != -1;
     }
+
+    /**
+     * Đăng ký người dùng mới mặc định (User)
+     */
+    public boolean registerUser(String username, String password, String fullname, String email, String phone, String location) {
+        return registerUser(username, password, fullname, email, phone, location, "user");
+    }
+
 
     /**
      * Kiểm tra đăng nhập (trả về User nếu đúng, null nếu sai)

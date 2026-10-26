@@ -175,11 +175,51 @@
                 android:background="@drawable/search_background"
                 android:padding="12dp"
                 android:inputType="textPassword"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="14dp"/>
+
+            <!-- Phân quyền vai trò tài khoản -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loại tài khoản đăng ký *"
+                android:textColor="#CCFFFFFF"
+                android:textSize="13sp"
+                android:layout_marginBottom="6dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgAccountRole"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/search_background"
+                android:padding="8dp"
+                android:layout_marginBottom="18dp">
+
+                <RadioButton
+                    android:id="@+id/rbRoleUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👤 Người dùng thông thường"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp"
+                    android:checked="true"
+                    android:buttonTint="@android:color/white"/>
+
+                <RadioButton
+                    android:id="@+id/rbRoleAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👑 Quản trị viên - Admin (Toàn quyền quản trị CSDL)"
+                    android:textColor="#FFEB3B"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    android:buttonTint="#FFEB3B"/>
+            </RadioGroup>
 
             <!-- Nút Hoàn tất Đăng ký -->
             <Button
                 android:id="@+id/btnSubmitRegister"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Hoàn Tất Đăng Ký"

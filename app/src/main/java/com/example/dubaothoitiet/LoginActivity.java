@@ -17,8 +17,8 @@ public class LoginActivity extends BaseActivity {
 
     private EditText etUsername, etPassword;
     private Button btnLogin, btnRegister;
-    private Button btnQuickAdmin, btnQuickStudent;
     private TextView tvSkipLogin;
+
     private SharedPreferences preferences;
     private DatabaseHelper databaseHelper;
 
@@ -45,22 +45,14 @@ public class LoginActivity extends BaseActivity {
         setupListeners();
     }
 
+    private static final int REQ_REGISTER = 101;
+
     private void initViews() {
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
-        btnQuickAdmin = findViewById(R.id.btnQuickAdmin);
-        btnQuickStudent = findViewById(R.id.btnQuickStudent);
         tvSkipLogin = findViewById(R.id.tvSkipLogin);
-
-        // Điền sẵn tài khoản mẫu để người dùng/giảng viên mở app là vào được ngay
-        if (etUsername.getText().toString().isEmpty()) {
-            etUsername.setText("sinhvien");
-        }
-        if (etPassword.getText().toString().isEmpty()) {
-            etPassword.setText("123456");
-        }
     }
 
     private void setupListeners() {
@@ -70,27 +62,9 @@ public class LoginActivity extends BaseActivity {
             loginWithCredentials(u, p);
         });
 
-        // 1 Chạm vào thẳng Admin
-        if (btnQuickAdmin != null) {
-            btnQuickAdmin.setOnClickListener(v -> {
-                etUsername.setText("admin");
-                etPassword.setText("123456");
-                loginWithCredentials("admin", "123456");
-            });
-        }
-
-        // 1 Chạm vào thẳng Sinh viên
-        if (btnQuickStudent != null) {
-            btnQuickStudent.setOnClickListener(v -> {
-                etUsername.setText("sinhvien");
-                etPassword.setText("123456");
-                loginWithCredentials("sinhvien", "123456");
-            });
-        }
-
         btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQ_REGISTER);
         });
 
         tvSkipLogin.setOnClickListener(v -> {
@@ -104,6 +78,19 @@ public class LoginActivity extends BaseActivity {
             goToMainActivity();
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_REGISTER && resultCode == RESULT_OK && data != null) {
+            String regUsername = data.getStringExtra("registered_username");
+            if (regUsername != null && !regUsername.isEmpty()) {
+                etUsername.setText(regUsername);
+                etPassword.requestFocus();
+            }
+        }
+    }
+
 
     private void loginWithCredentials(String username, String password) {
         if (username.isEmpty() || password.isEmpty()) {

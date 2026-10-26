@@ -41,7 +41,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tên đăng nhập"
-            android:text="sinhvien"
             android:textColorHint="#80FFFFFF"
             android:textColor="@android:color/white"
             android:background="@drawable/search_background"
@@ -55,21 +54,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Mật khẩu"
-            android:text="123456"
             android:textColorHint="#80FFFFFF"
             android:textColor="@android:color/white"
             android:background="@drawable/search_background"
             android:padding="14dp"
             android:inputType="textPassword"
-            android:layout_marginBottom="8dp"/>
-
-        <!-- Gợi ý tài khoản mẫu -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="💡 Tài khoản mẫu có sẵn: sinhvien / 123456 hoặc admin / 123456"
-            android:textColor="#CCFFFFFF"
-            android:textSize="11sp"
             android:layout_marginBottom="14dp"/>
 
         <!-- Nút Đăng nhập chính -->
@@ -79,57 +68,37 @@
             android:layout_height="wrap_content"
             android:text="Đăng Nhập"
             android:textColor="@android:color/white"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:background="@drawable/button_selected"
-            android:padding="12dp"
-            android:layout_marginBottom="10dp"/>
+            android:padding="14dp"
+            android:layout_marginBottom="12dp"/>
 
-        <!-- 2 Nút Đăng nhập Nhanh 1 Chạm cho người dùng / giảng viên -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_marginBottom="10dp">
-
-            <Button
-                android:id="@+id/btnQuickAdmin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="👑 Vào Admin"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:background="@drawable/button_normal"
-                android:layout_marginEnd="4dp"
-                android:padding="8dp"/>
-
-            <Button
-                android:id="@+id/btnQuickStudent"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="👤 Vào Sinh Viên"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:background="@drawable/button_normal"
-                android:layout_marginStart="4dp"
-                android:padding="8dp"/>
-        </LinearLayout>
-
-        <!-- Nút Đăng ký -->
+        <!-- Nút Tạo tài khoản mới -->
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tạo Tài Khoản Mới"
+            android:text="📝 Tạo Tài Khoản Mới (Đăng Ký)"
             android:textColor="@android:color/white"
-            android:textSize="14sp"
+            android:textSize="15sp"
+            android:textStyle="bold"
             android:background="@drawable/button_normal"
-            android:padding="10dp"/>
+            android:padding="12dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Gợi ý tài khoản mẫu nhỏ gọn -->
+        <TextView
+            android:id="@+id/tvDemoHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💡 Bạn có thể đăng ký tài khoản tự do (Admin hoặc User), hoặc dùng tài khoản có sẵn: admin / 123456"
+            android:textColor="#CCFFFFFF"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"/>
+
 
         <!-- Bỏ qua vào thẳng với tư cách Khách -->
         <TextView

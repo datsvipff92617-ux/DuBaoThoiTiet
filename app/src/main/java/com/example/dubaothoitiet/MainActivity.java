@@ -99,7 +99,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-
     private void initViews() {
         searchEditText = findViewById(R.id.searchEditText);
         searchButton = findViewById(R.id.searchButton);

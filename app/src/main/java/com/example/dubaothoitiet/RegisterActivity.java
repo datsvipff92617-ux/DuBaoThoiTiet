@@ -1,8 +1,12 @@
 package com.example.dubaothoitiet;
 
+import android.content.Intent;
 import android.os.Bundle;
+
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -10,11 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Màn hình Đăng Ký Tài Khoản (Member 1)
- * Lưu trữ thông tin người dùng mới vào SQLite
+ * Lưu trữ thông tin người dùng mới vào SQLite, hỗ trợ phân quyền Admin/User theo ý muốn
  */
 public class RegisterActivity extends BaseActivity {
 
     private EditText etRegUsername, etRegFullName, etRegEmail, etRegPhone, etRegLocation, etRegPassword, etRegConfirmPassword;
+    private RadioGroup rgAccountRole;
+    private RadioButton rbRoleUser, rbRoleAdmin;
     private Button btnSubmitRegister;
     private TextView tvBackToLogin;
     private DatabaseHelper databaseHelper;
@@ -38,6 +44,9 @@ public class RegisterActivity extends BaseActivity {
         etRegLocation = findViewById(R.id.etRegLocation);
         etRegPassword = findViewById(R.id.etRegPassword);
         etRegConfirmPassword = findViewById(R.id.etRegConfirmPassword);
+        rgAccountRole = findViewById(R.id.rgAccountRole);
+        rbRoleUser = findViewById(R.id.rbRoleUser);
+        rbRoleAdmin = findViewById(R.id.rbRoleAdmin);
         btnSubmitRegister = findViewById(R.id.btnSubmitRegister);
         tvBackToLogin = findViewById(R.id.tvBackToLogin);
     }
@@ -55,6 +64,9 @@ public class RegisterActivity extends BaseActivity {
         String location = etRegLocation.getText().toString().trim();
         String password = etRegPassword.getText().toString().trim();
         String confirmPassword = etRegConfirmPassword.getText().toString().trim();
+
+        // Xác định vai trò tài khoản được chọn
+        String role = (rbRoleAdmin != null && rbRoleAdmin.isChecked()) ? "admin" : "user";
 
         // Validate dữ liệu
         if (username.isEmpty() || fullName.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
@@ -83,13 +95,20 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
 
-        // Lưu vào CSDL SQLite
-        boolean success = databaseHelper.registerUser(username, password, fullName, email, phone, location);
+        // Lưu vào CSDL SQLite kèm vai trò (Admin hoặc User)
+        boolean success = databaseHelper.registerUser(username, password, fullName, email, phone, location, role);
         if (success) {
-            Toast.makeText(this, "Đăng ký tài khoản thành công! Hãy đăng nhập.", Toast.LENGTH_LONG).show();
+            String roleText = role.equals("admin") ? "👑 Quản trị viên (Admin)" : "Người dùng";
+            Toast.makeText(this, "Đăng ký thành công tài khoản " + roleText + "! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
+
+            // Truyền tên đăng nhập về LoginActivity để tiện đăng nhập
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("registered_username", username);
+            setResult(RESULT_OK, resultIntent);
             finish(); // Trở về màn hình Login
         } else {
             Toast.makeText(this, "Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại!", Toast.LENGTH_SHORT).show();
         }
     }
 }
+

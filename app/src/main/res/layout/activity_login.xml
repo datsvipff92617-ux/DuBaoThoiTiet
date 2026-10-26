@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:background="@drawable/gradient_background"
     android:fitsSystemWindows="true"
-    android:padding="24dp"
+    android:padding="20dp"
     android:gravity="center">
 
     <!-- Logo hoặc Title -->
@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:text="☀️ Dự Báo Thời Tiết"
         android:textColor="@android:color/white"
-        android:textSize="32sp"
+        android:textSize="28sp"
         android:textStyle="bold"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="24dp"/>
 
     <!-- Card chứa form đăng nhập -->
     <LinearLayout
@@ -24,16 +24,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/card_background"
-        android:padding="24dp">
+        android:padding="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Đăng Nhập"
             android:textColor="@android:color/white"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="16dp"/>
 
         <!-- Username -->
         <EditText
@@ -41,12 +41,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Tên đăng nhập"
+            android:text="sinhvien"
             android:textColorHint="#80FFFFFF"
             android:textColor="@android:color/white"
             android:background="@drawable/search_background"
-            android:padding="16dp"
+            android:padding="14dp"
             android:inputType="text"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="12dp"/>
 
         <!-- Password -->
         <EditText
@@ -54,48 +55,94 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Mật khẩu"
+            android:text="123456"
             android:textColorHint="#80FFFFFF"
             android:textColor="@android:color/white"
             android:background="@drawable/search_background"
-            android:padding="16dp"
+            android:padding="14dp"
             android:inputType="textPassword"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="8dp"/>
 
-        <!-- Nút Đăng nhập -->
+        <!-- Gợi ý tài khoản mẫu -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="💡 Tài khoản mẫu có sẵn: sinhvien / 123456 hoặc admin / 123456"
+            android:textColor="#CCFFFFFF"
+            android:textSize="11sp"
+            android:layout_marginBottom="14dp"/>
+
+        <!-- Nút Đăng nhập chính -->
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Đăng Nhập"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:background="@drawable/button_normal"
-            android:padding="16dp"
-            android:layout_marginBottom="12dp"/>
+            android:background="@drawable/button_selected"
+            android:padding="12dp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- 2 Nút Đăng nhập Nhanh 1 Chạm cho người dùng / giảng viên -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_marginBottom="10dp">
+
+            <Button
+                android:id="@+id/btnQuickAdmin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="👑 Vào Admin"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/button_normal"
+                android:layout_marginEnd="4dp"
+                android:padding="8dp"/>
+
+            <Button
+                android:id="@+id/btnQuickStudent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="👤 Vào Sinh Viên"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:background="@drawable/button_normal"
+                android:layout_marginStart="4dp"
+                android:padding="8dp"/>
+        </LinearLayout>
 
         <!-- Nút Đăng ký -->
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Đăng Ký"
+            android:text="Tạo Tài Khoản Mới"
             android:textColor="@android:color/white"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:background="@drawable/button_normal"
-            android:padding="16dp"/>
+            android:padding="10dp"/>
 
-        <!-- Hoặc tiếp tục không đăng nhập -->
+        <!-- Bỏ qua vào thẳng với tư cách Khách -->
         <TextView
             android:id="@+id/tvSkipLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bỏ qua →"
-            android:textColor="#B3FFFFFF"
-            android:textSize="14sp"
+            android:text="🚀 Bỏ qua đăng nhập (Vào xem ngay với tư cách Khách) →"
+            android:textColor="#E0F7FA"
+            android:textSize="13sp"
+            android:textStyle="bold"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            android:padding="6dp"
             android:clickable="true"
             android:focusable="true"/>
     </LinearLayout>

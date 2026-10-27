@@ -177,6 +177,7 @@ public class SettingsActivity extends BaseActivity {
         }
         editor.putString(KEY_PRESSURE_UNIT, pressureUnit);
 
+        int oldTheme = preferences.getInt(KEY_THEME, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         int theme;
         if (rbLight.isChecked()) {
             theme = AppCompatDelegate.MODE_NIGHT_NO;
@@ -195,8 +196,8 @@ public class SettingsActivity extends BaseActivity {
 
         AppCompatDelegate.setDefaultNightMode(theme);
 
-        if (!language.equals(oldLanguage)) {
-            Toast.makeText(this, "Đang khởi động lại ứng dụng...", Toast.LENGTH_SHORT).show();
+        if (!language.equals(oldLanguage) || theme != oldTheme) {
+            Toast.makeText(this, "Đã áp dụng giao diện mới trên tất cả các trang!", Toast.LENGTH_SHORT).show();
 
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

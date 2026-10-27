@@ -13,77 +13,127 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- Top Header & Search Bar -->
+        <!-- Top Header: User Badge & Quick Actions (GPS, Settings, Logout) -->
         <LinearLayout
-            android:id="@+id/searchContainer"
+            android:id="@+id/topHeaderRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:background="@drawable/search_background"
-            android:padding="6dp"
             android:gravity="center_vertical"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="6dp">
 
             <TextView
                 android:id="@+id/tvUserName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="👤 Username"
-                android:textColor="@android:color/white"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                android:layout_marginEnd="6dp"
-                android:visibility="gone"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="4dp"/>
-
-            <EditText
-                android:id="@+id/searchEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Tìm kiếm thành phố (VD: HCM, Đà Lạt)..."
-                android:textColorHint="#99FFFFFF"
+                android:text="👑 admin (Admin)"
                 android:textColor="@android:color/white"
-                android:background="@android:color/transparent"
-                android:padding="6dp"
-                android:inputType="text"
-                android:imeOptions="actionSearch"
-                android:textSize="14sp" />
-
-            <ImageView
-                android:id="@+id/searchButton"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:src="@android:drawable/ic_menu_search"
-                android:padding="6dp"
+                android:textSize="13sp"
+                android:textStyle="bold"
                 android:clickable="true"
                 android:focusable="true"
+                android:background="@drawable/card_background"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:singleLine="true"
+                android:ellipsize="end" />
+
+            <ImageView
+                android:id="@+id/btnQuickGps"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:src="@android:drawable/ic_menu_mylocation"
+                android:padding="8dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/card_background"
+                android:contentDescription="Định vị GPS chính xác"
                 app:tint="@android:color/white" />
 
             <ImageView
                 android:id="@+id/settingsButton"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:src="@drawable/ic_settings"
-                android:padding="6dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/card_background"
                 android:contentDescription="@string/menu_settings"
                 app:tint="@android:color/white" />
 
             <ImageView
                 android:id="@+id/btnLogout"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="38dp"
+                android:layout_height="38dp"
                 android:src="@drawable/ic_logout"
-                android:padding="6dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/card_background"
                 android:contentDescription="Đăng xuất"
                 app:tint="@android:color/white" />
+        </LinearLayout>
+
+        <!-- Search Bar Row: Rộng rãi, độc lập, chữ tương phản cao, không bao giờ bị trắng mờ -->
+        <LinearLayout
+            android:id="@+id/searchContainer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:background="@drawable/search_background"
+            android:gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="8dp">
+
+            <ImageView
+                android:id="@+id/ivSearchIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="@color/searchIconTint"
+                android:layout_marginEnd="8dp" />
+
+            <EditText
+                android:id="@+id/searchEditText"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Tìm kiếm: Triều Khúc, Phùng Khoang, Hà Nội..."
+                android:textColorHint="@color/searchBoxHint"
+                android:textColor="@color/searchBoxText"
+                android:background="@android:color/transparent"
+                android:inputType="text"
+                android:imeOptions="actionSearch"
+                android:textSize="14sp"
+                android:singleLine="true" />
+
+            <ImageView
+                android:id="@+id/btnClearSearch"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:padding="6dp"
+                android:visibility="gone"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="@color/searchBoxHint" />
+
+            <ImageView
+                android:id="@+id/searchButton"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:src="@android:drawable/ic_menu_send"
+                android:padding="6dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:tint="@color/searchIconTint" />
         </LinearLayout>
 
         <!-- Weather Scrollable Body -->
@@ -581,14 +631,14 @@
     <ListView
         android:id="@+id/searchSuggestionsListView"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:layout_marginTop="56dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="108dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@drawable/suggestions_background"
-        android:divider="#30FFFFFF"
+        android:divider="@color/suggestionDivider"
         android:dividerHeight="1dp"
-        android:elevation="10dp"
+        android:elevation="12dp"
         android:visibility="gone"/>
 
 </FrameLayout>

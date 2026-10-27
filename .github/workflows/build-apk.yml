@@ -11,6 +11,8 @@ jobs:
   build:
     name: Build Debug APK
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout Repository
@@ -29,8 +31,33 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleDebug
 
-    - name: Upload Debug APK
+    - name: Prepare APK File
+      run: cp app/build/outputs/apk/debug/app-debug.apk DuBaoThoiTiet.apk
+
+    - name: Upload Debug APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: DuBaoThoiTiet-Debug-APK
-        path: app/build/outputs/apk/debug/app-debug.apk
+        path: DuBaoThoiTiet.apk
+
+    - name: Publish GitHub Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref == 'refs/heads/main'
+      with:
+        tag_name: v2.0-latest
+        name: "Bản Cập Nhật Mới Nhất - DuBaoThoiTiet APK"
+        body: |
+          ### 📱 Ứng Dụng Dự Báo Thời Tiết Android (Cập Nhật Mới Nhất)
+          
+          #### 📥 Hướng dẫn tải về điện thoại:
+          1. Bấm vào file **`DuBaoThoiTiet.apk`** ở mục **Assets** bên dưới để tải trực tiếp về điện thoại Android.
+          2. Mở file APK trên điện thoại và chọn **Cài đặt** (Cho phép cài đặt từ nguồn không xác định nếu được hỏi).
+          
+          #### ✨ Các tính năng nâng cấp nổi bật:
+          - 🛰️ **Định vị GPS thông minh chuẩn xác:** Tự động nhận diện khu vực người dùng đang ở (tự động phân giải cấp phường/xã, quận/huyện, tỉnh/thành). Hoạt động hoàn hảo trên cả điện thoại thật và máy ảo.
+          - 🌗 **Chế độ Sáng / Tối (Dark / Light Theme):** Chuyển đổi giao diện đồng bộ tức thì trên toàn bộ 16 màn hình của ứng dụng trong phần Cài đặt.
+          - 🔍 **Tìm kiếm khu vực cải tiến:** Khắc phục triệt để hiện tượng lóa trắng thanh tìm kiếm; gợi ý địa điểm thông minh với độ tương phản cao, dễ nhìn.
+          - ⚡ **Đăng nhập 1 chạm:** Hỗ trợ đăng nhập nhanh tài khoản Admin & Student cho mục đích thuyết trình, chấm điểm hoặc kiểm thử đám mây.
+        files: DuBaoThoiTiet.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

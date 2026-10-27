@@ -20,6 +20,20 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        applySavedTheme();
+        super.onCreate(savedInstanceState);
+    }
+
+    protected void applySavedTheme() {
+        android.content.SharedPreferences prefs = getSharedPreferences("AppSettings", android.content.Context.MODE_PRIVATE);
+        int theme = prefs.getInt("theme", androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        if (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode() != theme) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(theme);
+        }
+    }
+
+    @Override
     protected void attachBaseContext(android.content.Context newBase) {
 
         android.content.SharedPreferences prefs = newBase.getSharedPreferences("AppSettings", android.content.Context.MODE_PRIVATE);

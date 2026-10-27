@@ -1,22 +1,31 @@
 package com.example.dubaothoitiet;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.net.Uri;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,19 +41,17 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends BaseActivity {
 
     private EditText searchEditText;
     private ImageView searchButton;
+    private ImageView btnClearSearch;
+    private ImageView btnQuickGps;
     private ListView searchSuggestionsListView;
     private TextView cityNameText, dateText, tempText, conditionText;
     private TextView feelsLikeText, humidityText, windText, uvText;
@@ -61,10 +68,10 @@ public class MainActivity extends BaseActivity {
 
     private String currentCity = "Hanoi";
     private String currentCountry = "VN";
+    private String currentExactDisplayName = "";
 
-    private ArrayAdapter<String> suggestionsAdapter;
-    private List<String> suggestionsList;
-    private Map<String, String> suggestionQueryMap = new HashMap<>();
+    private SearchSuggestionAdapter suggestionsAdapter;
+    private List<SearchSuggestionAdapter.SuggestionItem> suggestionsList;
     private SharedPreferences searchHistory;
 
     private double lastTempC = 0, lastFeelsLikeC = 0, lastWindKph = 0, lastUv = 0;
@@ -74,7 +81,7 @@ public class MainActivity extends BaseActivity {
     private final String API_KEY = "35d141f7fec24768b87114757252510";
     private static final String PREF_NAME = "SearchHistory";
     private static final String HISTORY_KEY = "history";
-
+    private static final int GPS_PERMISSION_REQUEST_CODE = 2002;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +90,11 @@ public class MainActivity extends BaseActivity {
 
         if (getIntent() != null && getIntent().hasExtra("city")) {
             currentCity = getIntent().getStringExtra("city");
+        }
+
+        String savedLoc = LocationHelper.getSavedExactLocation(this);
+        if (!savedLoc.isEmpty()) {
+            currentExactDisplayName = savedLoc;
         }
 
         initViews();
@@ -97,6 +109,7 @@ public class MainActivity extends BaseActivity {
         });
 
         loadWeatherData(currentCity);
+        checkAndRequestGpsOnStart();
     }
 
     @Override
@@ -112,6 +125,8 @@ public class MainActivity extends BaseActivity {
     private void initViews() {
         searchEditText = findViewById(R.id.searchEditText);
         searchButton = findViewById(R.id.searchButton);
+        btnClearSearch = findViewById(R.id.btnClearSearch);
+        btnQuickGps = findViewById(R.id.btnQuickGps);
         searchSuggestionsListView = findViewById(R.id.searchSuggestionsListView);
         cityNameText = findViewById(R.id.cityNameText);
         dateText = findViewById(R.id.dateText);
@@ -153,10 +168,10 @@ public class MainActivity extends BaseActivity {
 
         updateLoginStatus();
 
-        searchEditText.setHint("Tìm kiếm thành phố...");
+        searchEditText.setHint(isEnglish() ? "Search: Trieu Khuc, Phung Khoang, Hanoi..." : "Tìm kiếm: Triều Khúc, Phùng Khoang, Hà Nội...");
 
         suggestionsList = new ArrayList<>();
-        suggestionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, suggestionsList);
+        suggestionsAdapter = new SearchSuggestionAdapter(this, suggestionsList);
         searchSuggestionsListView.setAdapter(suggestionsAdapter);
         searchSuggestionsListView.setVisibility(View.GONE);
     }
@@ -181,6 +196,17 @@ public class MainActivity extends BaseActivity {
             performSearch();
             return true;
         });
+
+        if (btnClearSearch != null) {
+            btnClearSearch.setOnClickListener(v -> {
+                searchEditText.setText("");
+                searchSuggestionsListView.setVisibility(View.GONE);
+            });
+        }
+
+        if (btnQuickGps != null) {
+            btnQuickGps.setOnClickListener(v -> requestQuickGpsLocation(true));
+        }
 
         searchEditText.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus && searchEditText.getText().toString().isEmpty()) {
@@ -333,6 +359,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (btnClearSearch != null) {
+                    btnClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                }
                 if (s.length() > 0) {
                     searchLocations(s.toString());
                 } else {
@@ -346,19 +375,15 @@ public class MainActivity extends BaseActivity {
 
         searchSuggestionsListView.setOnItemClickListener((parent, view, position, id) -> {
             if (position >= 0 && position < suggestionsList.size()) {
-                String selected = suggestionsList.get(position);
-                String resolvedQuery = suggestionQueryMap.get(selected);
-                if (resolvedQuery == null) {
-                    resolvedQuery = selected.replace("📍 ", "").split(",")[0].trim();
-                }
-
+                SearchSuggestionAdapter.SuggestionItem item = suggestionsList.get(position);
                 searchEditText.setText("");
                 searchSuggestionsListView.setVisibility(View.GONE);
-
-                currentCity = resolvedQuery;
-                loadWeatherData(resolvedQuery);
-                saveToHistory(selected.replace("📍 ", ""));
                 hideKeyboard();
+
+                currentExactDisplayName = item.title + (item.subtitle != null && !item.subtitle.isEmpty() ? ", " + item.subtitle : "");
+                currentCity = item.query;
+                loadWeatherData(item.query);
+                saveToHistory(item.title);
             }
         });
 
@@ -497,10 +522,11 @@ public class MainActivity extends BaseActivity {
     private void showSearchHistory() {
         Set<String> history = getSearchHistory();
         suggestionsList.clear();
-        suggestionQueryMap.clear();
 
         if (!history.isEmpty()) {
-            suggestionsList.addAll(history);
+            for (String h : history) {
+                suggestionsList.add(new SearchSuggestionAdapter.SuggestionItem(h, "Lịch sử tìm kiếm", h, true));
+            }
             suggestionsAdapter.notifyDataSetChanged();
             searchSuggestionsListView.setVisibility(View.VISIBLE);
         } else {
@@ -515,14 +541,11 @@ public class MainActivity extends BaseActivity {
         }
 
         suggestionsList.clear();
-        suggestionQueryMap.clear();
 
-        // 1. Tìm kiếm trong danh bạ 63 Tỉnh/Thành Việt Nam (hiển thị gợi ý ngay lập tức)
+        // 1. Tìm kiếm trong danh bạ 63 Tỉnh/Thành & các khu vực trọng điểm (Triều Khúc, Phùng Khoang...)
         List<VietnamLocations.LocationItem> vnMatches = VietnamLocations.search(query);
         for (VietnamLocations.LocationItem item : vnMatches) {
-            String display = "📍 " + item.getDisplayString();
-            suggestionsList.add(display);
-            suggestionQueryMap.put(display, item.weatherQuery);
+            suggestionsList.add(new SearchSuggestionAdapter.SuggestionItem(item.name, item.province, item.weatherQuery, false));
         }
 
         if (!suggestionsList.isEmpty()) {
@@ -552,12 +575,18 @@ public class MainActivity extends BaseActivity {
                         }
 
                         String countryVN = translateCountry(country);
-                        String display = name + ", " + (region.isEmpty() ? "" : region + ", ") + countryVN;
-                        String queryVal = name + ", " + country;
+                        String sub = region.isEmpty() ? countryVN : region + ", " + countryVN;
 
-                        if (!suggestionsList.contains("📍 " + display) && !suggestionsList.contains(display)) {
-                            suggestionsList.add(display);
-                            suggestionQueryMap.put(display, queryVal);
+                        boolean exists = false;
+                        for (SearchSuggestionAdapter.SuggestionItem it : suggestionsList) {
+                            if (it.title.equalsIgnoreCase(name)) {
+                                exists = true;
+                                break;
+                            }
+                        }
+
+                        if (!exists) {
+                            suggestionsList.add(new SearchSuggestionAdapter.SuggestionItem(name, sub, name + ", " + country, false));
                             hasNew = true;
                         }
                     }
@@ -568,9 +597,7 @@ public class MainActivity extends BaseActivity {
                             searchSuggestionsListView.setVisibility(View.VISIBLE);
                         });
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                } catch (Exception ignored) {}
             }
         });
     }
@@ -612,6 +639,7 @@ public class MainActivity extends BaseActivity {
         if (!city.isEmpty()) {
             String resolved = VietnamLocations.resolveToWeatherQuery(city);
             currentCity = resolved;
+            currentExactDisplayName = city;
             loadWeatherData(resolved);
             hideKeyboard();
             searchEditText.setText("");
@@ -687,10 +715,11 @@ public class MainActivity extends BaseActivity {
             lastUv = current.getDouble("uv");
             hasParsedWeather = true;
 
-            String displayCity = translateCityName(currentCity);
-            String displayCountry = translateCountry(currentCountry);
+            String displayCity = (currentExactDisplayName != null && !currentExactDisplayName.trim().isEmpty())
+                    ? currentExactDisplayName
+                    : translateCityName(currentCity);
 
-            cityNameText.setText(displayCity + ", " + displayCountry);
+            cityNameText.setText("📍 " + displayCity);
 
             boolean en = isEnglish();
             SimpleDateFormat sdf = new SimpleDateFormat(
@@ -756,5 +785,94 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void checkAndRequestGpsOnStart() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    GPS_PERMISSION_REQUEST_CODE);
+        } else {
+            requestQuickGpsLocation(false);
+        }
+    }
+
+    private void requestQuickGpsLocation(boolean showToast) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    GPS_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        if (showToast) {
+            Toast.makeText(this, isEnglish() ? "🛰️ Detecting your current location..." : "🛰️ Đang tự động định vị vị trí của bạn...", Toast.LENGTH_SHORT).show();
+        }
+
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (lm == null) return;
+
+        Location bestLoc = null;
+        try {
+            Location gps = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location net = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location pas = lm.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+            if (gps != null) bestLoc = gps;
+            else if (net != null) bestLoc = net;
+            else bestLoc = pas;
+        } catch (SecurityException ignored) {}
+
+        if (bestLoc != null) {
+            applyGpsLocation(bestLoc);
+        }
+
+        try {
+            LocationListener listener = new LocationListener() {
+                @Override
+                public void onLocationChanged(@NonNull Location location) {
+                    applyGpsLocation(location);
+                    lm.removeUpdates(this);
+                }
+            };
+            if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                lm.requestSingleUpdate(LocationManager.GPS_PROVIDER, listener, Looper.getMainLooper());
+            } else if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, listener, Looper.getMainLooper());
+            }
+        } catch (SecurityException ignored) {}
+    }
+
+    private void applyGpsLocation(Location loc) {
+        double lat = loc.getLatitude();
+        double lon = loc.getLongitude();
+
+        if (LocationHelper.isEmulatorDefaultCoordinates(lat, lon)) {
+            LocationHelper.fetchLocationByIP(this, (shortName, fullAddress, weatherQuery) -> {
+                currentExactDisplayName = shortName;
+                currentCity = weatherQuery;
+                loadWeatherData(weatherQuery);
+                Toast.makeText(this, "📍 Vị trí thực tế của bạn: " + shortName, Toast.LENGTH_SHORT).show();
+            });
+            return;
+        }
+
+        LocationHelper.resolvePreciseLocation(this, lat, lon, (shortName, fullAddress, weatherQuery) -> {
+            currentExactDisplayName = shortName;
+            currentCity = weatherQuery;
+            loadWeatherData(weatherQuery);
+            Toast.makeText(this, "📍 Vị trí của bạn: " + shortName, Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == GPS_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestQuickGpsLocation(true);
+            }
+        }
     }
 }

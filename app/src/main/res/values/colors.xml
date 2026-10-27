@@ -8,18 +8,28 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Thêm các màu này -->
-    <color name="colorPrimary">#667eea</color>
-    <color name="colorPrimaryDark">#5568d3</color>
-    <color name="colorAccent">#764ba2</color>
+    <color name="colorPrimary">#3B82F6</color>
+    <color name="colorPrimaryDark">#1D4ED8</color>
+    <color name="colorAccent">#06B6D4</color>
 
-    <!-- Màu cho gradient background -->
-    <color name="gradientStart">#667eea</color>
-    <color name="gradientEnd">#764ba2</color>
+    <!-- Màu cho gradient background chế độ Sáng (Tươi sáng, năng động) -->
+    <color name="gradientStart">#4A7AE8</color>
+    <color name="gradientEnd">#6C4AE8</color>
 
     <!-- Màu cho text và UI -->
     <color name="textPrimary">#FFFFFF</color>
-    <color name="textSecondary">#B3FFFFFF</color>
-    <color name="cardBackground">#30FFFFFF</color>
-    <color name="searchBackground">#40FFFFFF</color>
+    <color name="textSecondary">#E0E7FF</color>
+    <color name="cardBackground">#35FFFFFF</color>
+    <color name="cardBorder">#50FFFFFF</color>
+
+    <!-- Thanh tìm kiếm và dropdown (chế độ sáng: nền trắng tinh khiết, chữ đen/xám đậm tương phản tuyệt đối) -->
+    <color name="searchBoxBg">#FFFFFF</color>
+    <color name="searchBoxBorder">#CBD5E1</color>
+    <color name="searchBoxText">#0F172A</color>
+    <color name="searchBoxHint">#64748B</color>
+    <color name="searchIconTint">#3B82F6</color>
+    <color name="suggestionBg">#FFFFFF</color>
+    <color name="suggestionItemText">#0F172A</color>
+    <color name="suggestionItemSubtext">#64748B</color>
+    <color name="suggestionDivider">#E2E8F0</color>
 </resources>

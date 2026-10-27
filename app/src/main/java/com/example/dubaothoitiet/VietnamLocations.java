@@ -40,6 +40,16 @@ public class VietnamLocations {
     private static final List<LocationItem> ALL_LOCATIONS = new ArrayList<>();
 
     static {
+        // --- KHU VỰC DÂN CƯ & ĐẠI HỌC TRỌNG ĐIỂM HÀ NỘI ---
+        add("Triều Khúc", "Thanh Xuân, Hà Nội", "20.9856,105.7984", 20.9856, 105.7984);
+        add("Phùng Khoang", "Nam Từ Liêm, Hà Nội", "20.9892,105.7892", 20.9892, 105.7892);
+        add("Thanh Xuân", "Hà Nội", "20.9932,105.8078", 20.9932, 105.8078);
+        add("Nam Từ Liêm", "Hà Nội", "21.0131,105.7656", 21.0131, 105.7656);
+        add("Hà Đông", "Hà Nội", "20.9721,105.7772", 20.9721, 105.7772);
+        add("Cầu Giấy", "Hà Nội", "21.0362,105.7906", 21.0362, 105.7906);
+        add("Đống Đa", "Hà Nội", "21.0181,105.8294", 21.0181, 105.8294);
+        add("Bách Khoa", "Hai Bà Trưng, Hà Nội", "21.0044,105.8444", 21.0044, 105.8444);
+
         // --- 5 THÀNH PHỐ TRỰC THUỘC TRUNG ƯƠNG ---
         add("Hà Nội", "Thủ đô", "Ha Noi, Vietnam", 21.0285, 105.8542);
         add("TP. Hồ Chí Minh", "Sài Gòn", "Ho Chi Minh City, Vietnam", 10.8231, 106.6297);

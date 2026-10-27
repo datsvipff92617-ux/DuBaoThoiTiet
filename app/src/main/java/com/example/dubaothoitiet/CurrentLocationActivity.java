@@ -49,14 +49,10 @@ public class CurrentLocationActivity extends BaseActivity {
     private TextView tvCurrentLocHumidity, tvCurrentLocWind, tvCurrentLocUV, tvCurrentLocPressure, tvCurrentLocVisibility, tvCurrentLocCloud;
     private Button btnRefreshLocation;
 
-    private Button chipLocHanoi, chipLocHcm, chipLocDanang, chipLocDalat, chipLocHaiphong, chipLocCantho;
-
     private LocationManager locationManager;
     private final String API_KEY = "35d141f7fec24768b87114757252510";
     private String exactResolvedLocationName = "";
     private String exactResolvedFullAddress = "";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +61,6 @@ public class CurrentLocationActivity extends BaseActivity {
 
         initViews();
         setupListeners();
-        setupCityChips();
         checkAndRequestLocation();
     }
 
@@ -86,36 +81,11 @@ public class CurrentLocationActivity extends BaseActivity {
         tvCurrentLocCloud = findViewById(R.id.tvCurrentLocCloud);
 
         btnRefreshLocation = findViewById(R.id.btnRefreshLocation);
-
-        chipLocHanoi = findViewById(R.id.chipLocHanoi);
-        chipLocHcm = findViewById(R.id.chipLocHcm);
-        chipLocDanang = findViewById(R.id.chipLocDanang);
-        chipLocDalat = findViewById(R.id.chipLocDalat);
-        chipLocHaiphong = findViewById(R.id.chipLocHaiphong);
-        chipLocCantho = findViewById(R.id.chipLocCantho);
     }
 
     private void setupListeners() {
         btnBackCurrentLoc.setOnClickListener(v -> finish());
         btnRefreshLocation.setOnClickListener(v -> checkAndRequestLocation());
-    }
-
-    private void setupCityChips() {
-        if (chipLocHanoi != null) chipLocHanoi.setOnClickListener(v -> selectLivingCity("Hà Nội"));
-        if (chipLocHcm != null) chipLocHcm.setOnClickListener(v -> selectLivingCity("TP. Hồ Chí Minh"));
-        if (chipLocDanang != null) chipLocDanang.setOnClickListener(v -> selectLivingCity("Đà Nẵng"));
-        if (chipLocDalat != null) chipLocDalat.setOnClickListener(v -> selectLivingCity("Đà Lạt"));
-        if (chipLocHaiphong != null) chipLocHaiphong.setOnClickListener(v -> selectLivingCity("Hải Phòng"));
-        if (chipLocCantho != null) chipLocCantho.setOnClickListener(v -> selectLivingCity("Cần Thơ"));
-    }
-
-    private void selectLivingCity(String cityName) {
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        prefs.edit().putString(PREF_HOME_CITY, cityName).apply();
-
-        tvGpsStatus.setText("📍 Vị trí bạn chọn: " + cityName);
-        tvCurrentLocCoords.setText("Đang tải dữ liệu thời tiết thực tế...");
-        loadWeatherByCityName(cityName);
     }
 
     private void checkAndRequestLocation() {
@@ -194,107 +164,50 @@ public class CurrentLocationActivity extends BaseActivity {
         double lat = location.getLatitude();
         double lon = location.getLongitude();
 
-        // Kiểm tra xem tọa độ có thuộc lãnh thổ Việt Nam không
-        if (WeatherUtils.isCoordinatesInVietnam(lat, lon)) {
-            tvGpsStatus.setText("🟢 Đang đồng bộ vị trí vệ tinh GPS...");
-            tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E (Việt Nam)", lat, lon));
-
-            // 1. Phân giải địa chỉ chuẩn Google Maps bằng Geocoder
-            resolveAddressFromCoordinates(lat, lon);
-
-            // 2. Tải dữ liệu thời tiết theo tọa độ
-            loadWeatherByCoordinates(lat, lon);
-        } else {
-            // Máy ảo / Emulator (Appetize / Android Studio) thường có tọa độ US
-            tvGpsStatus.setText("💡 Máy ảo/Giả lập (Tọa độ Quốc tế). Tự động dùng vị trí tại Việt Nam.");
-            loadFallbackLocation();
-        }
-    }
-
-    private void resolveAddressFromCoordinates(double lat, double lon) {
-        new Thread(() -> {
-            String shortName = null;
-            String fullAddr = null;
-            try {
-                if (Geocoder.isPresent()) {
-                    Geocoder geocoder = new Geocoder(CurrentLocationActivity.this, new Locale("vi", "VN"));
-                    List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
-                    if (addresses != null && !addresses.isEmpty()) {
-                        Address addr = addresses.get(0);
-                        fullAddr = addr.getAddressLine(0);
-
-                        StringBuilder sb = new StringBuilder();
-                        String street = addr.getThoroughfare();
-                        String ward = addr.getSubLocality();
-                        String district = addr.getSubAdminArea();
-                        String city = addr.getAdminArea();
-
-                        if (street != null && !street.isEmpty()) {
-                            sb.append(street);
-                        }
-                        if (ward != null && !ward.isEmpty() && (street == null || !ward.equalsIgnoreCase(street))) {
-                            if (sb.length() > 0) sb.append(", ");
-                            sb.append(ward);
-                        }
-                        if (district != null && !district.isEmpty()) {
-                            if (sb.length() > 0) sb.append(", ");
-                            sb.append(district);
-                        }
-                        if (city != null && !city.isEmpty()) {
-                            if (sb.length() > 0) sb.append(", ");
-                            sb.append(city);
-                        }
-
-                        shortName = sb.toString();
-                        if (shortName.isEmpty()) {
-                            shortName = fullAddr;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                Log.e("CurrentLocation", "Geocoder error: " + e.getMessage());
-            }
-
-            final String resShort = shortName;
-            final String resFull = fullAddr;
-
-            runOnUiThread(() -> {
-                if (resShort != null && !resShort.isEmpty()) {
-                    exactResolvedLocationName = resShort;
-                    exactResolvedFullAddress = resFull;
-                    tvGpsStatus.setText("🟢 Định vị chuẩn xác theo GPS thực tế!");
-                    tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
-                    if (exactResolvedFullAddress != null && !exactResolvedFullAddress.isEmpty()) {
-                        tvCurrentLocCoords.setText(exactResolvedFullAddress + "\n(Tọa độ: " + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
-                    }
-
-                    // Lưu vào UserPrefs để MainActivity tự động nhận diện khu vực của bạn
-                    SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-                    prefs.edit().putString(PREF_HOME_CITY, exactResolvedLocationName).apply();
-                }
+        // Nếu là tọa độ mặc định của máy ảo Android Studio (Mountain View California)
+        if (LocationHelper.isEmulatorDefaultCoordinates(lat, lon)) {
+            tvGpsStatus.setText("🌐 Máy ảo: Đang tự động nhận diện vị trí thực tế của bạn...");
+            LocationHelper.fetchLocationByIP(this, (shortName, fullAddress, weatherQuery) -> {
+                exactResolvedLocationName = shortName;
+                exactResolvedFullAddress = fullAddress;
+                tvGpsStatus.setText("🟢 Đã tự động định vị vị trí thực tế của bạn!");
+                tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
+                tvCurrentLocCoords.setText(exactResolvedFullAddress);
+                loadWeatherByCityName(weatherQuery);
             });
-        }).start();
-    }
-
-    private void loadFallbackLocation() {
-        SharedPreferences prefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String savedHomeCity = prefs.getString(PREF_HOME_CITY, "");
-
-        if (!savedHomeCity.isEmpty()) {
-            tvCurrentLocCoords.setText("Khu vực sinh sống: " + savedHomeCity);
-            loadWeatherByCityName(savedHomeCity);
             return;
         }
 
-        String username = prefs.getString("username", "sinhvien");
-        DatabaseHelper db = new DatabaseHelper(this);
-        User user = db.getUserByUsername(username);
+        tvGpsStatus.setText("🟢 Đã định vị thành công qua GPS vệ tinh!");
+        tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E", lat, lon));
 
-        String targetLocation = (user != null && user.getLocation() != null && !user.getLocation().trim().isEmpty())
-                ? user.getLocation() : "Hà Nội";
+        // 1. Phân giải địa chỉ tự động theo tọa độ GPS thực tế
+        resolveAddressFromCoordinates(lat, lon);
 
-        tvCurrentLocCoords.setText("Khu vực mặc định: " + targetLocation);
-        loadWeatherByCityName(targetLocation);
+        // 2. Tải dữ liệu thời tiết theo đúng tọa độ GPS
+        loadWeatherByCoordinates(lat, lon);
+    }
+
+    private void resolveAddressFromCoordinates(double lat, double lon) {
+        LocationHelper.resolvePreciseLocation(this, lat, lon, (shortName, fullAddress, weatherQuery) -> {
+            exactResolvedLocationName = shortName;
+            exactResolvedFullAddress = fullAddress;
+            tvGpsStatus.setText("🟢 Định vị chuẩn xác theo GPS thực tế!");
+            tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
+            tvCurrentLocCoords.setText(exactResolvedFullAddress + "\n(Tọa độ: " + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
+        });
+    }
+
+    private void loadFallbackLocation() {
+        tvGpsStatus.setText("🌐 Đang tự động định vị vị trí thực tế qua mạng Internet...");
+        LocationHelper.fetchLocationByIP(this, (shortName, fullAddress, weatherQuery) -> {
+            exactResolvedLocationName = shortName;
+            exactResolvedFullAddress = fullAddress;
+            tvGpsStatus.setText("🟢 Đã tự động định vị theo vị trí thực tế!");
+            tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
+            tvCurrentLocCoords.setText(exactResolvedFullAddress);
+            loadWeatherByCityName(weatherQuery);
+        });
     }
 
     private void loadWeatherByCoordinates(double lat, double lon) {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#6366F1</color>
+    <color name="colorPrimaryDark">#4F46E5</color>
+    <color name="colorAccent">#38BDF8</color>
+
+    <!-- Màu cho gradient background chế độ Tối (Đêm huyền bí, êm dịu, sang trọng) -->
+    <color name="gradientStart">#090D16</color>
+    <color name="gradientEnd">#161933</color>
+
+    <!-- Màu cho text và UI -->
+    <color name="textPrimary">#FFFFFF</color>
+    <color name="textSecondary">#94A3B8</color>
+    <color name="cardBackground">#18FFFFFF</color>
+    <color name="cardBorder">#25FFFFFF</color>
+
+    <!-- Thanh tìm kiếm và dropdown (chế độ tối: nền xám đen sang trọng, chữ trắng sáng) -->
+    <color name="searchBoxBg">#1E293B</color>
+    <color name="searchBoxBorder">#334155</color>
+    <color name="searchBoxText">#F8FAFC</color>
+    <color name="searchBoxHint">#94A3B8</color>
+    <color name="searchIconTint">#38BDF8</color>
+    <color name="suggestionBg">#1E293B</color>
+    <color name="suggestionItemText">#F8FAFC</color>
+    <color name="suggestionItemSubtext">#94A3B8</color>
+    <color name="suggestionDivider">#334155</color>
+</resources>

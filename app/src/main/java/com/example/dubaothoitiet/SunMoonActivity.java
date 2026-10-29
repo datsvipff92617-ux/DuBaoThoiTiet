@@ -139,7 +139,10 @@ public class SunMoonActivity extends BaseActivity {
                     ? displayName
                     : WeatherUtils.cleanLocationName(cityName);
 
-            tvSunMoonCity.setText(displayLoc + " (" + country + ")");
+            boolean en = isEnglish();
+            String finalLoc = en ? VietnamLocations.toEnglishLocation(displayLoc) : displayLoc;
+            String finalCountry = en ? "Vietnam" : ("Vietnam".equalsIgnoreCase(country) ? "Việt Nam" : country);
+            tvSunMoonCity.setText(finalLoc + " (" + finalCountry + ")");
 
             JSONObject astro = root.getJSONObject("astronomy").getJSONObject("astro");
             String sunrise = astro.getString("sunrise");
@@ -155,7 +158,6 @@ public class SunMoonActivity extends BaseActivity {
             tvMoonrise.setText(moonrise);
             tvMoonset.setText(moonset);
 
-            boolean en = isEnglish();
             tvMoonPhase.setText(en ? ("Moon Phase: " + moonPhase) : ("Tuần trăng: " + WeatherUtils.translateMoonPhase(moonPhase)));
             tvMoonIllumination.setText((en ? "💡 Moon Illumination: " : "💡 Độ sáng bề mặt trăng: ") + moonIllumination + "%");
 

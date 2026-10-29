@@ -75,7 +75,9 @@ public class Forecast3DaysActivity extends BaseActivity {
         if (tvTitle3Days != null) {
             tvTitle3Days.setText(isEnglish() ? "📅 3-Day Forecast" : "📅 Dự Báo 3 Ngày Tới");
         }
-        tvCityName3Days.setText((isEnglish() ? "Location: " : "Khu vực: ") + displayName);
+        boolean en = isEnglish();
+        String disp = en ? VietnamLocations.toEnglishLocation(displayName) : displayName;
+        tvCityName3Days.setText((en ? "Location: " : "Khu vực: ") + disp);
 
         // Ngày 1
         tvDateDay1 = findViewById(R.id.tvDateDay1);

@@ -65,7 +65,8 @@ public class ForecastActivity extends BaseActivity {
         forecastContainer = findViewById(R.id.forecastContainer);
 
         boolean en = isEnglish();
-        titleText.setText((en ? "7-Day Forecast - " : "Dự báo 7 ngày - ") + displayName);
+        String disp = en ? VietnamLocations.toEnglishLocation(displayName) : displayName;
+        titleText.setText((en ? "7-Day Forecast - " : "Dự báo 7 ngày - ") + disp);
     }
 
     private void setupListeners() {

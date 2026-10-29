@@ -91,7 +91,12 @@ public class UserProfileActivity extends BaseActivity {
     private void loadUserData() {
         User user = databaseHelper.getUserByUsername(currentUsername);
         boolean en = isEnglish();
-        if (user != null) {
+        boolean isGuest = "guest".equalsIgnoreCase(user != null ? user.getRole() : "")
+                || "Khách".equalsIgnoreCase(currentUsername)
+                || "Khach".equalsIgnoreCase(currentUsername)
+                || "Guest".equalsIgnoreCase(currentUsername);
+
+        if (user != null && !isGuest) {
             tvProfileUsername.setText(user.getUsername());
             tvProfileRole.setText(user.isAdmin() ? (en ? "Role: ⭐ Administrator (Admin)" : "Vai trò: ⭐ Quản trị viên (Admin)") : (en ? "Role: 👤 Member" : "Vai trò: 👤 Thành viên"));
             tvProfileCreatedAt.setText((en ? "Joined: " : "Ngày tham gia: ") + (user.getCreatedAt() != null ? user.getCreatedAt() : (en ? "Recently" : "Mới đây")));
@@ -99,10 +104,15 @@ public class UserProfileActivity extends BaseActivity {
             etProfileFullName.setText(user.getFullName() != null ? user.getFullName() : "");
             etProfileEmail.setText(user.getEmail() != null ? user.getEmail() : "");
             etProfilePhone.setText(user.getPhone() != null ? user.getPhone() : "");
-            etProfileLocation.setText(user.getLocation() != null ? user.getLocation() : "");
+            etProfileLocation.setText(user.getLocation() != null ? (en ? VietnamLocations.toEnglishLocation(user.getLocation()) : user.getLocation()) : "");
         } else {
-            tvProfileUsername.setText(currentUsername);
+            tvProfileUsername.setText(en ? "Guest" : "Khách");
             tvProfileRole.setText(en ? "Guest User" : "Khách vãng lai");
+            tvProfileCreatedAt.setText(en ? "Joined: Temporary Session" : "Ngày tham gia: Phiên tạm thời");
+            etProfileFullName.setText("");
+            etProfileEmail.setText("");
+            etProfilePhone.setText("");
+            etProfileLocation.setText("");
         }
     }
 

@@ -429,8 +429,11 @@ public class MainActivity extends BaseActivity {
         boolean en = isEnglish();
 
         if (tvUserName != null) {
+            boolean isGuest = "guest".equalsIgnoreCase(role) || "Khách".equalsIgnoreCase(username) || "Khach".equalsIgnoreCase(username) || "Guest".equalsIgnoreCase(username);
             if (isAdmin) {
                 tvUserName.setText("👑 " + username + " (Admin)");
+            } else if (isGuest) {
+                tvUserName.setText(en ? "👤 Guest" : "👤 Khách");
             } else if (isLoggedIn) {
                 tvUserName.setText("👤 " + username);
             } else {
@@ -541,8 +544,10 @@ public class MainActivity extends BaseActivity {
         suggestionsList.clear();
 
         if (!history.isEmpty()) {
+            boolean en = isEnglish();
+            String sub = en ? "Search History" : "Lịch sử tìm kiếm";
             for (String h : history) {
-                suggestionsList.add(new SearchSuggestionAdapter.SuggestionItem(h, "Lịch sử tìm kiếm", h, true));
+                suggestionsList.add(new SearchSuggestionAdapter.SuggestionItem(h, sub, h, true));
             }
             suggestionsAdapter.notifyDataSetChanged();
             searchSuggestionsListView.setVisibility(View.VISIBLE);
@@ -652,10 +657,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private String getResolvedDisplayName() {
+        String name;
         if (currentExactDisplayName != null && !currentExactDisplayName.trim().isEmpty()) {
-            return WeatherUtils.cleanLocationName(currentExactDisplayName);
+            name = WeatherUtils.cleanLocationName(currentExactDisplayName);
+        } else {
+            name = WeatherUtils.cleanLocationName(translateCityName(currentCity));
         }
-        return WeatherUtils.cleanLocationName(translateCityName(currentCity));
+        if (isEnglish()) {
+            return VietnamLocations.toEnglishLocation(name);
+        }
+        return name;
     }
 
     private void performSearch() {

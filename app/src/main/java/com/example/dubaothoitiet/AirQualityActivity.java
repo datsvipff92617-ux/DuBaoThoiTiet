@@ -66,7 +66,9 @@ public class AirQualityActivity extends BaseActivity {
     private void initViews(String displayCity) {
         btnBackAqi = findViewById(R.id.btnBackAqi);
         tvAqiCity = findViewById(R.id.tvAqiCity);
-        tvAqiCity.setText((isEnglish() ? "Location: " : "Khu vực: ") + displayCity);
+        boolean en = isEnglish();
+        String disp = en ? VietnamLocations.toEnglishLocation(displayCity) : displayCity;
+        tvAqiCity.setText((en ? "Location: " : "Khu vực: ") + disp);
 
         TextView tvAqiHeaderTitle = findViewById(R.id.tvAqiHeaderTitle);
         TextView tvAqiScoreLabel = findViewById(R.id.tvAqiScoreLabel);

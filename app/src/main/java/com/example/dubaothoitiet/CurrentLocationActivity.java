@@ -205,9 +205,12 @@ public class CurrentLocationActivity extends BaseActivity {
             exactResolvedFullAddress = fullAddress;
             // Đồng bộ vị trí lưu trữ toàn ứng dụng
             LocationHelper.saveLocation(this, exactResolvedLocationName, exactResolvedFullAddress, weatherQuery);
-            tvGpsStatus.setText(isEnglish() ? "🟢 Precise GPS location locked!" : "🟢 Định vị chuẩn xác theo GPS thực tế!");
-            tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
-            tvCurrentLocCoords.setText(exactResolvedFullAddress + "\n(" + (isEnglish() ? "Coordinates: " : "Tọa độ: ") + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
+            boolean en = isEnglish();
+            tvGpsStatus.setText(en ? "🟢 Precise GPS location locked!" : "🟢 Định vị chuẩn xác theo GPS thực tế!");
+            String dispCity = en ? VietnamLocations.toEnglishLocation(exactResolvedLocationName) : exactResolvedLocationName;
+            String dispAddr = en ? VietnamLocations.toEnglishLocation(exactResolvedFullAddress) : exactResolvedFullAddress;
+            tvCurrentLocCity.setText("📍 " + dispCity);
+            tvCurrentLocCoords.setText(dispAddr + "\n(" + (en ? "Coordinates: " : "Tọa độ: ") + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
         });
     }
 
@@ -218,9 +221,12 @@ public class CurrentLocationActivity extends BaseActivity {
             exactResolvedFullAddress = fullAddress;
             // Đồng bộ vị trí lưu trữ toàn ứng dụng
             LocationHelper.saveLocation(this, exactResolvedLocationName, exactResolvedFullAddress, weatherQuery);
-            tvGpsStatus.setText(isEnglish() ? "🟢 Located your actual location!" : "🟢 Đã tự động định vị theo vị trí thực tế!");
-            tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
-            tvCurrentLocCoords.setText(exactResolvedFullAddress);
+            boolean en = isEnglish();
+            tvGpsStatus.setText(en ? "🟢 Located your actual location!" : "🟢 Đã tự động định vị theo vị trí thực tế!");
+            String dispCity = en ? VietnamLocations.toEnglishLocation(exactResolvedLocationName) : exactResolvedLocationName;
+            String dispAddr = en ? VietnamLocations.toEnglishLocation(exactResolvedFullAddress) : exactResolvedFullAddress;
+            tvCurrentLocCity.setText("📍 " + dispCity);
+            tvCurrentLocCoords.setText(dispAddr);
             loadWeatherByCityName(weatherQuery);
         });
     }
@@ -267,14 +273,17 @@ public class CurrentLocationActivity extends BaseActivity {
             String country = loc.getString("country");
 
             // Ưu tiên sử dụng tên địa chỉ chuẩn Google Maps nếu Geocoder đã tìm thấy
+            boolean en = isEnglish();
             if (exactResolvedLocationName != null && !exactResolvedLocationName.trim().isEmpty()) {
-                tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
+                String dispCity = en ? VietnamLocations.toEnglishLocation(exactResolvedLocationName) : exactResolvedLocationName;
+                tvCurrentLocCity.setText("📍 " + dispCity);
             } else {
                 // Sử dụng hàm khử lỗi Mojibake từ API nếu chưa có Geocoder
                 String cleanName = WeatherUtils.cleanLocationName(name);
                 String fullLocation = cleanName;
                 if (!region.isEmpty() && !cleanName.contains(region)) fullLocation += ", " + region;
-                fullLocation += " (" + country + ")";
+                fullLocation += " (" + (en ? "Vietnam" : country) + ")";
+                if (en) fullLocation = VietnamLocations.toEnglishLocation(fullLocation);
                 tvCurrentLocCity.setText("📍 " + fullLocation);
             }
 
@@ -290,7 +299,6 @@ public class CurrentLocationActivity extends BaseActivity {
 
             String conditionText = current.getJSONObject("condition").getString("text");
 
-            boolean en = isEnglish();
             tvCurrentLocTemp.setText(SettingsActivity.formatTemp(this, tempC));
             tvCurrentLocCondition.setText("🌥️ " + conditionText);
             tvCurrentLocFeelsLike.setText((en ? "Feels like: " : "Cảm giác thực tế: ") + SettingsActivity.formatTemp(this, feelsLike));

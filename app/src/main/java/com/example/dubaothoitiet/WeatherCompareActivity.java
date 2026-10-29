@@ -83,8 +83,25 @@ public class WeatherCompareActivity extends BaseActivity {
             if (tvCompareHeaderTitle != null) tvCompareHeaderTitle.setText("⚖️ Compare Weather");
             if (tvCompareInputLabel != null) tvCompareInputLabel.setText("Choose 2 Locations to Compare");
             if (etCity1 != null) etCity1.setHint("Location 1 (e.g. Hanoi)");
-            if (etCity2 != null) etCity2.setHint("Location 2 (e.g. Da Nang)");
+            if (etCity2 != null) etCity2.setHint("Location 2 (e.g. Ho Chi Minh)");
             if (btnStartCompare != null) btnStartCompare.setText("Compare Weather");
+
+            tvCompareCity1Name.setText("Hanoi");
+            tvCompareCity2Name.setText("Ho Chi Minh City");
+
+            TextView tvCompareLabelTemp = findViewById(R.id.tvCompareLabelTemp);
+            TextView tvCompareLabelCond = findViewById(R.id.tvCompareLabelCond);
+            TextView tvCompareLabelHum = findViewById(R.id.tvCompareLabelHum);
+            TextView tvCompareLabelWind = findViewById(R.id.tvCompareLabelWind);
+            TextView tvCompareLabelUV = findViewById(R.id.tvCompareLabelUV);
+            TextView tvCompareAdviceTitle = findViewById(R.id.tvCompareAdviceTitle);
+
+            if (tvCompareLabelTemp != null) tvCompareLabelTemp.setText("Temperature");
+            if (tvCompareLabelCond != null) tvCompareLabelCond.setText("Weather");
+            if (tvCompareLabelHum != null) tvCompareLabelHum.setText("Humidity");
+            if (tvCompareLabelWind != null) tvCompareLabelWind.setText("Wind Speed");
+            if (tvCompareLabelUV != null) tvCompareLabelUV.setText("UV Index");
+            if (tvCompareAdviceTitle != null) tvCompareAdviceTitle.setText("📊 Travel Assessment & Advice");
         }
     }
 
@@ -150,23 +167,26 @@ public class WeatherCompareActivity extends BaseActivity {
             double wind = cur.getDouble("wind_kph");
             double uv = cur.getDouble("uv");
 
+            boolean en = isEnglish();
+            String displayCityName = en ? VietnamLocations.toEnglishLocation(cityName) : cityName;
+
             if (slot == 1) {
-                name1 = cityName;
+                name1 = displayCityName;
                 temp1 = temp;
                 hum1 = hum;
                 uv1 = uv;
-                tvCompareCity1Name.setText(cityName);
+                tvCompareCity1Name.setText(displayCityName);
                 tvCompareCity1Temp.setText(SettingsActivity.formatTemp(this, temp));
                 tvCompareCity1Condition.setText(cond);
                 tvCompareCity1Humidity.setText(hum + "%");
                 tvCompareCity1Wind.setText(SettingsActivity.formatWindSpeed(this, wind));
                 tvCompareCity1UV.setText(String.format(Locale.getDefault(), "%.0f", uv));
             } else {
-                name2 = cityName;
+                name2 = displayCityName;
                 temp2 = temp;
                 hum2 = hum;
                 uv2 = uv;
-                tvCompareCity2Name.setText(cityName);
+                tvCompareCity2Name.setText(displayCityName);
                 tvCompareCity2Temp.setText(SettingsActivity.formatTemp(this, temp));
                 tvCompareCity2Condition.setText(cond);
                 tvCompareCity2Humidity.setText(hum + "%");

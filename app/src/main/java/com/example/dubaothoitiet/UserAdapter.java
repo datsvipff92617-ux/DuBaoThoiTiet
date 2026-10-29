@@ -62,7 +62,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             }
             if (user.getLocation() != null && !user.getLocation().isEmpty()) {
                 if (!contact.isEmpty()) contact += " | ";
-                contact += user.getLocation();
+                contact += en ? VietnamLocations.toEnglishLocation(user.getLocation()) : user.getLocation();
             }
             tvContact.setText(contact.isEmpty() ? (en ? "No contact information" : "Chưa có thông tin liên hệ") : contact);
 

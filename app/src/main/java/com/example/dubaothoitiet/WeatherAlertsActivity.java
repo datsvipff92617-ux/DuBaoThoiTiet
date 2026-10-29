@@ -74,7 +74,8 @@ public class WeatherAlertsActivity extends BaseActivity {
             tvAlertsHeaderTitle.setText(en ? "⚠️ Weather Alerts" : "⚠️ Cảnh Báo Khí Tượng");
         }
         tvAlertsCity = findViewById(R.id.tvAlertsCity);
-        tvAlertsCity.setText((en ? "Scanning alerts for: " : "Đang kiểm tra cảnh báo tại ") + displayCity);
+        String disp = en ? VietnamLocations.toEnglishLocation(displayCity) : displayCity;
+        tvAlertsCity.setText((en ? "Scanning alerts for: " : "Đang kiểm tra cảnh báo tại ") + disp);
 
         tvAlertLevelIcon = findViewById(R.id.tvAlertLevelIcon);
         tvAlertLevelTitle = findViewById(R.id.tvAlertLevelTitle);

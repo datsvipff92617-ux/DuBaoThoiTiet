@@ -46,9 +46,10 @@ public class SearchSuggestionAdapter extends ArrayAdapter<SearchSuggestionAdapte
             TextView tvSubtitle = convertView.findViewById(R.id.tvSuggestionSubtitle);
             ImageView ivIcon = convertView.findViewById(R.id.ivSuggestionIcon);
 
-            tvTitle.setText(item.title);
+            boolean en = SettingsActivity.isEnglish(getContext());
+            tvTitle.setText(en ? VietnamLocations.toEnglishLocation(item.title) : item.title);
             if (item.subtitle != null && !item.subtitle.isEmpty()) {
-                tvSubtitle.setText(item.subtitle);
+                tvSubtitle.setText(en ? VietnamLocations.toEnglishLocation(item.subtitle) : item.subtitle);
                 tvSubtitle.setVisibility(View.VISIBLE);
             } else {
                 tvSubtitle.setVisibility(View.GONE);

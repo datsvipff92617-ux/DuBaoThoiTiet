@@ -69,7 +69,9 @@ public class DetailActivity extends BaseActivity {
         detailHeatIndex = findViewById(R.id.detailHeatIndex);
         detailWindChill = findViewById(R.id.detailWindChill);
 
-        titleText.setText((isEnglish() ? "Atmospheric Details - " : "Chi tiết thời tiết - ") + displayCity);
+        boolean en = isEnglish();
+        String disp = en ? VietnamLocations.toEnglishLocation(displayCity) : displayCity;
+        titleText.setText((en ? "Atmospheric Details - " : "Chi tiết thời tiết - ") + disp);
 
         if (isEnglish()) {
             TextView lblHumidity = findViewById(R.id.lblHumidity);

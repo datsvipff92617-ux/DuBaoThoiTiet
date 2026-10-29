@@ -40,6 +40,18 @@ public class VietnamLocations {
         }
 
         public String getDisplayString() {
+            return getDisplayString(false);
+        }
+
+        public String getDisplayString(boolean isEnglish) {
+            if (isEnglish) {
+                String enName = toEnglishLocation(name);
+                String enProv = toEnglishLocation(province);
+                if (enProv.isEmpty() || enName.equalsIgnoreCase(enProv)) {
+                    return enName + ", Vietnam";
+                }
+                return enName + " (" + enProv + "), Vietnam";
+            }
             if (province.isEmpty() || name.equalsIgnoreCase(province)) {
                 return name + ", Việt Nam";
             }
@@ -464,6 +476,57 @@ public class VietnamLocations {
                 .replace("Đ", "D")
                 .replace("–", "-")
                 .replace("—", "-");
+    }
+
+    /**
+     * Chuyển đổi tên địa danh sang tiếng Anh không dấu chuẩn quốc tế
+     * Ví dụ: Hà Nội -> Ha Noi / Hanoi, TP. Hồ Chí Minh -> Ho Chi Minh City, Đà Lạt -> Da Lat
+     */
+    public static String toEnglishLocation(String input) {
+        if (input == null || input.trim().isEmpty()) return "";
+        String trimmed = input.trim();
+        String compact = toCompactKey(trimmed);
+
+        if (compact.equals("lichsutimkiem") || trimmed.equalsIgnoreCase("Lịch sử tìm kiếm") || trimmed.equalsIgnoreCase("Lich su tim kiem")) {
+            return "Search History";
+        }
+
+        if (compact.equals("tphcm") || compact.equals("hcm") || compact.equals("hcmc")
+                || compact.equals("sg") || compact.equals("saigon") || compact.equals("tphochiminh")
+                || compact.equals("hochiminh") || compact.equals("thanhphohochiminh")
+                || compact.equals("tphochiminhcity")) {
+            return "Ho Chi Minh City";
+        }
+        if (compact.equals("hn") || compact.equals("hanoi")) return "Hanoi";
+        if (compact.equals("dn") || compact.equals("danang")) return "Da Nang";
+        if (compact.equals("hp") || compact.equals("haiphong")) return "Hai Phong";
+        if (compact.equals("ct") || compact.equals("cantho")) return "Can Tho";
+        if (compact.equals("dalat") || compact.equals("dl")) return "Da Lat";
+        if (compact.equals("nhatrang")) return "Nha Trang";
+        if (compact.equals("halong")) return "Ha Long";
+        if (compact.equals("phuquoc") || compact.equals("pq")) return "Phu Quoc";
+        if (compact.equals("quynhon")) return "Quy Nhon";
+        if (compact.equals("hue") || compact.equals("tth")) return "Hue";
+        if (compact.equals("bmt") || compact.equals("buonmathuot")) return "Buon Ma Thuot";
+        if (compact.equals("brvt") || compact.equals("vungtau")) return "Vung Tau";
+
+        String result = trimmed;
+        if (result.startsWith("TP. ") || result.startsWith("TP ")) {
+            String base = result.substring(result.indexOf(" ") + 1).trim();
+            return stripAccents(base) + " City";
+        }
+        if (result.toLowerCase(Locale.ROOT).startsWith("thành phố ")) {
+            String base = result.substring("thành phố ".length()).trim();
+            return stripAccents(base) + " City";
+        }
+        if (result.toLowerCase(Locale.ROOT).startsWith("tỉnh ")) {
+            String base = result.substring("tỉnh ".length()).trim();
+            return stripAccents(base) + " Province";
+        }
+
+        result = result.replace("Việt Nam", "Vietnam").replace("Viet Nam", "Vietnam");
+
+        return stripAccents(result);
     }
 }
 

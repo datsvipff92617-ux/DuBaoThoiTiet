@@ -165,7 +165,7 @@ public class SearchLocationActivity extends BaseActivity {
         for (int i = 0; i < count; i++) {
             VietnamLocations.LocationItem item = matches.get(i);
             TextView tv = new TextView(this);
-            tv.setText("📍 " + item.getDisplayString());
+            tv.setText("📍 " + item.getDisplayString(isEnglish()));
             tv.setTextColor(itemTextColor);
             tv.setTextSize(14);
             tv.setPadding(24, 20, 24, 20);
@@ -195,9 +195,13 @@ public class SearchLocationActivity extends BaseActivity {
                 R.id.chipNhatrang, R.id.chipHue, R.id.chipSapa
         };
 
+        boolean en = isEnglish();
         for (int id : chipIds) {
             Button b = findViewById(id);
             if (b != null) {
+                if (en) {
+                    b.setText(VietnamLocations.toEnglishLocation(b.getText().toString()));
+                }
                 b.setOnClickListener(v -> {
                     String cityName = b.getText().toString();
                     etSearchQuery.setText(cityName);
@@ -259,11 +263,13 @@ public class SearchLocationActivity extends BaseActivity {
             double wind = current.getDouble("wind_kph");
             double uv = current.getDouble("uv");
 
+            boolean en = isEnglish();
             String cleanName = WeatherUtils.cleanLocationName(name);
-            tvResultCityName.setText(cleanName + ", " + country);
+            String displayCity = en ? VietnamLocations.toEnglishLocation(cleanName) : cleanName;
+            String displayCountry = en ? "Vietnam" : ("Vietnam".equalsIgnoreCase(country) ? "Việt Nam" : country);
+            tvResultCityName.setText(displayCity + ", " + displayCountry);
             tvResultTemp.setText(SettingsActivity.formatTemp(this, temp));
             tvResultCondition.setText("🌥️ " + condition);
-            boolean en = isEnglish();
             tvResultDetails.setText(String.format(Locale.getDefault(), (en ? "Humidity: %d%% | Wind: %s | UV: %.0f" : "Độ ẩm: %d%% | Gió: %s | UV: %.0f"),
                     humidity, SettingsActivity.formatWindSpeed(this, wind), uv));
 
@@ -284,9 +290,10 @@ public class SearchLocationActivity extends BaseActivity {
             tvEmptyHistory.setVisibility(View.GONE);
 
             int itemTextColor = ContextCompat.getColor(this, R.color.suggestionItemText);
+            boolean en = isEnglish();
             for (String city : history) {
                 TextView tvItem = new TextView(this);
-                tvItem.setText("🔍 " + city);
+                tvItem.setText("🔍 " + (en ? VietnamLocations.toEnglishLocation(city) : city));
                 tvItem.setTextColor(itemTextColor);
                 tvItem.setTextSize(14);
                 tvItem.setPadding(24, 20, 24, 20);

@@ -68,7 +68,9 @@ public class LifestyleAdviceActivity extends BaseActivity {
             tvLifestyleHeaderTitle.setText(isEnglish() ? "👕 Lifestyle & Health Advice" : "👕 Gợi Ý Đời Sống");
         }
         tvLifestyleCity = findViewById(R.id.tvLifestyleCity);
-        tvLifestyleCity.setText((isEnglish() ? "Lifestyle suggestions for: " : "Gợi ý sinh hoạt cho khu vực: ") + displayCity);
+        boolean en = isEnglish();
+        String disp = en ? VietnamLocations.toEnglishLocation(displayCity) : displayCity;
+        tvLifestyleCity.setText((en ? "Lifestyle suggestions for: " : "Gợi ý sinh hoạt cho khu vực: ") + disp);
 
         tvAdviceClothing = findViewById(R.id.tvAdviceClothing);
         tvAdviceUmbrella = findViewById(R.id.tvAdviceUmbrella);

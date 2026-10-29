@@ -64,7 +64,9 @@ public class HourlyForecastActivity extends BaseActivity {
         titleText = findViewById(R.id.titleText);
         hourlyContainer = findViewById(R.id.hourlyContainer);
 
-        titleText.setText((isEnglish() ? "24-Hour Forecast - " : "Dự báo theo giờ - ") + displayName);
+        boolean en = isEnglish();
+        String disp = en ? VietnamLocations.toEnglishLocation(displayName) : displayName;
+        titleText.setText((en ? "24-Hour Forecast - " : "Dự báo theo giờ - ") + disp);
     }
 
     private void setupListeners() {

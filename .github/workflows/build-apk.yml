@@ -44,20 +44,20 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: github.ref == 'refs/heads/main'
       with:
-        tag_name: v2.1
-        name: "Bản Cập Nhật v2.1 - DuBaoThoiTiet APK (Chữ Đen Tương Phản Sắc Nét)"
+        tag_name: v2.2
+        name: "Bản Cập Nhật v2.2 - DuBaoThoiTiet APK (Hoàn Thiện Tương Phản Sáng/Tối & Tra Cứu TP.HCM)"
         overwrite: true
         body: |
-          ### 📱 Ứng Dụng Dự Báo Thời Tiết Android - Bản v2.1 (Mới Nhất)
+          ### 📱 Ứng Dụng Dự Báo Thời Tiết Android - Bản v2.2 (Mới Nhất)
           
           #### 📥 Hướng dẫn tải về điện thoại:
-          1. Bấm vào file **`DuBaoThoiTiet.apk`** ở mục **Assets** bên dưới để tải trực tiếp về điện thoại Android.
+          1. Bấm vào file **`DuBaoThoiTiet.apk`** ở mục **Assets** bên dưới hoặc quét mã QR để tải trực tiếp về điện thoại Android.
           2. Mở file APK trên điện thoại và chọn **Cài đặt**.
           
-          #### ✨ Các điểm nâng cấp cốt lõi trong bản v2.1:
-          - 🖤 **Khắc phục 100% màu chữ trên ô nhập liệu:** Đảm bảo toàn bộ chữ gõ và gợi ý tại màn hình Đăng ký, Đăng nhập, Hồ sơ, Tìm kiếm luôn là màu đen/xám đậm tương phản tuyệt đối trên nền trắng.
-          - 🛰️ **Định vị GPS thông minh:** Tự động nhận diện chính xác khu vực người dùng đang ở (thôn/xã, quận/huyện, tỉnh/thành). Hoạt động chuẩn xác trên cả điện thoại thật và máy ảo.
-          - 🌗 **Chế độ Sáng / Tối (Dark / Light Theme):** Chuyển đổi giao diện đồng bộ tức thì trên toàn bộ 16 màn hình.
+          #### ✨ Các điểm nâng cấp cốt lõi trong bản v2.2:
+          - 🌗 **Tương phản chuẩn xác Sáng / Tối:** Nền trắng chữ màu đen tuyệt đối; Nền tối chữ màu trắng sáng rõ nét, không còn hiện tượng chữ đen trên nền tối hay chữ trắng trên nền trắng.
+          - 🏙️ **Hỗ trợ đầy đủ từ viết tắt TP.HCM / Sài Gòn:** Tìm kiếm `TP.HCM`, `TP. HCM`, `TPHCM`, `tp hcm`, `tphcm`, `saigon`, `sg` ra ngay thời tiết TP. Hồ Chí Minh chính xác và hiển thị đẹp.
+          - 🛰️ **Giữ nguyên định vị vị trí GPS chuẩn:** Tự động bắt tọa độ thực tế và nhận diện chính xác khu vực.
         files: DuBaoThoiTiet.apk
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -92,7 +92,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="📍 GỢI Ý ĐỊA PHƯƠNG PHÙ HỢP:"
-                android:textColor="#80FFFFFF"
+                android:textColor="@color/suggestionItemSubtext"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="6dp"

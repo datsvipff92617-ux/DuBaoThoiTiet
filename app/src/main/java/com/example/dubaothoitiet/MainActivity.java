@@ -639,12 +639,12 @@ public class MainActivity extends BaseActivity {
         if (!city.isEmpty()) {
             String resolved = VietnamLocations.resolveToWeatherQuery(city);
             currentCity = resolved;
-            currentExactDisplayName = city;
+            currentExactDisplayName = VietnamLocations.getCanonicalDisplayName(city);
             loadWeatherData(resolved);
             hideKeyboard();
             searchEditText.setText("");
             searchSuggestionsListView.setVisibility(View.GONE);
-            saveToHistory(city);
+            saveToHistory(currentExactDisplayName);
         } else {
             Toast.makeText(this, isEnglish() ? "Please enter a location" : "Vui lòng nhập tên địa phương", Toast.LENGTH_SHORT).show();
         }

@@ -25,11 +25,11 @@
     <!-- Thanh tìm kiếm và dropdown (chế độ tối: nền xám đen sang trọng, chữ trắng sáng) -->
     <color name="searchBoxBg">#1E293B</color>
     <color name="searchBoxBorder">#334155</color>
-    <color name="searchBoxText">#F8FAFC</color>
+    <color name="searchBoxText">#FFFFFF</color>
     <color name="searchBoxHint">#94A3B8</color>
     <color name="searchIconTint">#38BDF8</color>
     <color name="suggestionBg">#1E293B</color>
-    <color name="suggestionItemText">#F8FAFC</color>
+    <color name="suggestionItemText">#FFFFFF</color>
     <color name="suggestionItemSubtext">#94A3B8</color>
     <color name="suggestionDivider">#334155</color>
 </resources>

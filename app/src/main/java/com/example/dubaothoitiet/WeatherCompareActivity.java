@@ -130,7 +130,8 @@ public class WeatherCompareActivity extends BaseActivity {
     private void parseAndDisplaySlot(String json, int slot) {
         try {
             JSONObject obj = new JSONObject(json);
-            String cityName = obj.getJSONObject("location").getString("name");
+            String rawCityName = obj.getJSONObject("location").getString("name");
+            String cityName = VietnamLocations.getDisplayNameForApiResult(rawCityName);
             JSONObject cur = obj.getJSONObject("current");
 
             double temp = cur.getDouble("temp_c");

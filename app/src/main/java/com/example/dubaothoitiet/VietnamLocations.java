@@ -19,14 +19,24 @@ public class VietnamLocations {
         public final double lat;            // Vĩ độ
         public final double lon;            // Kinh độ
         public final String normalizedKey;  // Chuỗi không dấu để tìm kiếm nhanh
+        public final String[] aliases;      // Từ viết tắt / tên thay thế (ví dụ: tp.hcm, tphcm, sg, saigon...)
 
-        public LocationItem(String name, String province, String weatherQuery, double lat, double lon) {
+        public LocationItem(String name, String province, String weatherQuery, double lat, double lon, String... aliases) {
             this.name = name;
             this.province = province;
             this.weatherQuery = weatherQuery;
             this.lat = lat;
             this.lon = lon;
-            this.normalizedKey = stripAccents(name + " " + province + " " + weatherQuery).toLowerCase(Locale.ROOT);
+            this.aliases = aliases != null ? aliases : new String[0];
+            StringBuilder sb = new StringBuilder(name).append(" ").append(province).append(" ").append(weatherQuery);
+            for (String a : this.aliases) {
+                sb.append(" ").append(a);
+            }
+            this.normalizedKey = stripAccents(sb.toString()).toLowerCase(Locale.ROOT);
+        }
+
+        public LocationItem(String name, String province, String weatherQuery, double lat, double lon) {
+            this(name, province, weatherQuery, lat, lon, new String[0]);
         }
 
         public String getDisplayString() {
@@ -41,21 +51,22 @@ public class VietnamLocations {
 
     static {
         // --- KHU VỰC DÂN CƯ & ĐẠI HỌC TRỌNG ĐIỂM HÀ NỘI ---
-        add("Triều Khúc", "Thanh Xuân, Hà Nội", "20.9856,105.7984", 20.9856, 105.7984);
-        add("Phùng Khoang", "Nam Từ Liêm, Hà Nội", "20.9892,105.7892", 20.9892, 105.7892);
-        add("Thanh Xuân", "Hà Nội", "20.9932,105.8078", 20.9932, 105.8078);
-        add("Nam Từ Liêm", "Hà Nội", "21.0131,105.7656", 21.0131, 105.7656);
-        add("Hà Đông", "Hà Nội", "20.9721,105.7772", 20.9721, 105.7772);
-        add("Cầu Giấy", "Hà Nội", "21.0362,105.7906", 21.0362, 105.7906);
-        add("Đống Đa", "Hà Nội", "21.0181,105.8294", 21.0181, 105.8294);
-        add("Bách Khoa", "Hai Bà Trưng, Hà Nội", "21.0044,105.8444", 21.0044, 105.8444);
+        add("Triều Khúc", "Thanh Xuân, Hà Nội", "20.9856,105.7984", 20.9856, 105.7984, "trieu khuc", "trieukhuc");
+        add("Phùng Khoang", "Nam Từ Liêm, Hà Nội", "20.9892,105.7892", 20.9892, 105.7892, "phung khoang", "phungkhoang");
+        add("Thanh Xuân", "Hà Nội", "20.9932,105.8078", 20.9932, 105.8078, "thanh xuan");
+        add("Nam Từ Liêm", "Hà Nội", "21.0131,105.7656", 21.0131, 105.7656, "nam tu liem");
+        add("Hà Đông", "Hà Nội", "20.9721,105.7772", 20.9721, 105.7772, "ha dong");
+        add("Cầu Giấy", "Hà Nội", "21.0362,105.7906", 21.0362, 105.7906, "cau giay");
+        add("Đống Đa", "Hà Nội", "21.0181,105.8294", 21.0181, 105.8294, "dong da");
+        add("Bách Khoa", "Hai Bà Trưng, Hà Nội", "21.0044,105.8444", 21.0044, 105.8444, "bach khoa");
 
         // --- 5 THÀNH PHỐ TRỰC THUỘC TRUNG ƯƠNG ---
-        add("Hà Nội", "Thủ đô", "Ha Noi, Vietnam", 21.0285, 105.8542);
-        add("TP. Hồ Chí Minh", "Sài Gòn", "Ho Chi Minh City, Vietnam", 10.8231, 106.6297);
-        add("Đà Nẵng", "Đà Nẵng", "Da Nang, Vietnam", 16.0678, 108.2208);
-        add("Hải Phòng", "Hải Phòng", "Hai Phong, Vietnam", 20.8561, 106.6822);
-        add("Cần Thơ", "Cần Thơ", "Can Tho, Vietnam", 10.0333, 105.7833);
+        add("Hà Nội", "Thủ đô", "Ha Noi, Vietnam", 21.0285, 105.8542, "hn", "hanoi", "ha noi", "thu do");
+        add("TP. Hồ Chí Minh", "Sài Gòn", "Ho Chi Minh City, Vietnam", 10.8231, 106.6297,
+            "tp.hcm", "tp. hcm", "tphcm", "tp hcm", "tp.h.c.m", "t.p.hcm", "hcm", "hcmc", "sg", "sai gon", "saigon", "sài gòn", "ho chi minh", "tp ho chi minh", "thanh pho ho chi minh");
+        add("Đà Nẵng", "Đà Nẵng", "Da Nang, Vietnam", 16.0678, 108.2208, "dn", "danang", "da nang");
+        add("Hải Phòng", "Hải Phòng", "Hai Phong, Vietnam", 20.8561, 106.6822, "hp", "haiphong", "hai phong");
+        add("Cần Thơ", "Cần Thơ", "Can Tho, Vietnam", 10.0333, 105.7833, "ct", "cantho", "can tho");
 
         // --- BẮC TRUNG BỘ (HUẾ, NGHỆ AN, HÀ TĨNH, QUẢNG BÌNH, QUẢNG TRỊ, THANH HÓA) ---
         add("Huế", "Thừa Thiên Huế", "Hue, Vietnam", 16.4667, 107.6000);
@@ -161,12 +172,24 @@ public class VietnamLocations {
         add("Vĩnh Long", "Vĩnh Long", "Vinh Long, Vietnam", 10.2500, 105.9667);
     }
 
+    private static void add(String name, String province, String weatherQuery, double lat, double lon, String... aliases) {
+        ALL_LOCATIONS.add(new LocationItem(name, province, weatherQuery, lat, lon, aliases));
+    }
+
     private static void add(String name, String province, String weatherQuery, double lat, double lon) {
         ALL_LOCATIONS.add(new LocationItem(name, province, weatherQuery, lat, lon));
     }
 
     /**
-     * Tìm kiếm gợi ý tỉnh thành Việt Nam theo từ khóa (có dấu hoặc không dấu)
+     * Khử dấu và chỉ giữ lại chữ/số viết thường để khớp các từ viết tắt như "tp.hcm" -> "tphcm"
+     */
+    public static String toCompactKey(String input) {
+        if (input == null) return "";
+        return stripAccents(input).toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+    }
+
+    /**
+     * Tìm kiếm gợi ý tỉnh thành Việt Nam theo từ khóa (có dấu, không dấu, hoặc viết tắt như TP.HCM, HN...)
      */
     public static List<LocationItem> search(String query) {
         List<LocationItem> results = new ArrayList<>();
@@ -176,8 +199,24 @@ public class VietnamLocations {
 
         String rawClean = query.trim().toLowerCase(Locale.ROOT);
         String stripped = stripAccents(rawClean);
+        String compact = toCompactKey(rawClean);
 
-        // 1. Khớp từ bắt đầu trước (ưu tiên hàng đầu)
+        // 0. Khớp từ viết tắt/alias đặc biệt (Ưu tiên số 1 - ví dụ: tp.hcm, tphcm, sg, saigon, hn, dn...)
+        for (LocationItem item : ALL_LOCATIONS) {
+            for (String alias : item.aliases) {
+                String aliasCompact = toCompactKey(alias);
+                String aliasStripped = stripAccents(alias).toLowerCase(Locale.ROOT);
+                if ((!compact.isEmpty() && (aliasCompact.equals(compact) || aliasCompact.startsWith(compact)))
+                        || (!stripped.isEmpty() && (aliasStripped.equals(stripped) || aliasStripped.startsWith(stripped)))) {
+                    if (!results.contains(item)) {
+                        results.add(item);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // 1. Khớp từ bắt đầu trước (ưu tiên cao)
         for (LocationItem item : ALL_LOCATIONS) {
             String itemStripped = stripAccents(item.name.toLowerCase(Locale.ROOT));
             if (itemStripped.startsWith(stripped) || item.name.toLowerCase(Locale.ROOT).startsWith(rawClean)) {
@@ -187,7 +226,7 @@ public class VietnamLocations {
             }
         }
 
-        // 2. Khớp từ chứa trong tên tỉnh/thành phố
+        // 2. Khớp từ chứa trong tên tỉnh/thành phố hoặc normalizedKey
         for (LocationItem item : ALL_LOCATIONS) {
             if (item.normalizedKey.contains(stripped) || item.name.toLowerCase(Locale.ROOT).contains(rawClean)) {
                 if (!results.contains(item)) {
@@ -209,25 +248,86 @@ public class VietnamLocations {
         }
 
         String raw = input.trim();
+        String compact = toCompactKey(raw);
         String stripped = stripAccents(raw).toLowerCase(Locale.ROOT);
 
-        // Kiểm tra khớp trực tiếp trong danh bạ Việt Nam
+        // 1. Kiểm tra trực tiếp các từ viết tắt / alias thông dụng của Việt Nam
+        if (compact.equals("tphcm") || compact.equals("hcm") || compact.equals("hcmc")
+                || compact.equals("sg") || compact.equals("saigon") || compact.equals("tphochiminh")
+                || compact.equals("hochiminh") || compact.equals("thanhphohochiminh")) {
+            return "Ho Chi Minh City, Vietnam";
+        }
+        if (compact.equals("hn") || compact.equals("hanoi")) {
+            return "Ha Noi, Vietnam";
+        }
+        if (compact.equals("dn") || compact.equals("danang")) {
+            return "Da Nang, Vietnam";
+        }
+        if (compact.equals("hp") || compact.equals("haiphong")) {
+            return "Hai Phong, Vietnam";
+        }
+        if (compact.equals("ct") || compact.equals("cantho")) {
+            return "Can Tho, Vietnam";
+        }
+        if (compact.equals("brvt") || compact.equals("vungtau") || compact.equals("bariavungtau")) {
+            return "Vung Tau, Vietnam";
+        }
+        if (compact.equals("bmt") || compact.equals("buonmathuot")) {
+            return "Buon Ma Thuot, Vietnam";
+        }
+        if (compact.equals("dalat") || compact.equals("dl")) {
+            return "Da Lat, Vietnam";
+        }
+        if (compact.equals("nhatrang")) {
+            return "Nha Trang, Vietnam";
+        }
+        if (compact.equals("halong")) {
+            return "Ha Long, Vietnam";
+        }
+        if (compact.equals("phuquoc") || compact.equals("pq")) {
+            return "Phu Quoc, Vietnam";
+        }
+        if (compact.equals("quynhon")) {
+            return "Quy Nhon, Vietnam";
+        }
+        if (compact.equals("phanthiet")) {
+            return "Phan Thiet, Vietnam";
+        }
+        if (compact.equals("phanrang")) {
+            return "Phan Rang, Vietnam";
+        }
+        if (compact.equals("hue") || compact.equals("tth")) {
+            return "Hue, Vietnam";
+        }
+
+        // 2. Khớp theo danh sách alias của từng LocationItem
+        for (LocationItem item : ALL_LOCATIONS) {
+            for (String alias : item.aliases) {
+                if (compact.equals(toCompactKey(alias)) || stripped.equalsIgnoreCase(stripAccents(alias))) {
+                    return item.weatherQuery;
+                }
+            }
+        }
+
+        // 3. Kiểm tra khớp trực tiếp trong danh bạ Việt Nam
         for (LocationItem item : ALL_LOCATIONS) {
             String itemStripped = stripAccents(item.name).toLowerCase(Locale.ROOT);
-            if (itemStripped.equals(stripped) || item.name.equalsIgnoreCase(raw)) {
+            if (itemStripped.equals(stripped) || item.name.equalsIgnoreCase(raw) || toCompactKey(item.name).equals(compact)) {
                 return item.weatherQuery;
             }
         }
 
-        // Kiểm tra khớp từng phần (ví dụ người dùng gõ "tỉnh quảng bình" -> tìm "quang binh")
+        // 4. Kiểm tra khớp từng phần (ví dụ người dùng gõ "tỉnh quảng bình" -> tìm "quang binh")
         for (LocationItem item : ALL_LOCATIONS) {
             String itemStripped = stripAccents(item.name).toLowerCase(Locale.ROOT);
-            if (stripped.contains(itemStripped) || itemStripped.contains(stripped)) {
+            String itemCompact = toCompactKey(item.name);
+            if (stripped.contains(itemStripped) || itemStripped.contains(stripped) ||
+                (!compact.isEmpty() && !itemCompact.isEmpty() && (compact.contains(itemCompact) || itemCompact.contains(compact)))) {
                 return item.weatherQuery;
             }
         }
 
-        // Nếu là tìm kiếm quốc tế hoặc chưa có trong danh bạ
+        // 5. Nếu là tìm kiếm quốc tế hoặc chưa có trong danh bạ
         if (!stripped.contains("vietnam") && !stripped.contains("viet nam")) {
             // Nếu có dấu tiếng Việt, ưu tiên thêm ", Vietnam" để API không nhầm sang nước ngoài
             if (!raw.equals(stripped)) {
@@ -268,8 +368,17 @@ public class VietnamLocations {
     public static String getDisplayNameForApiResult(String apiName) {
         if (apiName == null) return "Hà Nội";
         String lower = stripAccents(apiName.trim().toLowerCase(Locale.ROOT));
+        String compact = toCompactKey(apiName);
 
+        if (lower.contains("ho chi minh") || lower.contains("sai gon") || compact.contains("hochiminh") || compact.contains("saigon")) {
+            return "TP. Hồ Chí Minh";
+        }
+        if (lower.contains("ha noi") || lower.contains("hanoi") || compact.equals("hanoi")) return "Hà Nội";
+        if (lower.contains("da nang") || lower.contains("danang") || compact.equals("danang")) return "Đà Nẵng";
+        if (lower.contains("hai phong") || lower.contains("haiphong") || compact.equals("haiphong")) return "Hải Phòng";
+        if (lower.contains("can tho") || lower.contains("cantho") || compact.equals("cantho")) return "Cần Thơ";
         if (lower.contains("dong hoi")) return "Quảng Bình";
+        if (lower.contains("vinh yen")) return "Vĩnh Phúc";
         if (lower.contains("vinh")) return "Nghệ An";
         if (lower.contains("hue")) return "Huế";
         if (lower.contains("tam ky")) return "Quảng Nam";
@@ -283,7 +392,6 @@ public class VietnamLocations {
         if (lower.contains("pleiku")) return "Gia Lai";
         if (lower.contains("buon ma thuot")) return "Đắk Lắk";
         if (lower.contains("viet tri")) return "Phú Thọ";
-        if (lower.contains("vinh yen")) return "Vĩnh Phúc";
         if (lower.contains("phu ly")) return "Hà Nam";
         if (lower.contains("my tho")) return "Tiền Giang";
         if (lower.contains("tan an")) return "Long An";
@@ -299,6 +407,38 @@ public class VietnamLocations {
             }
         }
         return apiName;
+    }
+
+    /**
+     * Chuyển đổi từ viết tắt/tên gõ nhanh (TP.HCM, HN, ĐN...) thành tên hiển thị chuẩn tiếng Việt
+     */
+    public static String getCanonicalDisplayName(String query) {
+        if (query == null || query.trim().isEmpty()) return "Hà Nội";
+        String compact = toCompactKey(query);
+        if (compact.equals("tphcm") || compact.equals("hcm") || compact.equals("hcmc")
+                || compact.equals("sg") || compact.equals("saigon") || compact.equals("tphochiminh")
+                || compact.equals("hochiminh") || compact.equals("thanhphohochiminh")) {
+            return "TP. Hồ Chí Minh";
+        }
+        if (compact.equals("hn") || compact.equals("hanoi")) return "Hà Nội";
+        if (compact.equals("dn") || compact.equals("danang")) return "Đà Nẵng";
+        if (compact.equals("hp") || compact.equals("haiphong")) return "Hải Phòng";
+        if (compact.equals("ct") || compact.equals("cantho")) return "Cần Thơ";
+        if (compact.equals("dalat") || compact.equals("dl")) return "Đà Lạt";
+        if (compact.equals("nhatrang")) return "Nha Trang";
+        if (compact.equals("halong")) return "Hạ Long";
+        if (compact.equals("phuquoc") || compact.equals("pq")) return "Phú Quốc";
+        if (compact.equals("quynhon")) return "Quy Nhơn";
+        if (compact.equals("hue") || compact.equals("tth")) return "Huế";
+        if (compact.equals("bmt") || compact.equals("buonmathuot")) return "Buôn Ma Thuột";
+        if (compact.equals("brvt") || compact.equals("vungtau")) return "Vũng Tàu";
+
+        for (LocationItem item : ALL_LOCATIONS) {
+            if (toCompactKey(item.name).equals(compact) || stripAccents(item.name).equalsIgnoreCase(stripAccents(query))) {
+                return item.name;
+            }
+        }
+        return query;
     }
 
     /**

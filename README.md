@@ -8,8 +8,8 @@
 
 Bạn có thể tải trực tiếp file cài đặt APK về điện thoại thông minh Android qua các đường dẫn bên dưới:
 
-* **👉 Link Tải Bản Cập Nhật Mới Nhất (GitHub Releases v2.1):**  
-  [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.1/DuBaoThoiTiet.apk](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.1/DuBaoThoiTiet.apk)
+* **👉 Link Tải Bản Cập Nhật Mới Nhất (GitHub Releases v2.2):**  
+  [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet.apk](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet.apk)
 * **👉 Link Trang Releases GitHub:**  
   [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases)
 * **👉 Link Tải Từ GitHub Actions (Artifacts):**  

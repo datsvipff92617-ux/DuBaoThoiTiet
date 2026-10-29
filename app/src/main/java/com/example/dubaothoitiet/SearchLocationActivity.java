@@ -186,7 +186,8 @@ public class SearchLocationActivity extends BaseActivity {
     }
 
     private void performSearch(String query) {
-        Toast.makeText(this, "Đang tra cứu: " + query + "...", Toast.LENGTH_SHORT).show();
+        String displayName = VietnamLocations.getCanonicalDisplayName(query);
+        Toast.makeText(this, "Đang tra cứu: " + displayName + "...", Toast.LENGTH_SHORT).show();
 
         String resolved = VietnamLocations.resolveToWeatherQuery(query);
         String encoded = WeatherUtils.encodeQuery(resolved);
@@ -207,13 +208,13 @@ public class SearchLocationActivity extends BaseActivity {
                 if (response.isSuccessful()) {
                     String json = response.body().string();
                     runOnUiThread(() -> {
-                        parseSearchResult(json, query);
+                        parseSearchResult(json, displayName);
                         // Lưu vào lịch sử SQLite
-                        databaseHelper.addSearchHistory(query);
+                        databaseHelper.addSearchHistory(displayName);
                         loadHistoryList();
                     });
                 } else {
-                    runOnUiThread(() -> Toast.makeText(SearchLocationActivity.this, "Không tìm thấy khu vực: " + query, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> Toast.makeText(SearchLocationActivity.this, "Không tìm thấy khu vực: " + displayName, Toast.LENGTH_LONG).show());
                 }
             }
         });

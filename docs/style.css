@@ -1,75 +1,70 @@
-/* ===== DESIGN SYSTEM & TOKENS ===== */
+/* ===== DESIGN SYSTEM & TOKENS (KHỚP 100% ANDROID XML) ===== */
 :root {
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   
   /* Chế độ Sáng (Mặc định) */
-  --bg-gradient: linear-gradient(145deg, #3B82F6 0%, #6366F1 50%, #8B5CF6 100%);
-  --bg-color: #3B82F6;
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.82);
-  --text-muted: rgba(255, 255, 255, 0.65);
+  --bg-gradient: linear-gradient(160deg, #2563EB 0%, #4F46E5 50%, #7C3AED 100%);
+  --bg-color: #2563EB;
+  --text-white: #FFFFFF;
+  --text-muted: rgba(255, 255, 255, 0.75);
   
-  --card-bg: rgba(255, 255, 255, 0.22);
-  --card-border: rgba(255, 255, 255, 0.35);
-  --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  --card-bg: rgba(255, 255, 255, 0.18);
+  --card-border: rgba(255, 255, 255, 0.32);
+  --card-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.25);
   
-  /* Ô nhập liệu: NỀN TRẮNG CHỮ ĐEN */
+  --btn-bg: rgba(255, 255, 255, 0.22);
+  --btn-border: rgba(255, 255, 255, 0.35);
+  --btn-hover: rgba(255, 255, 255, 0.35);
+  
+  /* Ô nhập liệu: NỀN TRẮNG CHỮ ĐEN RÕ NÉT */
   --input-bg: #FFFFFF;
-  --input-border: #CBD5E1;
-  --input-text: #000000;
+  --input-text: #0F172A;
   --input-hint: #64748B;
-  --input-icon: #3B82F6;
   
   --dropdown-bg: #FFFFFF;
-  --dropdown-item-text: #000000;
-  --dropdown-item-sub: #64748B;
-  --dropdown-divider: #E2E8F0;
+  --dropdown-text: #0F172A;
+  --dropdown-sub: #64748B;
   --dropdown-hover: #F1F5F9;
+  --dropdown-border: #E2E8F0;
 
-  --accent-color: #38BDF8;
-  --btn-primary: #2563EB;
-  --btn-primary-hover: #1D4ED8;
-  --btn-text: #FFFFFF;
-  
-  --badge-bg: rgba(255, 255, 255, 0.25);
-  --badge-border: rgba(255, 255, 255, 0.4);
+  --modal-bg: #1E293B;
+  --modal-text: #FFFFFF;
+  --modal-sub: #94A3B8;
+  --modal-card: #334155;
+  --modal-border: #475569;
 }
 
 /* Chế độ Tối (Dark Mode) */
 body.dark-mode {
-  --bg-gradient: linear-gradient(145deg, #090D16 0%, #111827 50%, #1E1B4B 100%);
+  --bg-gradient: linear-gradient(160deg, #090D16 0%, #111827 50%, #1E1B4B 100%);
   --bg-color: #090D16;
-  --text-primary: #FFFFFF;
-  --text-secondary: #CBD5E1;
-  --text-muted: #94A3B8;
   
-  --card-bg: rgba(30, 41, 59, 0.65);
+  --card-bg: rgba(30, 41, 59, 0.7);
   --card-border: rgba(255, 255, 255, 0.12);
-  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55);
+  --card-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.6);
   
-  /* Ô nhập liệu: NỀN TỐI CHỮ TRẮNG */
+  --btn-bg: rgba(255, 255, 255, 0.12);
+  --btn-border: rgba(255, 255, 255, 0.2);
+  --btn-hover: rgba(255, 255, 255, 0.25);
+  
   --input-bg: #1E293B;
-  --input-border: #334155;
   --input-text: #FFFFFF;
   --input-hint: #94A3B8;
-  --input-icon: #38BDF8;
   
   --dropdown-bg: #1E293B;
-  --dropdown-item-text: #FFFFFF;
-  --dropdown-item-sub: #94A3B8;
-  --dropdown-divider: #334155;
+  --dropdown-text: #FFFFFF;
+  --dropdown-sub: #94A3B8;
   --dropdown-hover: #334155;
+  --dropdown-border: #334155;
 
-  --accent-color: #818CF8;
-  --btn-primary: #4F46E5;
-  --btn-primary-hover: #4338CA;
-  --btn-text: #FFFFFF;
-  
-  --badge-bg: rgba(255, 255, 255, 0.1);
-  --badge-border: rgba(255, 255, 255, 0.18);
+  --modal-bg: #0F172A;
+  --modal-text: #FFFFFF;
+  --modal-sub: #94A3B8;
+  --modal-card: #1E293B;
+  --modal-border: #334155;
 }
 
-/* ===== RESET & GLOBAL STYLES ===== */
+/* ===== RESET & GLOBAL ===== */
 * {
   margin: 0;
   padding: 0;
@@ -81,613 +76,842 @@ body {
   font-family: var(--font-main);
   background: var(--bg-gradient);
   background-attachment: fixed;
-  color: var(--text-primary);
+  color: var(--text-white);
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   padding: 0;
-  transition: background 0.4s ease, color 0.3s ease;
   overflow-x: hidden;
+  transition: background 0.4s ease;
 }
 
-/* ===== CONTAINER MÔ PHỎNG ĐIỆN THOẠI CAO CẤP ===== */
+/* ===== KHUNG ĐIỆN THOẠI DI ĐỘNG ===== */
 .app-container {
   width: 100%;
-  max-width: 460px;
+  max-width: 480px;
   min-height: 100vh;
-  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px;
+  padding: max(12px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px;
   display: flex;
   flex-direction: column;
-  position: relative;
-  background: transparent;
+  gap: 12px;
 }
 
-@media (min-width: 768px) {
-  body {
-    padding: 30px 20px;
-    background: radial-gradient(circle at top right, #1E1B4B 0%, #0F172A 100%);
-  }
-  .app-container {
-    background: var(--bg-gradient);
-    border-radius: 40px;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 10px rgba(255, 255, 255, 0.08);
-    min-height: 880px;
-    margin: auto;
-    overflow: hidden;
-  }
-}
-
-/* ===== TOP BAR (TIÊU ĐỀ & CÔNG CỤ) ===== */
-.top-header {
+/* ===== TOP HEADER ROW ===== */
+.top-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
-}
-
-.brand-wrapper {
-  display: flex;
-  align-items: center;
   gap: 8px;
+  margin-top: 4px;
 }
 
-.brand-logo {
-  font-size: 24px;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
-}
-
-.brand-title {
-  font-size: 19px;
+.user-badge {
+  flex: 1;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
   font-weight: 700;
-  letter-spacing: -0.3px;
   color: #FFFFFF;
-}
-
-.top-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.control-btn {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #FFFFFF;
-  padding: 6px 10px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.user-badge:active {
+  transform: scale(0.97);
+}
+
+.top-action-icons {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #FFFFFF;
+  font-size: 1.1rem;
   display: flex;
   align-items: center;
-  gap: 4px;
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+.icon-btn:active {
+  transform: scale(0.92);
 }
 
-.control-btn:hover, .control-btn:active {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-/* ===== THANH TÌM KIẾM ĐỈNH CAO ===== */
-.search-wrapper {
+/* ===== SEARCH CONTAINER ===== */
+.search-container {
   position: relative;
-  margin-bottom: 16px;
-  z-index: 50;
-}
-
-.search-box {
   display: flex;
   align-items: center;
+  height: 48px;
   background: var(--input-bg);
-  border: 1.5px solid var(--input-border);
-  border-radius: 24px;
-  padding: 4px 10px 4px 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-  transition: all 0.25s ease;
+  border-radius: 14px;
+  padding: 0 10px 0 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transition: box-shadow 0.2s;
+  z-index: 10;
 }
-
-.search-box:focus-within {
-  border-color: #38BDF8;
-  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.35);
+.search-container:focus-within {
+  box-shadow: 0 0 0 2px #38BDF8, 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .search-icon {
-  font-size: 16px;
-  color: var(--input-icon);
+  font-size: 1rem;
   margin-right: 8px;
+  opacity: 0.7;
 }
 
 .search-input {
   flex: 1;
   border: none;
   background: transparent;
-  color: var(--input-text);
-  font-size: 14.5px;
-  font-weight: 500;
   outline: none;
-  padding: 8px 0;
   font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--input-text);
 }
-
 .search-input::placeholder {
   color: var(--input-hint);
   font-weight: 400;
 }
 
-.btn-clear {
-  background: transparent;
+.btn-clear-search {
+  background: none;
   border: none;
   color: var(--input-hint);
+  font-size: 1rem;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
-  font-size: 16px;
-  padding: 4px 8px;
   display: none;
 }
 
-.btn-search {
-  background: var(--btn-primary);
+.btn-search-submit {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   border: none;
-  color: var(--btn-text);
-  padding: 8px 14px;
-  border-radius: 18px;
-  font-size: 13px;
-  font-weight: 600;
+  background: #2563EB;
+  color: #FFFFFF;
+  font-size: 0.9rem;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 4px;
-  transition: background 0.2s ease, transform 0.1s ease;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+.btn-search-submit:active {
+  transform: scale(0.92);
 }
 
-.btn-search:hover {
-  background: var(--btn-primary-hover);
-  transform: scale(1.03);
-}
-
-/* Dropdown gợi ý tìm kiếm */
+/* DROPDOWN GỢI Ý TÌM KIẾM */
 .suggestions-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  background: var(--dropdown-bg);
-  border: 1px solid var(--dropdown-divider);
-  border-radius: 18px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
-  max-height: 280px;
-  overflow-y: auto;
   display: none;
+  position: absolute;
+  top: 106px;
+  left: 16px;
+  right: 16px;
+  max-width: 448px;
+  margin: 0 auto;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+  max-height: 260px;
+  overflow-y: auto;
   z-index: 100;
-  backdrop-filter: blur(12px);
 }
-
-.suggestion-header {
-  padding: 10px 16px 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--dropdown-item-sub);
-  text-transform: uppercase;
-}
-
 .suggestion-item {
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--dropdown-border);
   cursor: pointer;
-  border-bottom: 1px solid var(--dropdown-divider);
-  transition: background 0.15s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
 .suggestion-item:last-child {
   border-bottom: none;
 }
-
-.suggestion-item:hover, .suggestion-item.active {
+.suggestion-item:hover, .suggestion-item:active {
   background: var(--dropdown-hover);
 }
-
-.suggestion-pin {
-  font-size: 16px;
-}
-
-.suggestion-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.suggestion-title {
-  color: var(--dropdown-item-text);
-  font-size: 14px;
+.suggestion-name {
+  font-size: 0.92rem;
   font-weight: 600;
+  color: var(--dropdown-text);
 }
-
 .suggestion-sub {
-  color: var(--dropdown-item-sub);
-  font-size: 12px;
+  font-size: 0.8rem;
+  color: var(--dropdown-sub);
 }
 
-/* ===== MAIN WEATHER CARD (HERO) ===== */
-.hero-card {
+/* ===== HERO WEATHER CARD ===== */
+.hero-weather-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 28px;
-  padding: 24px 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 20px;
+  padding: 18px 16px 14px 16px;
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  position: relative;
-  margin-bottom: 16px;
-  overflow: hidden;
 }
 
-.hero-location-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--badge-bg);
-  border: 1px solid var(--badge-border);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 14.5px;
-  font-weight: 600;
+.city-name {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+}
+
+.date-text {
+  font-size: 0.82rem;
+  color: var(--text-muted);
   margin-bottom: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.hero-location-badge:hover {
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.hero-date {
-  font-size: 12.5px;
-  color: var(--text-secondary);
-  margin-bottom: 14px;
-}
-
-.hero-icon-temp-row {
+.temp-icon-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 8px;
 }
 
-.hero-weather-icon {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.2));
-  animation: float 4s ease-in-out infinite;
+.main-weather-icon {
+  width: 72px;
+  height: 72px;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-.hero-temp {
-  font-size: 64px;
+.temp-text {
+  font-size: 3.2rem;
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -2px;
-  color: #FFFFFF;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
-.hero-condition {
-  font-size: 18px;
+.condition-text {
+  font-size: 1.05rem;
   font-weight: 600;
-  margin-bottom: 8px;
-  color: #FFFFFF;
+  margin-top: 4px;
+  color: #F8FAFC;
 }
 
-.hero-substats {
-  display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-/* ===== QUICK STATS GRID (4 Ô THÔNG SỐ) ===== */
-.stats-grid {
+/* 4 Ô THỐNG KÊ NHANH */
+.quick-metrics-row {
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  padding: 8px 4px;
+  margin-top: 14px;
 }
-
-.stat-item {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 20px;
-  padding: 14px 16px;
-  box-shadow: var(--card-shadow);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: transform 0.2s ease;
-}
-
-.stat-item:hover {
-  transform: translateY(-2px);
-}
-
-.stat-icon {
-  font-size: 26px;
-  width: 44px;
-  height: 44px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-details {
+.metric-item {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
-
-.stat-label {
-  font-size: 11.5px;
+.metric-label {
+  font-size: 0.72rem;
   color: var(--text-muted);
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  margin-bottom: 2px;
 }
-
-.stat-val {
-  font-size: 16px;
+.metric-val {
+  font-size: 0.88rem;
   font-weight: 700;
-  color: #FFFFFF;
-  margin-top: 2px;
 }
 
-/* ===== DỰ BÁO 24 GIỜ (HOURLY HORIZONTAL SCROLL) ===== */
-.section-block {
-  margin-bottom: 18px;
-}
-
-.section-title {
-  font-size: 14.5px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #FFFFFF;
-  letter-spacing: -0.2px;
-}
-
-.hourly-scroll {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 6px;
-  scrollbar-width: none;
-}
-
-.hourly-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.hourly-card {
+/* ===== FEATURE SECTIONS & BUTTON GRIDS ===== */
+.feature-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-radius: 18px;
-  padding: 12px 14px;
-  min-width: 78px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 6px;
+  padding: 12px;
   box-shadow: var(--card-shadow);
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.hourly-card:hover {
-  transform: translateY(-2px);
-}
-
-.hourly-card.now {
-  background: rgba(255, 255, 255, 0.35);
-  border-color: #FFFFFF;
-}
-
-.hourly-time {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.hourly-icon {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-}
-
-.hourly-temp {
-  font-size: 15px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-/* ===== DỰ BÁO 3-7 NGÀY TỚI (DAILY LIST) ===== */
-.daily-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.daily-row {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 18px;
-  padding: 12px 16px;
+.feature-card-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #E0F2FE;
+  margin-bottom: 2px;
+}
+.text-green { color: #BBF7D0; }
+.text-orange { color: #FED7AA; }
+.text-purple { color: #E9D5FF; }
+
+.button-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.button-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px;
+}
+
+.app-btn {
+  background: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s, background 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.app-btn:active {
+  transform: scale(0.96);
+  background: var(--btn-hover);
+}
+
+.admin-btn {
+  background: rgba(234, 179, 8, 0.28);
+  border-color: rgba(234, 179, 8, 0.5);
+  color: #FEF08A;
+}
+
+/* ===== FOOTER & DOWNLOAD LINK ===== */
+.app-footer {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+}
+
+.btn-download-apk {
+  width: 100%;
+  background: #10B981;
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 13px 16px;
+  border-radius: 14px;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.btn-download-apk:active {
+  transform: scale(0.97);
+}
+
+.install-tip {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.ios-tip-box {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #FFFFFF;
+}
+
+.copyright {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ===== MODALS (MÔ PHỎNG MÀN HÌNH ANDROID ACTIVITY) ===== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 999;
+  justify-content: center;
+  align-items: flex-end;
+}
+.modal-backdrop.active {
+  display: flex;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  background: var(--modal-bg);
+  color: var(--modal-text);
+  border-radius: 24px 24px 0 0;
+  padding: 18px 18px max(24px, env(safe-area-inset-bottom)) 18px;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.2s ease;
+  border-bottom: 1px solid var(--modal-border);
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+.modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.modal-close {
+  background: var(--modal-card);
+  border: none;
+  color: #FFFFFF;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
-.daily-row:hover {
-  transform: translateY(-1px);
-}
-
-.daily-day-info {
-  width: 90px;
+.modal-body {
+  overflow-y: auto;
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
-}
-
-.daily-day-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.daily-day-date {
-  font-size: 11.5px;
-  color: var(--text-muted);
-}
-
-.daily-condition {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  justify-content: center;
-}
-
-.daily-icon {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
-}
-
-.daily-text {
-  font-size: 13px;
-  color: var(--text-secondary);
-  max-width: 130px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.daily-temps {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  min-width: 65px;
-  justify-content: flex-end;
-}
-
-.daily-max {
-  color: #FFFFFF;
-}
-
-.daily-min {
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-/* ===== AQI & MẶT TRỜI ===== */
-.extra-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 18px;
 }
 
-.extra-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 20px;
-  padding: 16px;
-  box-shadow: var(--card-shadow);
+/* Hourly & Forecast List Items */
+.hourly-list, .forecast-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
-
-.extra-header {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
+.hour-row, .forecast-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  background: var(--modal-card);
+  padding: 10px 14px;
+  border-radius: 12px;
+}
+.row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.row-icon {
+  width: 36px;
+  height: 36px;
+}
+.row-time {
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.row-desc {
+  font-size: 0.78rem;
+  color: var(--modal-sub);
+}
+.row-temp {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Compare Selectors */
+.compare-selectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.compare-select-col label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+.modal-select {
+  width: 100%;
+  background: var(--modal-card);
+  border: 1px solid var(--modal-border);
+  color: #FFFFFF;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-family: inherit;
+  outline: none;
+}
+.modal-btn-primary {
+  width: 100%;
+  background: #2563EB;
+  color: #FFFFFF;
+  border: none;
+  padding: 11px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.compare-result-box {
+  background: var(--modal-card);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* Info Stat Card Grids */
+.info-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.info-stat-card {
+  background: var(--modal-card);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.info-icon {
+  font-size: 1.8rem;
+}
+.info-label {
+  font-size: 0.75rem;
+  color: var(--modal-sub);
+}
+.info-val {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* AQI Banner */
+.aqi-hero-banner {
+  background: #10B981;
+  color: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+}
+.aqi-score {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+.aqi-level {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.pollutant-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 6px;
+}
+.pollutant-item {
+  background: var(--modal-card);
+  border-radius: 10px;
+  padding: 10px;
+}
+.p-name {
+  font-size: 0.74rem;
+  color: var(--modal-sub);
+  display: block;
+}
+.p-val {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Lifestyle items */
+.lifestyle-card {
+  background: var(--modal-card);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ls-icon {
+  font-size: 1.8rem;
+}
+.ls-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+.ls-desc {
+  font-size: 0.8rem;
+  color: var(--modal-sub);
+  margin-top: 2px;
+}
+
+/* Emergency buttons */
+.emergency-phones-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.emergency-btn {
+  text-decoration: none;
+  color: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.btn-112 { background: #DC2626; }
+.btn-114 { background: #EA580C; }
+.btn-115 { background: #059669; }
+.e-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+.e-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.survival-guide-list {
+  background: var(--modal-card);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+/* GPS Radar Box */
+.gps-radar-box {
+  display: flex;
+  justify-content: center;
+  padding: 14px;
+}
+.radar-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #38BDF8;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(56, 189, 248, 0.1);
+}
+.radar-pin {
+  font-size: 1.8rem;
+}
+.gps-info-grid {
+  background: var(--modal-card);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.88rem;
+}
+.gps-val-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Quick Chips */
+.quick-chips-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.chip {
+  background: var(--modal-card);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.chip:active {
+  background: #2563EB;
+}
+.list-63-provinces {
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
 }
-
-.extra-main {
-  font-size: 20px;
-  font-weight: 800;
-  color: #FFFFFF;
+.province-item {
+  background: var(--modal-card);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.extra-sub {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* ===== IPHONE INSTALL BANNER ===== */
-.iphone-banner {
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(16px);
-  border-radius: 18px;
-  padding: 14px 16px;
+/* Settings Switch */
+.setting-row {
+  background: var(--modal-card);
+  padding: 12px 14px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-  font-size: 12.5px;
-  line-height: 1.4;
+  justify-content: space-between;
 }
-
-.iphone-icon {
-  font-size: 24px;
-  flex-shrink: 0;
+.setting-sub {
+  font-size: 0.76rem;
+  color: var(--modal-sub);
+  margin-top: 2px;
 }
-
-.iphone-text strong {
-  color: #38BDF8;
-}
-
-/* ===== FOOTER ===== */
-.footer {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.footer a {
+.setting-select {
+  background: #0F172A;
+  border: 1px solid var(--modal-border);
   color: #FFFFFF;
-  text-decoration: underline;
+  padding: 6px 10px;
+  border-radius: 8px;
+  outline: none;
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #475569; transition: .3s; border-radius: 24px;
+}
+.slider:before {
+  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background-color: white; transition: .3s; border-radius: 50%;
+}
+input:checked + .slider { background-color: #2563EB; }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* Auth Modal */
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--modal-card);
+  padding: 4px;
+  border-radius: 12px;
+}
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--modal-sub);
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #2563EB;
+  color: #FFFFFF;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+.auth-input {
+  background: var(--modal-card);
+  border: 1px solid var(--modal-border);
+  color: #FFFFFF;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+}
+.modal-btn-guest {
+  background: transparent;
+  border: 1px solid var(--modal-border);
+  color: var(--modal-sub);
+  padding: 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* User Management */
+.admin-user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin-user-item {
+  background: var(--modal-card);
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.btn-delete-user {
+  background: #EF4444;
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.protected-badge {
+  background: #059669;
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
 }

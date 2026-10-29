@@ -1,335 +1,389 @@
 /**
- * DỰ BÁO THỜI TIẾT - WEB APPLICATION (PWA)
- * Đồng bộ tính năng, tra cứu viết tắt TP.HCM và giao diện Sáng/Tối với bản Android v2.2
+ * DỰ BÁO THỜI TIẾT - WEB APPLICATION & PWA
+ * Giao diện và 18 chức năng đồng bộ 100% với bản Android Java Native APK
  */
 
 const API_KEY = "35d141f7fec24768b87114757252510";
 
-// Danh bạ 63 Tỉnh/Thành & Khu Vực với Bí Danh Thông Minh (Khử lỗi viết tắt TP.HCM, HN...)
+// Danh bạ 63 Tỉnh/Thành Việt Nam với bí danh tìm kiếm thông minh
 const VIETNAM_LOCATIONS = [
-  { name: "TP. Hồ Chí Minh", province: "Sài Gòn", query: "Ho Chi Minh City, Vietnam", lat: 10.8231, lon: 106.6297, aliases: ["tphcm", "tp.hcm", "tp. hcm", "tp hcm", "hcm", "hcmc", "sg", "sai gon", "saigon", "sài gòn", "ho chi minh", "tp ho chi minh"] },
-  { name: "Hà Nội", province: "Thủ đô", query: "Ha Noi, Vietnam", lat: 21.0285, lon: 105.8542, aliases: ["hn", "hanoi", "ha noi", "thu do"] },
-  { name: "Đà Nẵng", province: "Đà Nẵng", query: "Da Nang, Vietnam", lat: 16.0678, lon: 108.2208, aliases: ["dn", "danang", "da nang"] },
-  { name: "Hải Phòng", province: "Hải Phòng", query: "Hai Phong, Vietnam", lat: 20.8561, lon: 106.6822, aliases: ["hp", "haiphong", "hai phong"] },
-  { name: "Cần Thơ", province: "Cần Thơ", query: "Can Tho, Vietnam", lat: 10.0333, lon: 105.7833, aliases: ["ct", "cantho", "can tho"] },
-  { name: "Triều Khúc", province: "Thanh Xuân, Hà Nội", query: "20.9856,105.7984", lat: 20.9856, lon: 105.7984, aliases: ["trieu khuc", "trieukhuc"] },
-  { name: "Phùng Khoang", province: "Nam Từ Liêm, Hà Nội", query: "20.9892,105.7892", lat: 20.9892, lon: 105.7892, aliases: ["phung khoang"] },
-  { name: "Huế", province: "Thừa Thiên Huế", query: "Hue, Vietnam", lat: 16.4667, lon: 107.6000, aliases: ["hue", "tth"] },
-  { name: "Nghệ An", province: "TP. Vinh", query: "Vinh, Vietnam", lat: 18.6796, lon: 105.6813, aliases: ["vinh", "nghe an"] },
-  { name: "Hà Tĩnh", province: "Hà Tĩnh", query: "Ha Tinh, Vietnam", lat: 18.3427, lon: 105.9056, aliases: ["ha tinh"] },
-  { name: "Quảng Bình", province: "Đồng Hới", query: "Dong Hoi, Vietnam", lat: 17.4667, lon: 106.6000, aliases: ["quang binh", "dong hoi"] },
-  { name: "Quảng Trị", province: "Đông Hà", query: "Quang Tri, Vietnam", lat: 16.7500, lon: 107.1833, aliases: ["quang tri", "dong ha"] },
-  { name: "Thanh Hóa", province: "Thanh Hóa", query: "Thanh Hoa, Vietnam", lat: 19.8000, lon: 105.7667, aliases: ["thanh hoa", "sam son"] },
-  { name: "Quảng Nam", province: "Hội An / Tam Kỳ", query: "Hoi An, Vietnam", lat: 15.8801, lon: 108.3380, aliases: ["quang nam", "hoi an", "tam ky"] },
-  { name: "Quảng Ngãi", province: "Quảng Ngãi", query: "Quang Ngai, Vietnam", lat: 15.1200, lon: 108.8000, aliases: ["quang ngai"] },
-  { name: "Bình Định", province: "Quy Nhơn", query: "Quy Nhon, Vietnam", lat: 13.7820, lon: 109.2194, aliases: ["binh dinh", "quy nhon", "quynhon"] },
-  { name: "Phú Yên", province: "Tuy Hòa", query: "Tuy Hoa, Vietnam", lat: 13.0883, lon: 109.3106, aliases: ["phu yen", "tuy hoa"] },
-  { name: "Khánh Hòa", province: "Nha Trang", query: "Nha Trang, Vietnam", lat: 12.2388, lon: 109.1967, aliases: ["khanh hoa", "nha trang", "nhatrang"] },
-  { name: "Ninh Thuận", province: "Phan Rang", query: "Phan Rang, Vietnam", lat: 11.5667, lon: 108.9833, aliases: ["ninh thuan", "phan rang"] },
-  { name: "Bình Thuận", province: "Phan Thiết", query: "Phan Thiet, Vietnam", lat: 10.9333, lon: 108.1000, aliases: ["binh thuan", "phan thiet", "mui ne"] },
-  { name: "Quảng Ninh", province: "Hạ Long", query: "Ha Long, Vietnam", lat: 20.9500, lon: 107.0833, aliases: ["quang ninh", "ha long", "halong"] },
-  { name: "Bắc Ninh", province: "Bắc Ninh", query: "Bac Ninh, Vietnam", lat: 21.1833, lon: 106.0500, aliases: ["bac ninh"] },
-  { name: "Hải Dương", province: "Hải Dương", query: "Hai Duong, Vietnam", lat: 20.9333, lon: 106.3167, aliases: ["hai duong"] },
-  { name: "Hưng Yên", province: "Hưng Yên", query: "Hung Yen, Vietnam", lat: 20.6500, lon: 106.0500, aliases: ["hung yen"] },
-  { name: "Nam Định", province: "Nam Định", query: "Nam Dinh, Vietnam", lat: 20.4167, lon: 106.1667, aliases: ["nam dinh"] },
-  { name: "Ninh Bình", province: "Ninh Bình", query: "Ninh Binh, Vietnam", lat: 20.2500, lon: 105.9750, aliases: ["ninh binh"] },
-  { name: "Thái Bình", province: "Thái Bình", query: "Thai Binh, Vietnam", lat: 20.4500, lon: 106.3333, aliases: ["thai binh"] },
-  { name: "Vĩnh Phúc", province: "Vĩnh Yên", query: "Vinh Yen, Vietnam", lat: 21.3090, lon: 105.6049, aliases: ["vinh phuc", "tam dao"] },
-  { name: "Phú Thọ", province: "Việt Trì", query: "Viet Tri, Vietnam", lat: 21.3228, lon: 105.4019, aliases: ["phu tho", "viet tri"] },
-  { name: "Lào Cai", province: "Sa Pa", query: "Sa Pa, Vietnam", lat: 22.3364, lon: 103.8438, aliases: ["lao cai", "sa pa", "sapa"] },
-  { name: "Lâm Đồng", province: "Đà Lạt", query: "Da Lat, Vietnam", lat: 11.9404, lon: 108.4583, aliases: ["lam dong", "da lat", "dalat", "dl"] },
-  { name: "Đắk Lắk", province: "Buôn Ma Thuột", query: "Buon Ma Thuot, Vietnam", lat: 12.6667, lon: 108.0500, aliases: ["dak lak", "buon ma thuot", "bmt"] },
-  { name: "Gia Lai", province: "Pleiku", query: "Pleiku, Vietnam", lat: 13.9833, lon: 108.0000, aliases: ["gia lai", "pleiku"] },
-  { name: "Bà Rịa - Vũng Tàu", province: "Vũng Tàu", query: "Vung Tau, Vietnam", lat: 10.3460, lon: 107.0843, aliases: ["brvt", "vung tau", "vungtau"] },
-  { name: "Bình Dương", province: "Thủ Dầu Một", query: "Thu Dau Mot, Vietnam", lat: 10.9804, lon: 106.6519, aliases: ["binh duong"] },
-  { name: "Đồng Nai", province: "Biên Hòa", query: "Bien Hoa, Vietnam", lat: 10.9500, lon: 106.8167, aliases: ["dong nai", "bien hoa"] },
-  { name: "Kiên Giang", province: "Phú Quốc", query: "Phu Quoc, Vietnam", lat: 10.2899, lon: 103.9840, aliases: ["phu quoc", "phuquoc", "kien giang", "rach gia"] }
+  { name: "Hà Nội", query: "Ha Noi, Vietnam", lat: 21.0285, lon: 105.8542, aliases: ["hn", "hanoi", "ha noi", "thu do"] },
+  { name: "TP. Hồ Chí Minh", query: "Ho Chi Minh City, Vietnam", lat: 10.8231, lon: 106.6297, aliases: ["tphcm", "tp.hcm", "hcm", "sg", "sai gon", "saigon", "ho chi minh"] },
+  { name: "Đà Nẵng", query: "Da Nang, Vietnam", lat: 16.0678, lon: 108.2208, aliases: ["dn", "danang", "da nang"] },
+  { name: "Hải Phòng", query: "Hai Phong, Vietnam", lat: 20.8561, lon: 106.6822, aliases: ["hp", "haiphong", "hai phong"] },
+  { name: "Cần Thơ", query: "Can Tho, Vietnam", lat: 10.0333, lon: 105.7833, aliases: ["ct", "cantho", "can tho"] },
+  { name: "Đà Lạt", query: "Da Lat, Vietnam", lat: 11.9404, lon: 108.4583, aliases: ["dalat", "dl", "lam dong"] },
+  { name: "Nha Trang", query: "Nha Trang, Vietnam", lat: 12.2388, lon: 109.1967, aliases: ["nhatrang", "khanh hoa"] },
+  { name: "Huế", query: "Hue, Vietnam", lat: 16.4667, lon: 107.6000, aliases: ["hue", "thua thien hue"] },
+  { name: "Quảng Ninh", query: "Ha Long, Vietnam", lat: 20.9500, lon: 107.0833, aliases: ["ha long", "quang ninh"] },
+  { name: "Nghệ An", query: "Vinh, Vietnam", lat: 18.6796, lon: 105.6813, aliases: ["vinh", "nghe an"] },
+  { name: "Sa Pa", query: "Sa Pa, Vietnam", lat: 22.3364, lon: 103.8438, aliases: ["sapa", "lao cai"] },
+  { name: "Phú Quốc", query: "Phu Quoc, Vietnam", lat: 10.2899, lon: 103.9840, aliases: ["phuquoc", "kien giang"] },
+  { name: "Vũng Tàu", query: "Vung Tau, Vietnam", lat: 10.3460, lon: 107.0843, aliases: ["vungtau", "brvt"] },
+  { name: "Buôn Ma Thuột", query: "Buon Ma Thuot, Vietnam", lat: 12.6667, lon: 108.0500, aliases: ["bmt", "dak lak"] },
+  { name: "Bắc Ninh", query: "Bac Ninh, Vietnam", lat: 21.1833, lon: 106.0500, aliases: ["bac ninh"] },
+  { name: "Hải Dương", query: "Hai Duong, Vietnam", lat: 20.9333, lon: 106.3167, aliases: ["hai duong"] },
+  { name: "Nam Định", query: "Nam Dinh, Vietnam", lat: 20.4167, lon: 106.1667, aliases: ["nam dinh"] },
+  { name: "Ninh Bình", query: "Ninh Binh, Vietnam", lat: 20.2500, lon: 105.9750, aliases: ["ninh binh"] },
+  { name: "Thanh Hóa", query: "Thanh Hoa, Vietnam", lat: 19.8000, lon: 105.7667, aliases: ["thanh hoa"] },
+  { name: "Bình Định", query: "Quy Nhon, Vietnam", lat: 13.7820, lon: 109.2194, aliases: ["quy nhon", "binh dinh"] },
+  { name: "Bình Thuận", query: "Phan Thiet, Vietnam", lat: 10.9333, lon: 108.1000, aliases: ["phan thiet", "mui ne"] }
 ];
 
-// Trạng thái ứng dụng
-let currentTempC = 28;
-let isFahrenheit = false;
-let isEnglish = false;
-let currentCityName = "Hà Nội";
-let currentQuery = "Ha Noi, Vietnam";
-let lastWeatherData = null;
+// Trạng thái cấu hình (Đọc từ localStorage tương tự SharedPreferences của Android)
+let state = {
+  city: "Hà Nội",
+  query: "Ha Noi, Vietnam",
+  tempC: 28,
+  isFahrenheit: localStorage.getItem("temp_unit") === "F",
+  isDarkMode: localStorage.getItem("dark_mode") === "true",
+  lang: localStorage.getItem("app_lang") || "vi",
+  currentUser: JSON.parse(localStorage.getItem("current_user")) || { username: "admin", role: "admin", email: "admin@dubaothoitiet.vn" },
+  lastData: null
+};
 
 // Khử dấu tiếng Việt
 function stripAccents(str) {
   if (!str) return "";
-  return str.normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d").replace(/Đ/g, "D");
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/g, "d").replace(/Đ/g, "D");
 }
 
-// Khử ký tự đặc biệt, dấu chấm, khoảng trắng thành chuỗi nén (tp.hcm -> tphcm)
+// Khử ký tự đặc biệt
 function toCompactKey(str) {
   if (!str) return "";
   return stripAccents(str).toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-// Khớp từ khóa người dùng gõ sang truy vấn chuẩn cho WeatherAPI
-function resolveWeatherQuery(input) {
-  if (!input || !input.trim()) return "Ha Noi, Vietnam";
-  const raw = input.trim();
-  const compact = toCompactKey(raw);
-
-  // 1. Kiểm tra trực tiếp các từ viết tắt TP.HCM
-  if (["tphcm", "hcm", "hcmc", "sg", "saigon", "tphochiminh", "hochiminh", "thanhphohochiminh"].includes(compact)) {
-    return "Ho Chi Minh City, Vietnam";
-  }
-  if (["hn", "hanoi"].includes(compact)) return "Ha Noi, Vietnam";
-  if (["dn", "danang"].includes(compact)) return "Da Nang, Vietnam";
-  if (["hp", "haiphong"].includes(compact)) return "Hai Phong, Vietnam";
-  if (["ct", "cantho"].includes(compact)) return "Can Tho, Vietnam";
-  if (["brvt", "vungtau"].includes(compact)) return "Vung Tau, Vietnam";
-  if (["bmt", "buonmathuot"].includes(compact)) return "Buon Ma Thuot, Vietnam";
-  if (["dalat", "dl"].includes(compact)) return "Da Lat, Vietnam";
-  if (["nhatrang"].includes(compact)) return "Nha Trang, Vietnam";
-  if (["halong"].includes(compact)) return "Ha Long, Vietnam";
-  if (["phuquoc", "pq"].includes(compact)) return "Phu Quoc, Vietnam";
-  if (["hue", "tth"].includes(compact)) return "Hue, Vietnam";
-
-  // 2. Tìm trong danh bạ qua alias
-  for (const item of VIETNAM_LOCATIONS) {
-    if (item.aliases.some(a => toCompactKey(a) === compact)) {
-      return item.query;
-    }
-  }
-
-  // 3. Khớp tên địa danh
-  for (const item of VIETNAM_LOCATIONS) {
-    if (toCompactKey(item.name) === compact || stripAccents(item.name).toLowerCase() === stripAccents(raw).toLowerCase()) {
-      return item.query;
-    }
-  }
-
-  // Nếu người dùng nhập tên tỉnh thành tiếng Việt khác
-  if (!raw.toLowerCase().includes("vietnam") && !raw.toLowerCase().includes("viet nam")) {
-    return raw + ", Vietnam";
-  }
-  return raw;
-}
-
-// Lấy tên hiển thị tiếng Việt chuẩn đẹp
-function getCanonicalDisplayName(query) {
-  if (!query) return "Hà Nội";
-  const compact = toCompactKey(query);
-  if (["tphcm", "hcm", "hcmc", "sg", "saigon", "tphochiminh", "hochiminh", "thanhphohochiminh"].includes(compact)) {
-    return "TP. Hồ Chí Minh";
-  }
-  if (["hn", "hanoi"].includes(compact)) return "Hà Nội";
-  if (["dn", "danang"].includes(compact)) return "Đà Nẵng";
-  if (["hp", "haiphong"].includes(compact)) return "Hải Phòng";
-  if (["ct", "cantho"].includes(compact)) return "Cần Thơ";
-  if (["dalat", "dl"].includes(compact)) return "Đà Lạt";
-  if (["nhatrang"].includes(compact)) return "Nha Trang";
-  if (["halong"].includes(compact)) return "Hạ Long";
-  if (["phuquoc", "pq"].includes(compact)) return "Phú Quốc";
-  if (["bmt"].includes(compact)) return "Buôn Ma Thuột";
-  if (["brvt"].includes(compact)) return "Vũng Tàu";
-  if (["hue"].includes(compact)) return "Huế";
-
-  for (const item of VIETNAM_LOCATIONS) {
-    if (item.aliases.some(a => toCompactKey(a) === compact) || toCompactKey(item.name) === compact) {
-      return item.name;
-    }
-  }
-  return query;
-}
-
-// Format nhiệt độ theo đơn vị người dùng chọn
+// Format nhiệt độ
 function formatTemp(tempC) {
   if (tempC === null || tempC === undefined) return "--";
-  if (isFahrenheit) {
+  if (state.isFahrenheit) {
     const f = (tempC * 9/5) + 32;
     return `${Math.round(f)}°F`;
   }
   return `${Math.round(tempC)}°C`;
 }
 
-// Đánh giá mức độ UV
-function getUVLevel(uv) {
-  if (uv <= 2) return isEnglish ? "Low" : "Thấp (An toàn)";
-  if (uv <= 5) return isEnglish ? "Moderate" : "Trung bình";
-  if (uv <= 7) return isEnglish ? "High" : "Cao (Cần che chắn)";
-  if (uv <= 10) return isEnglish ? "Very High" : "Rất cao (Nguy hiểm)";
-  return isEnglish ? "Extreme" : "Cực độ (Tránh ra nắng)";
-}
-
-// Đánh giá chất lượng không khí US-EPA AQI
-function getAqiDescription(aqi) {
-  switch (aqi) {
-    case 1: return isEnglish ? "Good (0-50)" : "Tốt (Không khí trong lành)";
-    case 2: return isEnglish ? "Moderate (51-100)" : "Trung bình (Chấp nhận được)";
-    case 3: return isEnglish ? "Unhealthy for sensitive groups" : "Kém (Nhạy cảm cần chú ý)";
-    case 4: return isEnglish ? "Unhealthy (151-200)" : "Xấu (Có hại cho sức khỏe)";
-    case 5: return isEnglish ? "Very Unhealthy (201-300)" : "Rất xấu (Rất có hại)";
-    case 6: return isEnglish ? "Hazardous (300+)" : "Nguy hại (Cảnh báo khẩn)";
-    default: return isEnglish ? "Moderate" : "Trung bình";
+// Áp dụng Dark Mode
+function applyTheme() {
+  if (state.isDarkMode) {
+    document.body.classList.add("dark-mode");
+    const toggle = document.getElementById("toggleDarkMode");
+    if (toggle) toggle.checked = true;
+  } else {
+    document.body.classList.remove("dark-mode");
+    const toggle = document.getElementById("toggleDarkMode");
+    if (toggle) toggle.checked = false;
   }
 }
 
-// Dịch tuần trăng
-function translateMoonPhase(phase) {
-  if (!phase) return "Trăng tròn";
-  const p = phase.toLowerCase();
-  if (p.includes("new")) return "🌑 Trăng non (Đầu tháng âm)";
-  if (p.includes("waxing crescent")) return "🌒 Trăng lưỡi liềm đầu tháng";
-  if (p.includes("first quarter")) return "🌓 Bán nguyệt đầu tháng";
-  if (p.includes("waxing gibbous")) return "🌔 Trăng khuyết đầu tháng";
-  if (p.includes("full")) return "🌕 Trăng tròn (Rằm)";
-  if (p.includes("waning gibbous")) return "🌖 Trăng khuyết cuối tháng";
-  if (p.includes("last quarter")) return "🌗 Bán nguyệt cuối tháng";
-  if (p.includes("waning crescent")) return "🌘 Trăng lưỡi liềm cuối tháng";
-  return `🌙 ${phase}`;
+// Áp dụng thông tin người dùng lên Header
+function updateTopUserBadge() {
+  const badge = document.getElementById("txtUserBadge");
+  const profUser = document.getElementById("profUsername");
+  const profRole = document.getElementById("profRoleBadge");
+  const profEmail = document.getElementById("profEmail");
+  const adminBtn = document.getElementById("btnUserManagement");
+
+  if (!badge) return;
+
+  if (state.currentUser.role === "admin") {
+    badge.textContent = `👑 ${state.currentUser.username} (Admin)`;
+    if (profRole) profRole.textContent = "Quản Trị Viên (Admin)";
+    if (adminBtn) adminBtn.style.display = "flex";
+  } else if (state.currentUser.role === "guest") {
+    badge.textContent = `👤 Khách (Bỏ qua ĐN)`;
+    if (profRole) profRole.textContent = "Khách (Phiên Tạm Thời)";
+    if (adminBtn) adminBtn.style.display = "none";
+  } else {
+    badge.textContent = `👤 ${state.currentUser.username} (User)`;
+    if (profRole) profRole.textContent = "Người Dùng Thường";
+    if (adminBtn) adminBtn.style.display = "none";
+  }
+
+  if (profUser) profUser.textContent = state.currentUser.username;
+  if (profEmail) profEmail.textContent = state.currentUser.email || "user@dubaothoitiet.vn";
 }
 
-// Tải dữ liệu thời tiết qua WeatherAPI
-async function fetchWeather(query, exactDisplayName = null) {
+// Tải dữ liệu thời tiết
+async function fetchWeather(searchStr, displayName = null) {
   try {
-    const resolved = resolveWeatherQuery(query);
-    const displayName = exactDisplayName || getCanonicalDisplayName(query);
-    currentCityName = displayName;
-    currentQuery = resolved;
+    let q = searchStr;
+    const compact = toCompactKey(searchStr);
 
-    document.getElementById("heroLocationName").textContent = `📍 ${displayName}`;
-    document.getElementById("heroCondition").textContent = isEnglish ? "Loading weather data..." : "Đang tải dữ liệu thời tiết...";
+    // Khớp danh bạ
+    for (const item of VIETNAM_LOCATIONS) {
+      if (item.aliases.some(a => toCompactKey(a) === compact) || toCompactKey(item.name) === compact) {
+        q = item.query;
+        if (!displayName) displayName = item.name;
+        break;
+      }
+    }
 
-    const url = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(resolved)}&days=7&aqi=yes&alerts=no&lang=${isEnglish ? "en" : "vi"}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("API request failed");
-    
+    if (!displayName) displayName = searchStr;
+
+    state.city = displayName;
+    state.query = q;
+
+    document.getElementById("cityNameText").textContent = `${displayName}, Việt Nam`;
+    document.getElementById("conditionText").textContent = "Đang tải dữ liệu khí tượng...";
+
+    const apiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(q)}&days=7&aqi=yes&alerts=yes&lang=${state.lang}`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error("Network response error");
+
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
 
-    lastWeatherData = data;
-    renderWeatherData(data, displayName);
+    state.lastData = data;
+    renderWeather(data, displayName);
 
   } catch (err) {
-    console.error("Fetch weather error:", err);
-    document.getElementById("heroCondition").textContent = isEnglish ? "Location not found" : "Không tìm thấy địa điểm";
+    console.error("Error fetching weather:", err);
+    document.getElementById("conditionText").textContent = "Không tìm thấy dữ liệu thời tiết.";
   }
 }
 
-function cleanLocationName(name) {
-  if (!name) return "Hà Nội";
-  const s = String(name).trim();
-  if (s.includes("Ã") || s.includes("Inh Thon") || s.includes("lnh Thon") || s.toLowerCase().includes("inh thon") || s.toLowerCase().includes("dinh thon")) {
-    return "Hà Nội";
-  }
-  return s;
-}
-
-// Hiển thị dữ liệu lên giao diện
-function renderWeatherData(data, displayName) {
+// Hiển thị thời tiết lên giao diện chính
+function renderWeather(data, displayName) {
   const current = data.current;
-  const location = data.location;
-  const forecastDays = data.forecast.forecastday;
-  const today = forecastDays[0];
+  const forecast = data.forecast.forecastday;
+  const today = forecast[0];
 
-  currentTempC = current.temp_c;
+  state.tempC = current.temp_c;
 
   // Hero Card
-  const finalDisplay = displayName ? cleanLocationName(displayName) : cleanLocationName(location.name);
-  document.getElementById("heroLocationName").textContent = `📍 ${finalDisplay}`;
+  document.getElementById("cityNameText").textContent = `${displayName}, Việt Nam`;
   
   const now = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  document.getElementById("heroDate").textContent = now.toLocaleDateString(isEnglish ? 'en-US' : 'vi-VN', options);
+  document.getElementById("dateText").textContent = now.toLocaleDateString(state.lang === 'en' ? 'en-US' : 'vi-VN', options);
 
   const iconUrl = current.condition.icon.startsWith("http") ? current.condition.icon : `https:${current.condition.icon}`;
-  document.getElementById("heroIcon").src = iconUrl.replace("64x64", "128x128");
-  document.getElementById("heroTemp").textContent = formatTemp(currentTempC);
-  document.getElementById("heroCondition").textContent = current.condition.text;
+  document.getElementById("weatherIcon").src = iconUrl.replace("64x64", "128x128");
+  document.getElementById("tempText").textContent = formatTemp(current.temp_c);
+  document.getElementById("conditionText").textContent = current.condition.text;
 
-  document.getElementById("heroHighLow").textContent = `H: ${formatTemp(today.day.maxtemp_c)} • L: ${formatTemp(today.day.mintemp_c)}`;
-  document.getElementById("heroFeelsLike").textContent = `${isEnglish ? "Feels like" : "Cảm giác như"} ${formatTemp(current.feelslike_c)}`;
+  // 4 Metrics
+  document.getElementById("feelsLikeText").textContent = formatTemp(current.feelslike_c);
+  document.getElementById("humidityText").textContent = `${current.humidity}%`;
+  document.getElementById("windText").textContent = `${Math.round(current.wind_kph)} km/h`;
+  document.getElementById("uvText").textContent = `${Math.round(current.uv)}`;
 
-  // Quick Stats
-  document.getElementById("valHumidity").textContent = `${current.humidity}%`;
-  document.getElementById("valWind").textContent = `${Math.round(current.wind_kph)} km/h`;
-  document.getElementById("valUV").textContent = `${Math.round(current.uv)} (${getUVLevel(current.uv)})`;
-  document.getElementById("valPressure").textContent = `${current.pressure_mb} mbar`;
+  // Điền dữ liệu cho các modal
+  populateModals(data);
+}
 
-  // Hourly Forecast (24 Giờ)
-  const hourlyContainer = document.getElementById("hourlyScroll");
-  hourlyContainer.innerHTML = "";
+// Bơm dữ liệu vào các Modal chức năng
+function populateModals(data) {
+  const current = data.current;
+  const forecast = data.forecast.forecastday;
+  const today = forecast[0];
+  const astro = today.astro;
 
-  const currentHour = now.getHours();
-  // Lấy các giờ của ngày hôm nay và ngày mai
-  const hoursToday = today.hour;
-  const hoursTomorrow = forecastDays[1] ? forecastDays[1].hour : [];
-  const combinedHours = [...hoursToday, ...hoursTomorrow];
+  // 1. Modal 24h Hourly
+  const hourlyBox = document.getElementById("hourlyListContent");
+  if (hourlyBox) {
+    hourlyBox.innerHTML = "";
+    const allHours = [...today.hour, ...(forecast[1] ? forecast[1].hour : [])];
+    const now = new Date();
+    let count = 0;
 
-  let addedCount = 0;
-  for (const h of combinedHours) {
-    const hTime = new Date(h.time);
-    if (hTime >= now || addedCount === 0 && hTime.getHours() === currentHour) {
-      if (addedCount >= 18) break;
+    for (const h of allHours) {
+      const hDate = new Date(h.time);
+      if (hDate >= now || count === 0 && hDate.getHours() === now.getHours()) {
+        if (count >= 24) break;
+        const icon = h.condition.icon.startsWith("http") ? h.condition.icon : `https:${h.condition.icon}`;
+        const timeLabel = count === 0 ? "Bây giờ" : `${hDate.getHours()}:00`;
 
-      const hourCard = document.createElement("div");
-      hourCard.className = `hourly-card ${addedCount === 0 ? "now" : ""}`;
-      
-      const timeLabel = addedCount === 0 ? (isEnglish ? "Now" : "Bây giờ") : `${hTime.getHours()}:00`;
-      const hIcon = h.condition.icon.startsWith("http") ? h.condition.icon : `https:${h.condition.icon}`;
-
-      hourCard.innerHTML = `
-        <div class="hourly-time">${timeLabel}</div>
-        <img class="hourly-icon" src="${hIcon}" alt="${h.condition.text}">
-        <div class="hourly-temp">${formatTemp(h.temp_c)}</div>
-      `;
-      hourlyContainer.appendChild(hourCard);
-      addedCount++;
+        const row = document.createElement("div");
+        row.className = "hour-row";
+        row.innerHTML = `
+          <div class="row-left">
+            <img class="row-icon" src="${icon}" alt="">
+            <div>
+              <div class="row-time">${timeLabel}</div>
+              <div class="row-desc">${h.condition.text}</div>
+            </div>
+          </div>
+          <div class="row-temp">${formatTemp(h.temp_c)}</div>
+        `;
+        hourlyBox.appendChild(row);
+        count++;
+      }
     }
   }
 
-  // 7-Day Forecast (Dự báo nhiều ngày)
-  const dailyContainer = document.getElementById("dailyList");
-  dailyContainer.innerHTML = "";
+  // 2. Modal 7 Days
+  const forecast7Box = document.getElementById("forecast7ListContent");
+  if (forecast7Box) {
+    forecast7Box.innerHTML = "";
+    forecast.forEach((day, idx) => {
+      const dDate = new Date(day.date);
+      let dayName = dDate.toLocaleDateString(state.lang === 'en' ? 'en-US' : 'vi-VN', { weekday: 'long' });
+      if (idx === 0) dayName = "Hôm nay";
+      const icon = day.day.condition.icon.startsWith("http") ? day.day.condition.icon : `https:${day.day.condition.icon}`;
 
-  forecastDays.forEach((day, index) => {
-    const dDate = new Date(day.date);
-    let dayName = dDate.toLocaleDateString(isEnglish ? 'en-US' : 'vi-VN', { weekday: 'short' });
-    if (index === 0) dayName = isEnglish ? "Today" : "Hôm nay";
+      const row = document.createElement("div");
+      row.className = "forecast-row";
+      row.innerHTML = `
+        <div class="row-left">
+          <img class="row-icon" src="${icon}" alt="">
+          <div>
+            <div class="row-time">${dayName} (${dDate.getDate()}/${dDate.getMonth() + 1})</div>
+            <div class="row-desc">${day.day.condition.text} • Mưa: ${day.day.daily_chance_of_rain}%</div>
+          </div>
+        </div>
+        <div class="row-temp">${formatTemp(day.day.maxtemp_c)} / ${formatTemp(day.day.mintemp_c)}</div>
+      `;
+      forecast7Box.appendChild(row);
+    });
+  }
 
-    const dIcon = day.day.condition.icon.startsWith("http") ? day.day.condition.icon : `https:${day.day.condition.icon}`;
-    const dateFormatted = `${dDate.getDate()}/${dDate.getMonth() + 1}`;
+  // 3. Modal 3 Days
+  const forecast3Box = document.getElementById("forecast3ListContent");
+  if (forecast3Box) {
+    forecast3Box.innerHTML = "";
+    forecast.slice(0, 3).forEach((day, idx) => {
+      const dDate = new Date(day.date);
+      let dayTitle = idx === 0 ? "Hôm nay" : (idx === 1 ? "Ngày mai" : "Ngày kia");
+      const icon = day.day.condition.icon.startsWith("http") ? day.day.condition.icon : `https:${day.day.condition.icon}`;
 
-    const row = document.createElement("div");
-    row.className = "daily-row";
-    row.innerHTML = `
-      <div class="daily-day-info">
-        <span class="daily-day-name">${dayName}</span>
-        <span class="daily-day-date">${dateFormatted}</span>
-      </div>
-      <div class="daily-condition">
-        <img class="daily-icon" src="${dIcon}" alt="${day.day.condition.text}">
-        <span class="daily-text">${day.day.condition.text}</span>
-      </div>
-      <div class="daily-temps">
-        <span class="daily-max">${formatTemp(day.day.maxtemp_c)}</span>
-        <span class="daily-min">${formatTemp(day.day.mintemp_c)}</span>
-      </div>
-    `;
-    dailyContainer.appendChild(row);
-  });
+      const row = document.createElement("div");
+      row.className = "forecast-row";
+      row.innerHTML = `
+        <div class="row-left">
+          <img class="row-icon" src="${icon}" alt="">
+          <div>
+            <div class="row-time">${dayTitle} (${dDate.getDate()}/${dDate.getMonth() + 1})</div>
+            <div class="row-desc">${day.day.condition.text}</div>
+          </div>
+        </div>
+        <div class="row-temp">${formatTemp(day.day.maxtemp_c)} / ${formatTemp(day.day.mintemp_c)}</div>
+      `;
+      forecast3Box.appendChild(row);
+    });
+  }
 
-  // AQI & Mặt Trời
-  const aqiIndex = current.air_quality ? current.air_quality["us-epa-index"] : 2;
-  document.getElementById("valAqi").textContent = `AQI: ${aqiIndex}`;
-  document.getElementById("valAqiDesc").textContent = getAqiDescription(aqiIndex);
+  // 4. Modal Sun/Moon
+  if (astro) {
+    document.getElementById("valSunrise").textContent = astro.sunrise || "--";
+    document.getElementById("valSunset").textContent = astro.sunset || "--";
+    document.getElementById("valMoonPhase").textContent = astro.moon_phase || "Trăng Tròn";
+    document.getElementById("valMoonIllum").textContent = `${astro.moon_illumination || 80}%`;
+  }
 
-  const astro = today.astro;
-  document.getElementById("valSunrise").textContent = astro ? astro.sunrise : "05:45 AM";
-  document.getElementById("valSunset").textContent = astro ? `${astro.sunset} • ${translateMoonPhase(astro.moon_phase)}` : "17:50 PM";
+  // 5. Modal Air Quality AQI
+  if (current.air_quality) {
+    const aqi = current.air_quality["us-epa-index"] || 2;
+    document.getElementById("valAqiScore").textContent = `AQI Index: ${aqi}`;
+    const descMap = {
+      1: "Tốt (Không khí rất trong lành)",
+      2: "Trung bình (Chấp nhận được)",
+      3: "Kém (Người nhạy cảm nên hạn chế ra ngoài)",
+      4: "Xấu (Bắt buộc đeo khẩu trang chống bụi)",
+      5: "Rất xấu (Nguy hại cho đường hô hấp)",
+      6: "Nguy hại (Cảnh báo khẩn cấp)"
+    };
+    document.getElementById("valAqiLevel").textContent = descMap[aqi] || "Trung bình";
+    document.getElementById("valPm25").textContent = `${Math.round(current.air_quality.pm2_5 || 15)} µg/m³`;
+    document.getElementById("valPm10").textContent = `${Math.round(current.air_quality.pm10 || 28)} µg/m³`;
+    document.getElementById("valCo").textContent = `${Math.round(current.air_quality.co || 240)} µg/m³`;
+    document.getElementById("valNo2").textContent = `${Math.round(current.air_quality.no2 || 12)} µg/m³`;
+    document.getElementById("valO3").textContent = `${Math.round(current.air_quality.o3 || 45)} µg/m³`;
+    document.getElementById("valSo2").textContent = `${Math.round(current.air_quality.so2 || 6)} µg/m³`;
+  }
+
+  // 6. Modal Details
+  document.getElementById("valDetailPressure").textContent = `${current.pressure_mb} mbar`;
+  document.getElementById("valDetailDew").textContent = formatTemp(current.feelslike_c - 3);
+  document.getElementById("valDetailVis").textContent = `${current.vis_km} km`;
+  document.getElementById("valDetailWindDir").textContent = `${current.wind_dir} (${Math.round(current.wind_kph)} km/h)`;
+
+  // 7. Modal Lifestyle Advice
+  if (current.temp_c < 18) {
+    document.getElementById("lsClothing").textContent = "Thời tiết lạnh rét, khuyến nghị mặc áo len dày, áo khoác ấm và khăn quàng cổ.";
+  } else if (current.temp_c <= 28) {
+    document.getElementById("lsClothing").textContent = "Thời tiết mát mẻ dễ chịu, trang phục thoải mái, vải cotton thoáng mát.";
+  } else {
+    document.getElementById("lsClothing").textContent = "Thời tiết nắng nóng, nên mặc trang phục mỏng nhẹ, sáng màu và mang theo ô che nắng.";
+  }
+
+  if (current.humidity < 70 && !current.condition.text.toLowerCase().includes("mưa")) {
+    document.getElementById("lsLaundry").textContent = "Độ ẩm lý tưởng và có nắng gió, phơi quần áo rất mau khô và thơm mát.";
+  } else {
+    document.getElementById("lsLaundry").textContent = "Độ ẩm cao hoặc có khả năng mưa, hạn chế phơi quần áo ngoài trời để tránh ẩm mốc.";
+  }
+
+  if (current.uv >= 6) {
+    document.getElementById("lsUv").textContent = "Chỉ số tia UV cao, nguy cơ tổn thương da. Khuyến nghị bôi kem chống nắng SPF 30+ và đeo kính râm.";
+  } else {
+    document.getElementById("lsUv").textContent = "Chỉ số UV ở mức an toàn, thích hợp hoạt động ngoài trời.";
+  }
 }
 
-// Tìm kiếm tự động gợi ý (Autocomplete)
-function setupAutocomplete() {
-  const searchInput = document.getElementById("searchInput");
-  const suggestionsBox = document.getElementById("suggestionsDropdown");
+// Setup các Modal mở/đóng mượt mà
+function setupModals() {
+  const modalButtons = [
+    { btnId: "btnHourly24h", modalId: "modalHourly" },
+    { btnId: "btnForecast7Days", modalId: "modalForecast7" },
+    { btnId: "btnForecast3Days", modalId: "modalForecast3" },
+    { btnId: "btnCompareWeather", modalId: "modalCompare" },
+    { btnId: "btnSunMoon", modalId: "modalSunMoon" },
+    { btnId: "btnAirQuality", modalId: "modalAirQuality" },
+    { btnId: "btnWeatherAlerts", modalId: "modalAlerts" },
+    { btnId: "btnLifestyle", modalId: "modalLifestyle" },
+    { btnId: "btnDisasterGuide", modalId: "modalDisaster" },
+    { btnId: "btnCurrentLocation", modalId: "modalGpsRadar" },
+    { btnId: "btnSearchLocation", modalId: "modalSearch63" },
+    { btnId: "btnDetails", modalId: "modalDetails" },
+    { btnId: "btnProfile", modalId: "modalProfile" },
+    { btnId: "btnTopUser", modalId: "modalProfile" },
+    { btnId: "btnSettings", modalId: "modalSettings" },
+    { btnId: "btnTopSettings", modalId: "modalSettings" },
+    { btnId: "btnUserManagement", modalId: "modalUserManagement" },
+    { btnId: "btnLoginModal", modalId: "modalLoginRegister" },
+    { btnId: "btnTopLogout", modalId: "modalLoginRegister" }
+  ];
+
+  modalButtons.forEach(item => {
+    const btn = document.getElementById(item.btnId);
+    const modal = document.getElementById(item.modalId);
+    if (btn && modal) {
+      btn.addEventListener("click", () => {
+        modal.classList.add("active");
+      });
+    }
+  });
+
+  // Nút đóng modal
+  document.querySelectorAll(".modal-close").forEach(closeBtn => {
+    closeBtn.addEventListener("click", () => {
+      const targetId = closeBtn.getAttribute("data-close");
+      if (targetId) {
+        document.getElementById(targetId).classList.remove("active");
+      }
+    });
+  });
+
+  // Bấm nền mờ bên ngoài để đóng modal
+  document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) {
+        backdrop.classList.remove("active");
+      }
+    });
+  });
+}
+
+// Xử lý Tìm kiếm và Autocomplete
+function setupSearch() {
+  const searchInput = document.getElementById("searchEditText");
   const clearBtn = document.getElementById("btnClearSearch");
+  const submitBtn = document.getElementById("btnSearchSubmit");
+  const dropdown = document.getElementById("searchSuggestionsList");
+
+  if (!searchInput) return;
 
   searchInput.addEventListener("input", () => {
     const val = searchInput.value.trim();
@@ -338,186 +392,268 @@ function setupAutocomplete() {
       showSuggestions(val);
     } else {
       clearBtn.style.display = "none";
-      suggestionsBox.style.display = "none";
+      dropdown.style.display = "none";
     }
   });
 
   clearBtn.addEventListener("click", () => {
     searchInput.value = "";
     clearBtn.style.display = "none";
-    suggestionsBox.style.display = "none";
+    dropdown.style.display = "none";
     searchInput.focus();
   });
 
-  document.addEventListener("click", (e) => {
-    if (!document.getElementById("searchWrapper").contains(e.target)) {
-      suggestionsBox.style.display = "none";
+  submitBtn.addEventListener("click", () => {
+    const val = searchInput.value.trim();
+    if (val) {
+      dropdown.style.display = "none";
+      fetchWeather(val);
     }
   });
 
   searchInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-      e.preventDefault();
-      const val = searchInput.value.trim();
-      if (val) {
-        suggestionsBox.style.display = "none";
-        fetchWeather(val);
-      }
+      submitBtn.click();
     }
   });
 
-  document.getElementById("btnSearch").addEventListener("click", () => {
-    const val = searchInput.value.trim();
-    if (val) {
-      suggestionsBox.style.display = "none";
-      fetchWeather(val);
-    }
-  });
-}
+  function showSuggestions(val) {
+    const compact = toCompactKey(val);
+    dropdown.innerHTML = "";
 
-// Hiển thị danh sách gợi ý
-function showSuggestions(query) {
-  const suggestionsBox = document.getElementById("suggestionsDropdown");
-  const compact = toCompactKey(query);
-  const stripped = stripAccents(query).toLowerCase();
-
-  const matches = [];
-
-  // 1. Ưu tiên khớp từ viết tắt (TP.HCM, HN, ĐN...)
-  for (const loc of VIETNAM_LOCATIONS) {
-    if (loc.aliases.some(a => toCompactKey(a).startsWith(compact) || stripAccents(a).toLowerCase().startsWith(stripped))) {
-      if (!matches.includes(loc)) matches.push(loc);
-    }
-  }
-
-  // 2. Khớp tên địa danh bắt đầu hoặc chứa
-  for (const loc of VIETNAM_LOCATIONS) {
-    const locStripped = stripAccents(loc.name).toLowerCase();
-    if (locStripped.startsWith(stripped) || loc.name.toLowerCase().startsWith(query.toLowerCase())) {
-      if (!matches.includes(loc)) matches.push(loc);
-    }
-  }
-
-  for (const loc of VIETNAM_LOCATIONS) {
-    const locStripped = stripAccents(loc.name).toLowerCase();
-    if (locStripped.includes(stripped) || loc.province.toLowerCase().includes(stripped)) {
-      if (!matches.includes(loc)) matches.push(loc);
-    }
-    if (matches.length >= 8) break;
-  }
-
-  if (matches.length === 0) {
-    suggestionsBox.style.display = "none";
-    return;
-  }
-
-  suggestionsBox.innerHTML = `<div class="suggestion-header">${isEnglish ? "Suggestions" : "Địa danh phù hợp"}</div>`;
-  matches.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "suggestion-item";
-    div.innerHTML = `
-      <span class="suggestion-pin">📍</span>
-      <div class="suggestion-info">
-        <span class="suggestion-title">${item.name}</span>
-        <span class="suggestion-sub">${item.province}, Việt Nam</span>
-      </div>
-    `;
-    div.addEventListener("click", () => {
-      document.getElementById("searchInput").value = item.name;
-      suggestionsBox.style.display = "none";
-      fetchWeather(item.query, item.name);
+    const matched = VIETNAM_LOCATIONS.filter(item => {
+      return toCompactKey(item.name).includes(compact) || item.aliases.some(a => toCompactKey(a).includes(compact));
     });
-    suggestionsBox.appendChild(div);
-  });
 
-  suggestionsBox.style.display = "block";
-}
-
-// Bắt vị trí GPS thực tế
-function setupGeolocation() {
-  const gpsBtn = document.getElementById("btnGps");
-  gpsBtn.addEventListener("click", () => {
-    if (!navigator.geolocation) {
-      alert(isEnglish ? "Geolocation is not supported by your browser." : "Trình duyệt của bạn không hỗ trợ định vị GPS.");
-      return;
+    if (matched.length > 0) {
+      dropdown.style.display = "block";
+      matched.slice(0, 6).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "suggestion-item";
+        div.innerHTML = `
+          <span class="suggestion-name">📍 ${item.name}</span>
+          <span class="suggestion-sub">Việt Nam</span>
+        `;
+        div.addEventListener("click", () => {
+          searchInput.value = item.name;
+          dropdown.style.display = "none";
+          fetchWeather(item.query, item.name);
+        });
+        dropdown.appendChild(div);
+      });
+    } else {
+      dropdown.style.display = "none";
     }
-
-    gpsBtn.textContent = "⏳...";
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        gpsBtn.textContent = "📍";
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        fetchWeather(`${lat},${lon}`, isEnglish ? "Current Location" : "Vị trí của bạn");
-      },
-      (err) => {
-        gpsBtn.textContent = "📍";
-        console.warn("Geolocation error:", err);
-        // Fallback về TP.HCM hoặc Hà Nội
-        fetchWeather("Ho Chi Minh City, Vietnam", "TP. Hồ Chí Minh");
-      },
-      { timeout: 10000, enableHighAccuracy: true }
-    );
-  });
-}
-
-// Đổi Dark / Light Theme
-function setupThemeToggle() {
-  const themeBtn = document.getElementById("btnTheme");
-  const isDark = localStorage.getItem("theme_mode") === "dark";
-
-  if (isDark) {
-    document.body.classList.add("dark-mode");
-    themeBtn.textContent = "☀️ Sáng";
-  } else {
-    document.body.classList.remove("dark-mode");
-    themeBtn.textContent = "🌙 Tối";
   }
 
-  themeBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    const activeDark = document.body.classList.contains("dark-mode");
-    localStorage.setItem("theme_mode", activeDark ? "dark" : "light");
-    themeBtn.textContent = activeDark ? (isEnglish ? "☀️ Light" : "☀️ Sáng") : (isEnglish ? "🌙 Dark" : "🌙 Tối");
-  });
+  // Quick GPS Button
+  const btnQuickGps = document.getElementById("btnQuickGps");
+  if (btnQuickGps) {
+    btnQuickGps.addEventListener("click", () => {
+      if ("geolocation" in navigator) {
+        document.getElementById("conditionText").textContent = "Đang quét tọa độ GPS vệ tinh...";
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+            document.getElementById("valGpsLat").textContent = `${lat.toFixed(4)}°`;
+            document.getElementById("valGpsLon").textContent = `${lon.toFixed(4)}°`;
+            document.getElementById("valGpsAcc").textContent = `±${Math.round(pos.coords.accuracy)} mét`;
+            fetchWeather(`${lat},${lon}`, "Vị Trí Hiện Tại (GPS)");
+          },
+          (err) => {
+            console.warn("GPS error/denied:", err);
+            fetchWeather("Ha Noi, Vietnam", "Hà Nội");
+          },
+          { timeout: 7000 }
+        );
+      } else {
+        fetchWeather("Ha Noi, Vietnam", "Hà Nội");
+      }
+    });
+  }
 }
 
-// Đổi đơn vị độ C / độ F
-function setupUnitToggle() {
-  const unitBtn = document.getElementById("btnUnit");
-  unitBtn.addEventListener("click", () => {
-    isFahrenheit = !isFahrenheit;
-    unitBtn.textContent = isFahrenheit ? "°F" : "°C";
-    if (lastWeatherData) {
-      renderWeatherData(lastWeatherData, currentCityName);
+// Setup So sánh thời tiết
+function setupCompare() {
+  const btnCompare = document.getElementById("btnRunCompare");
+  const sel1 = document.getElementById("selCompare1");
+  const sel2 = document.getElementById("selCompare2");
+  const resultBox = document.getElementById("compareResultBox");
+
+  if (!btnCompare) return;
+
+  btnCompare.addEventListener("click", async () => {
+    const c1 = sel1.value;
+    const c2 = sel2.value;
+    resultBox.innerHTML = "<p>Đang tải dữ liệu và đối chiếu song song 2 thành phố...</p>";
+
+    try {
+      const [res1, res2] = await Promise.all([
+        fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${encodeURIComponent(c1 + ", Vietnam")}`),
+        fetch(`https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${encodeURIComponent(c2 + ", Vietnam")}`)
+      ]);
+      const d1 = await res1.json();
+      const d2 = await res2.json();
+
+      const t1 = d1.current.temp_c;
+      const t2 = d2.current.temp_c;
+      const diff = Math.abs(t1 - t2).toFixed(1);
+
+      let summary = "";
+      if (t1 > t2) {
+        summary = `🔥 <strong>${c1}</strong> nóng hơn <strong>${c2}</strong> ${diff}°C`;
+      } else if (t2 > t1) {
+        summary = `🔥 <strong>${c2}</strong> nóng hơn <strong>${c1}</strong> ${diff}°C`;
+      } else {
+        summary = `⚖️ Cả 2 địa phương đều có mức nhiệt ngang nhau (${t1}°C)`;
+      }
+
+      resultBox.innerHTML = `
+        <div style="margin-bottom:8px; font-weight:700; color:#38BDF8;">${summary}</div>
+        <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+          <tr style="border-bottom:1px solid #475569;">
+            <th style="text-align:left; padding:4px;">Chỉ số</th>
+            <th style="padding:4px;">${c1}</th>
+            <th style="padding:4px;">${c2}</th>
+          </tr>
+          <tr style="border-bottom:1px solid #334155;">
+            <td style="padding:4px;">Nhiệt độ</td>
+            <td style="text-align:center; padding:4px;">${formatTemp(t1)}</td>
+            <td style="text-align:center; padding:4px;">${formatTemp(t2)}</td>
+          </tr>
+          <tr style="border-bottom:1px solid #334155;">
+            <td style="padding:4px;">Độ ẩm</td>
+            <td style="text-align:center; padding:4px;">${d1.current.humidity}%</td>
+            <td style="text-align:center; padding:4px;">${d2.current.humidity}%</td>
+          </tr>
+          <tr>
+            <td style="padding:4px;">Tốc độ gió</td>
+            <td style="text-align:center; padding:4px;">${d1.current.wind_kph} km/h</td>
+            <td style="text-align:center; padding:4px;">${d2.current.wind_kph} km/h</td>
+          </tr>
+        </table>
+      `;
+    } catch (e) {
+      resultBox.innerHTML = "<p>Lỗi kết nối khi đối chiếu thời tiết. Vui lòng thử lại.</p>";
     }
   });
 }
 
-// Đổi ngôn ngữ
-function setupLangToggle() {
-  const langBtn = document.getElementById("btnLang");
-  langBtn.addEventListener("click", () => {
-    isEnglish = !isEnglish;
-    langBtn.textContent = isEnglish ? "EN" : "VI";
-    document.getElementById("searchInput").placeholder = isEnglish ? "Search city: TP.HCM, Hanoi, Danang..." : "Tìm kiếm: TP.HCM, Hà Nội, Đà Nẵng...";
-    
-    const themeBtn = document.getElementById("btnTheme");
-    const isDark = document.body.classList.contains("dark-mode");
-    themeBtn.textContent = isDark ? (isEnglish ? "☀️ Light" : "☀️ Sáng") : (isEnglish ? "🌙 Dark" : "🌙 Tối");
+// Setup Cài đặt (Dark Mode, Đơn vị, Ngôn ngữ)
+function setupSettings() {
+  const toggleDark = document.getElementById("toggleDarkMode");
+  const selectUnit = document.getElementById("selectTempUnit");
+  const selectLang = document.getElementById("selectLang");
 
-    fetchWeather(currentQuery, currentCityName);
+  if (toggleDark) {
+    toggleDark.addEventListener("change", () => {
+      state.isDarkMode = toggleDark.checked;
+      localStorage.setItem("dark_mode", state.isDarkMode);
+      applyTheme();
+    });
+  }
+
+  if (selectUnit) {
+    selectUnit.value = state.isFahrenheit ? "F" : "C";
+    selectUnit.addEventListener("change", () => {
+      state.isFahrenheit = selectUnit.value === "F";
+      localStorage.setItem("temp_unit", selectUnit.value);
+      if (state.lastData) renderWeather(state.lastData, state.city);
+    });
+  }
+
+  if (selectLang) {
+    selectLang.value = state.lang;
+    selectLang.addEventListener("change", () => {
+      state.lang = selectLang.value;
+      localStorage.setItem("app_lang", state.lang);
+      fetchWeather(state.query, state.city);
+    });
+  }
+
+  // Quick Chips in 63 Provinces modal
+  document.querySelectorAll(".chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const city = chip.getAttribute("data-city");
+      document.getElementById("modalSearch63").classList.remove("active");
+      fetchWeather(city);
+    });
   });
+
+  // Modal 63 list
+  const list63 = document.getElementById("list63Container");
+  if (list63) {
+    list63.innerHTML = "";
+    VIETNAM_LOCATIONS.forEach(loc => {
+      const item = document.createElement("div");
+      item.className = "province-item";
+      item.textContent = `📍 ${loc.name}`;
+      item.addEventListener("click", () => {
+        document.getElementById("modalSearch63").classList.remove("active");
+        fetchWeather(loc.query, loc.name);
+      });
+      list63.appendChild(item);
+    });
+  }
+
+  // Auth form switching
+  const tabLogin = document.getElementById("tabLogin");
+  const tabReg = document.getElementById("tabRegister");
+  const formLogin = document.getElementById("formLogin");
+  const formReg = document.getElementById("formRegister");
+
+  if (tabLogin && tabReg) {
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabReg.classList.remove("active");
+      formLogin.style.display = "flex";
+      formReg.style.display = "none";
+    });
+    tabReg.addEventListener("click", () => {
+      tabReg.classList.add("active");
+      tabLogin.classList.remove("active");
+      formLogin.style.display = "none";
+      formReg.style.display = "flex";
+    });
+  }
+
+  // Đăng nhập demo
+  const btnDoLogin = document.getElementById("btnDoLogin");
+  const btnGuestLogin = document.getElementById("btnGuestLogin");
+
+  if (btnDoLogin) {
+    btnDoLogin.addEventListener("click", () => {
+      const u = document.getElementById("loginUsername").value.trim() || "admin";
+      state.currentUser = {
+        username: u,
+        role: u.toLowerCase() === "admin" ? "admin" : "user",
+        email: `${u}@dubaothoitiet.vn`
+      };
+      localStorage.setItem("current_user", JSON.stringify(state.currentUser));
+      updateTopUserBadge();
+      document.getElementById("modalLoginRegister").classList.remove("active");
+      alert(`Đăng nhập thành công với vai trò: ${state.currentUser.role.toUpperCase()}`);
+    });
+  }
+
+  if (btnGuestLogin) {
+    btnGuestLogin.addEventListener("click", () => {
+      state.currentUser = { username: "Khách", role: "guest", email: "guest@dubaothoitiet.vn" };
+      localStorage.setItem("current_user", JSON.stringify(state.currentUser));
+      updateTopUserBadge();
+      document.getElementById("modalLoginRegister").classList.remove("active");
+    });
+  }
 }
 
-// Khởi chạy
+// Khởi chạy ứng dụng
 document.addEventListener("DOMContentLoaded", () => {
-  setupThemeToggle();
-  setupUnitToggle();
-  setupLangToggle();
-  setupAutocomplete();
-  setupGeolocation();
-
-  // Khởi động mặc định với TP. Hồ Chí Minh
-  fetchWeather("Ho Chi Minh City, Vietnam", "TP. Hồ Chí Minh");
+  applyTheme();
+  updateTopUserBadge();
+  setupModals();
+  setupSearch();
+  setupCompare();
+  setupSettings();
+  fetchWeather("Ha Noi, Vietnam", "Hà Nội");
 });

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Dự Báo Thời Tiết - Ứng Dụng Khí Tượng Trực Tuyến</title>
-  <meta name="description" content="Ứng dụng dự báo thời tiết trực tuyến thông minh, định vị GPS vệ tinh và tra cứu chính xác 63 tỉnh thành Việt Nam.">
+  <title>Dự Báo Thời Tiết - Ứng Dụng Khí Tượng Thông Minh</title>
+  <meta name="description" content="Ứng dụng dự báo thời tiết thông minh trên Android và Web, định vị GPS vệ tinh, chất lượng không khí AQI và dự báo 63 tỉnh thành Việt Nam.">
   
   <!-- iOS Safari PWA Meta Tags -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -25,148 +25,644 @@
 </head>
 <body>
 
-  <main class="app-container">
-    
-    <!-- TOP HEADER -->
-    <header class="top-header">
-      <div class="brand-wrapper">
-        <span class="brand-logo">🌤️</span>
-        <h1 class="brand-title">Dự Báo Thời Tiết</h1>
+  <!-- MAIN APP CONTAINER (GIỐNG 100% GIAO DIỆN ANDROID APP) -->
+  <div class="app-container">
+
+    <!-- TOP BAR: USER BADGE & QUICK ICONS -->
+    <header class="top-header-row">
+      <div id="btnTopUser" class="user-badge" title="Xem hồ sơ cá nhân">
+        <span id="txtUserBadge">👑 admin (Admin)</span>
       </div>
-      <div class="top-controls">
-        <button id="btnGps" class="control-btn" title="Lấy vị trí GPS hiện tại">📍</button>
-        <button id="btnUnit" class="control-btn" title="Đổi đơn vị °C / °F">°C</button>
-        <button id="btnTheme" class="control-btn" title="Đổi giao diện Sáng / Tối">🌙 Tối</button>
-        <button id="btnLang" class="control-btn" title="Đổi ngôn ngữ Tiếng Việt / English">VI</button>
+      <div class="top-action-icons">
+        <button id="btnQuickGps" class="icon-btn" title="Định vị GPS vị trí hiện tại">📍</button>
+        <button id="btnTopSettings" class="icon-btn" title="Cài đặt ứng dụng">⚙️</button>
+        <button id="btnTopLogout" class="icon-btn" title="Đăng nhập / Đăng xuất">🚪</button>
       </div>
     </header>
 
-    <!-- SEARCH BAR & DROPDOWN -->
-    <section class="search-wrapper" id="searchWrapper">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          id="searchInput" 
-          class="search-input" 
-          placeholder="Tìm kiếm: TP.HCM, Hà Nội, Đà Nẵng..." 
-          autocomplete="off"
-          spellcheck="false"
-        >
-        <button id="btnClearSearch" class="btn-clear" aria-label="Xóa tìm kiếm">✕</button>
-        <button id="btnSearch" class="btn-search">Tìm</button>
-      </div>
-
-      <!-- Autocomplete Dropdown -->
-      <div id="suggestionsDropdown" class="suggestions-dropdown"></div>
+    <!-- SEARCH BAR CONTAINER (RỘNG RÃI, CHỮ TƯƠNG PHẢN CAO) -->
+    <section class="search-container">
+      <span class="search-icon">🔍</span>
+      <input 
+        type="text" 
+        id="searchEditText" 
+        class="search-input" 
+        placeholder="Tìm kiếm: Triều Khúc, TP.HCM, Hà Nội..." 
+        autocomplete="off" 
+        spellcheck="false"
+      >
+      <button id="btnClearSearch" class="btn-clear-search" aria-label="Xóa tìm kiếm">✕</button>
+      <button id="btnSearchSubmit" class="btn-search-submit" title="Tìm kiếm">➤</button>
     </section>
 
-    <!-- HERO WEATHER CARD -->
-    <section class="hero-card" id="heroCard">
-      <div class="hero-location-badge" id="heroLocationBadge">
-        <span id="heroLocationName">📍 TP. Hồ Chí Minh</span>
-      </div>
-      <div class="hero-date" id="heroDate">Thứ Năm, 29 Tháng 10, 2026</div>
+    <!-- AUTOCOMPLETE DROPDOWN LIST -->
+    <div id="searchSuggestionsList" class="suggestions-dropdown"></div>
+
+    <!-- HERO WEATHER CARD (THẺ THỜI TIẾT TRUNG TÂM) -->
+    <section class="hero-weather-card" id="heroCard">
+      <h2 id="cityNameText" class="city-name">Hà Nội, Việt Nam</h2>
+      <div id="dateText" class="date-text">Đang tải dữ liệu...</div>
       
-      <div class="hero-icon-temp-row">
-        <img id="heroIcon" class="hero-weather-icon" src="https://cdn.weatherapi.com/weather/128x128/day/116.png" alt="Thời tiết">
-        <div id="heroTemp" class="hero-temp">30°C</div>
+      <div class="temp-icon-row">
+        <img id="weatherIcon" class="main-weather-icon" src="https://cdn.weatherapi.com/weather/128x128/day/116.png" alt="Thời tiết">
+        <div id="tempText" class="temp-text">--°C</div>
       </div>
 
-      <div id="heroCondition" class="hero-condition">Có mây từng đợt</div>
-      
-      <div class="hero-substats">
-        <span id="heroHighLow">H: 33°C • L: 25°C</span>
-        <span id="heroFeelsLike">Cảm giác như 34°C</span>
-      </div>
-    </section>
+      <div id="conditionText" class="condition-text">Đang kết nối trạm khí tượng...</div>
 
-    <!-- QUICK STATS (4 Ô CHỈ SỐ) -->
-    <section class="stats-grid">
-      <div class="stat-item">
-        <div class="stat-icon">💧</div>
-        <div class="stat-details">
-          <span class="stat-label">Độ Ẩm</span>
-          <span class="stat-val" id="valHumidity">72%</span>
+      <!-- 4 QUICK METRICS (CẢM GIÁC, ĐỘ ẨM, GIÓ, UV) -->
+      <div class="quick-metrics-row">
+        <div class="metric-item">
+          <span class="metric-label">Cảm giác</span>
+          <span id="feelsLikeText" class="metric-val">--°C</span>
         </div>
-      </div>
-
-      <div class="stat-item">
-        <div class="stat-icon">💨</div>
-        <div class="stat-details">
-          <span class="stat-label">Gió</span>
-          <span class="stat-val" id="valWind">14 km/h</span>
+        <div class="metric-item">
+          <span class="metric-label">Độ ẩm</span>
+          <span id="humidityText" class="metric-val">--%</span>
         </div>
-      </div>
-
-      <div class="stat-item">
-        <div class="stat-icon">☀️</div>
-        <div class="stat-details">
-          <span class="stat-label">Chỉ Số UV</span>
-          <span class="stat-val" id="valUV">6 (Cao)</span>
+        <div class="metric-item">
+          <span class="metric-label">Tốc độ gió</span>
+          <span id="windText" class="metric-val">-- km/h</span>
         </div>
-      </div>
-
-      <div class="stat-item">
-        <div class="stat-icon">🧭</div>
-        <div class="stat-details">
-          <span class="stat-label">Áp Suất</span>
-          <span class="stat-val" id="valPressure">1010 mbar</span>
+        <div class="metric-item">
+          <span class="metric-label">Chỉ số UV</span>
+          <span id="uvText" class="metric-val">--</span>
         </div>
       </div>
     </section>
 
-    <!-- 24-HOUR HOURLY FORECAST -->
-    <section class="section-block">
-      <h2 class="section-title">⏱️ Dự Báo 24 Giờ Tiếp Theo</h2>
-      <div class="hourly-scroll" id="hourlyScroll">
-        <!-- Render động từ JavaScript -->
+    <!-- ========================================== -->
+    <!-- 4 SECTION CARDS (KHỚP 100% ANDROID XML)     -->
+    <!-- ========================================== -->
+
+    <!-- SECTION 1: 🌦️ DỰ BÁO & XU HƯỚNG THỜI TIẾT -->
+    <section class="feature-card">
+      <div class="feature-card-title">🌦️ DỰ BÁO &amp; XU HƯỚNG THỜI TIẾT</div>
+      <div class="button-grid-2">
+        <button id="btnForecast7Days" class="app-btn">📅 Dự Báo 7 Ngày</button>
+        <button id="btnHourly24h" class="app-btn">🕐 Theo 24 Giờ</button>
+      </div>
+      <div class="button-grid-3">
+        <button id="btnForecast3Days" class="app-btn">📅 3 Ngày Tới</button>
+        <button id="btnCompareWeather" class="app-btn">⚖️ So Sánh 2 Nơi</button>
+        <button id="btnSunMoon" class="app-btn">🌅 Thiên Văn</button>
       </div>
     </section>
 
-    <!-- 7-DAY FORECAST -->
-    <section class="section-block">
-      <h2 class="section-title">📅 Dự Báo 7 Ngày Tới</h2>
-      <div class="daily-list" id="dailyList">
-        <!-- Render động từ JavaScript -->
+    <!-- SECTION 2: 🌿 SỨC KHỎE, ĐỜI SỐNG & AN TOÀN -->
+    <section class="feature-card">
+      <div class="feature-card-title text-green">🌿 SỨC KHỎE, ĐỜI SỐNG &amp; AN TOÀN</div>
+      <div class="button-grid-2">
+        <button id="btnAirQuality" class="app-btn">🍃 Không Khí AQI</button>
+        <button id="btnWeatherAlerts" class="app-btn">⚡ Cảnh Báo Thiên Tai</button>
+      </div>
+      <div class="button-grid-2">
+        <button id="btnLifestyle" class="app-btn">🏃 Trợ Lý Đời Sống</button>
+        <button id="btnDisasterGuide" class="app-btn">🛡️ Cẩm Nang Sinh Tồn</button>
       </div>
     </section>
 
-    <!-- AIR QUALITY & SUN/MOON -->
-    <section class="extra-grid">
-      <div class="extra-card">
-        <div class="extra-header">🍃 Không Khí (AQI)</div>
-        <div class="extra-main" id="valAqi">AQI: 2</div>
-        <div class="extra-sub" id="valAqiDesc">Tốt (Không khí trong lành)</div>
-      </div>
-
-      <div class="extra-card">
-        <div class="extra-header">🌅 Bình Minh / Hoàng Hôn</div>
-        <div class="extra-main" id="valSunrise">05:48 AM</div>
-        <div class="extra-sub" id="valSunset">17:42 PM • Trăng non</div>
+    <!-- SECTION 3: 📍 TRA CỨU & VỊ TRÍ -->
+    <section class="feature-card">
+      <div class="feature-card-title text-orange">📍 TRA CỨU &amp; VỊ TRÍ ĐỊA LÝ</div>
+      <div class="button-grid-3">
+        <button id="btnCurrentLocation" class="app-btn">📍 Vị Trí GPS</button>
+        <button id="btnSearchLocation" class="app-btn">🔍 63 Tỉnh Thành</button>
+        <button id="btnDetails" class="app-btn">📊 Chi Tiết Khí Áp</button>
       </div>
     </section>
 
-    <!-- IPHONE PWA HELPER BANNER -->
-    <div class="iphone-banner">
-      <div class="iphone-icon">📱</div>
-      <div class="iphone-text">
-        <strong>Mẹo cho iPhone (iOS):</strong> Bấm nút <strong>Chia sẻ (Share) 📤</strong> trên Safari ➔ Chọn <strong>"Thêm vào Màn hình chính"</strong> để dùng app toàn màn hình mượt mà như app tải từ App Store!
+    <!-- SECTION 4: 👤 TÀI KHOẢN & HỆ THỐNG -->
+    <section class="feature-card">
+      <div class="feature-card-title text-purple">👤 TÀI KHOẢN &amp; HỆ THỐNG</div>
+      <div class="button-grid-2">
+        <button id="btnProfile" class="app-btn">👤 Hồ Sơ Cá Nhân</button>
+        <button id="btnSettings" class="app-btn">⚙️ Cài Đặt Hệ Thống</button>
       </div>
-    </div>
+      <div class="button-grid-2">
+        <button id="btnUserManagement" class="app-btn admin-btn">👑 Quản Trị User</button>
+        <button id="btnLoginModal" class="app-btn">🚪 Đăng Nhập / ĐK</button>
+      </div>
+    </section>
 
-    <!-- FOOTER WITH DOWNLOAD LINKS -->
-    <footer class="footer">
-      <p>Ứng dụng Dự Báo Thời Tiết © 2026</p>
-      <p>
-        <a href="./DuBaoThoiTiet.apk" download="DuBaoThoiTiet.apk" class="btn-download-apk">📲 Tải file APK (Android) Bản Mới Nhất</a>
+    <!-- FOOTER & DOWNLOAD LINKS -->
+    <footer class="app-footer">
+      <a href="./DuBaoThoiTiet.apk" download="DuBaoThoiTiet.apk" class="btn-download-apk">
+        📲 Tải File APK (Android) Bản Mới Nhất v2.3
+      </a>
+      <p class="install-tip">
+        *Lưu ý khi cài trên Android: Chọn <strong>"Chi tiết khác"</strong> ➔ <strong>"Vẫn cài đặt"</strong> khi Play Protect hỏi.
       </p>
-      <p style="font-size: 0.8rem; color: #888; margin-top: 6px;">
-        *Lưu ý khi cài trên điện thoại: Nếu máy báo "Bị chặn bởi Play Protect", hãy chọn <strong>"Chi tiết khác"</strong> ➔ <strong>"Vẫn cài đặt"</strong>.
-      </p>
+      <div class="ios-tip-box">
+        <strong>📱 Mẹo cho iPhone (iOS):</strong> Bấm nút <strong>Chia sẻ (Share) 📤</strong> trên Safari ➔ Chọn <strong>"Thêm vào Màn hình chính"</strong> để dùng app toàn màn hình mượt mà như app thật!
+      </div>
+      <p class="copyright">Ứng dụng Dự Báo Thời Tiết © 2026 • 5 Thành Viên</p>
     </footer>
 
-  </main>
+  </div> <!-- END .app-container -->
+
+
+  <!-- ========================================== -->
+  <!-- MODALS CHO TỪNG MÀN HÌNH CHỨC NĂNG (18 MÀN) -->
+  <!-- ========================================== -->
+
+  <!-- MODAL: DỰ BÁO 24 GIỜ (HOURLY) -->
+  <div id="modalHourly" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>🕐 Dự Báo 24 Giờ Tiếp Theo</h3>
+        <button class="modal-close" data-close="modalHourly">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="hourlyListContent" class="hourly-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DỰ BÁO 7 NGÀY (FORECAST) -->
+  <div id="modalForecast7" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>📅 Dự Báo Thời Tiết 7 Ngày</h3>
+        <button class="modal-close" data-close="modalForecast7">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="forecast7ListContent" class="forecast-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DỰ BÁO 3 NGÀY TỚI -->
+  <div id="modalForecast3" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>📅 Dự Báo 3 Ngày Ngắn Hạn</h3>
+        <button class="modal-close" data-close="modalForecast3">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="forecast3ListContent" class="forecast-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SO SÁNH THỜI TIẾT 2 NƠI -->
+  <div id="modalCompare" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>⚖️ So Sánh Thời Tiết 2 Địa Điểm</h3>
+        <button class="modal-close" data-close="modalCompare">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="compare-selectors">
+          <div class="compare-select-col">
+            <label>Địa điểm 1:</label>
+            <select id="selCompare1" class="modal-select">
+              <option value="Hà Nội" selected>Hà Nội</option>
+              <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+              <option value="Đà Nẵng">Đà Nẵng</option>
+              <option value="Hải Phòng">Hải Phòng</option>
+              <option value="Cần Thơ">Cần Thơ</option>
+              <option value="Đà Lạt">Đà Lạt</option>
+              <option value="Nha Trang">Nha Trang</option>
+              <option value="Sa Pa">Sa Pa</option>
+            </select>
+          </div>
+          <div class="compare-select-col">
+            <label>Địa điểm 2:</label>
+            <select id="selCompare2" class="modal-select">
+              <option value="TP. Hồ Chí Minh" selected>TP. Hồ Chí Minh</option>
+              <option value="Hà Nội">Hà Nội</option>
+              <option value="Đà Nẵng">Đà Nẵng</option>
+              <option value="Hải Phòng">Hải Phòng</option>
+              <option value="Cần Thơ">Cần Thơ</option>
+              <option value="Đà Lạt">Đà Lạt</option>
+              <option value="Nha Trang">Nha Trang</option>
+              <option value="Sa Pa">Sa Pa</option>
+            </select>
+          </div>
+        </div>
+        <button id="btnRunCompare" class="modal-btn-primary">Đối Chiếu Thời Tiết</button>
+        <div id="compareResultBox" class="compare-result-box">
+          <p>Chọn 2 địa phương và bấm "Đối Chiếu Thời Tiết" để xem chênh lệch nhiệt độ, độ ẩm và sức gió!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: THIÊN VĂN MẶT TRỜI & MẶT TRĂNG -->
+  <div id="modalSunMoon" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>🌅 Thiên Văn Mặt Trời &amp; Mặt Trăng</h3>
+        <button class="modal-close" data-close="modalSunMoon">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-card-grid">
+          <div class="info-stat-card">
+            <span class="info-icon">🌅</span>
+            <div>
+              <div class="info-label">Mặt Trời Mọc</div>
+              <div id="valSunrise" class="info-val">05:48 AM</div>
+            </div>
+          </div>
+          <div class="info-stat-card">
+            <span class="info-icon">🌇</span>
+            <div>
+              <div class="info-label">Mặt Trời Lặn</div>
+              <div id="valSunset" class="info-val">17:42 PM</div>
+            </div>
+          </div>
+          <div class="info-stat-card">
+            <span class="info-icon">🌖</span>
+            <div>
+              <div class="info-label">Tuần Trăng</div>
+              <div id="valMoonPhase" class="info-val">Trăng Khuyết</div>
+            </div>
+          </div>
+          <div class="info-stat-card">
+            <span class="info-icon">✨</span>
+            <div>
+              <div class="info-label">Độ Sáng Mặt Trăng</div>
+              <div id="valMoonIllum" class="info-val">84%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KHÔNG KHÍ AQI -->
+  <div id="modalAirQuality" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>🍃 Chất Lượng Không Khí (AQI)</h3>
+        <button class="modal-close" data-close="modalAirQuality">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="aqi-hero-banner" id="aqiBanner">
+          <div class="aqi-score" id="valAqiScore">AQI: 2</div>
+          <div class="aqi-level" id="valAqiLevel">Trung bình (Chấp nhận được)</div>
+        </div>
+        <div class="pollutant-grid">
+          <div class="pollutant-item">
+            <span class="p-name">Bụi siêu mịn PM2.5</span>
+            <span class="p-val" id="valPm25">18.4 µg/m³</span>
+          </div>
+          <div class="pollutant-item">
+            <span class="p-name">Bụi thô PM10</span>
+            <span class="p-val" id="valPm10">32.1 µg/m³</span>
+          </div>
+          <div class="pollutant-item">
+            <span class="p-name">Khí CO (Carbon monoxide)</span>
+            <span class="p-val" id="valCo">290 µg/m³</span>
+          </div>
+          <div class="pollutant-item">
+            <span class="p-name">Khí NO2 (Nitrogen dioxide)</span>
+            <span class="p-val" id="valNo2">14.2 µg/m³</span>
+          </div>
+          <div class="pollutant-item">
+            <span class="p-name">Khí Ozone O3</span>
+            <span class="p-val" id="valO3">48.6 µg/m³</span>
+          </div>
+          <div class="pollutant-item">
+            <span class="p-name">Khí SO2</span>
+            <span class="p-val" id="valSo2">6.8 µg/m³</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CẢNH BÁO THIÊN TAI -->
+  <div id="modalAlerts" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>⚡ Radar Cảnh Báo Thiên Tai</h3>
+        <button class="modal-close" data-close="modalAlerts">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="alertsContainer" class="alerts-list">
+          <div class="alert-card alert-safe">
+            <div class="alert-title">🟢 Hiện tại khu vực an toàn</div>
+            <div class="alert-desc">Không phát hiện cảnh báo dông lốc, mưa lũ ngập lụt hay sóng nhiệt cực đoan tại địa phương này.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GỢI Ý ĐỜI SỐNG LIFESTYLE -->
+  <div id="modalLifestyle" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>🏃 Trợ Lý Đời Sống &amp; Sức Khỏe</h3>
+        <button class="modal-close" data-close="modalLifestyle">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="lifestyle-card">
+          <div class="ls-icon">👕</div>
+          <div class="ls-info">
+            <div class="ls-title">Trang Phục Hôm Nay</div>
+            <div id="lsClothing" class="ls-desc">Thời tiết mát mẻ, trang phục thoải mái, cotton thấm hút mồ hôi.</div>
+          </div>
+        </div>
+        <div class="lifestyle-card">
+          <div class="ls-icon">🧺</div>
+          <div class="ls-info">
+            <div class="ls-title">Phơi Đồ Giặt</div>
+            <div id="lsLaundry" class="ls-desc">Độ ẩm vừa phải, có nắng gió thích hợp để phơi quần áo ngoài trời.</div>
+          </div>
+        </div>
+        <div class="lifestyle-card">
+          <div class="ls-icon">☀️</div>
+          <div class="ls-info">
+            <div class="ls-title">Bảo Vệ Da (Tia UV)</div>
+            <div id="lsUv" class="ls-desc">Chỉ số UV ở mức an toàn, nên đội mũ nón khi ra ngoài trời lúc trưa.</div>
+          </div>
+        </div>
+        <div class="lifestyle-card">
+          <div class="ls-icon">🏃‍♂️</div>
+          <div class="ls-info">
+            <div class="ls-title">Thể Dục Ngoài Trời</div>
+            <div id="lsWorkout" class="ls-desc">Điều kiện thời tiết rất tốt cho việc chạy bộ, đạp xe và tập thể thao.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CẨM NANG SINH TỒN & CỨU HỘ -->
+  <div id="modalDisaster" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>🛡️ Cẩm Nang Sinh Tồn &amp; Số Khẩn Cấp</h3>
+        <button class="modal-close" data-close="modalDisaster">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="emergency-phones-row">
+          <a href="tel:112" class="emergency-btn btn-112">
+            <span class="e-num">112</span>
+            <span class="e-label">Tìm Kiếm Cứu Nạn</span>
+          </a>
+          <a href="tel:114" class="emergency-btn btn-114">
+            <span class="e-num">114</span>
+            <span class="e-label">Cứu Hỏa Cứu Nạn</span>
+          </a>
+          <a href="tel:115" class="emergency-btn btn-115">
+            <span class="e-num">115</span>
+            <span class="e-label">Cấp Cứu Y Tế</span>
+          </a>
+        </div>
+        <div class="survival-guide-list">
+          <div class="survival-item">
+            <strong>🌪️ Khi Có Bão Lũ, Lốc Xoáy:</strong> Chằng chống nhà cửa, cắt cầu dao điện, dự trữ nước sạch và đồ khô, di chuyển lên vùng cao ráo.
+          </div>
+          <div class="survival-item">
+            <strong>⚡ Khi Có Dông Sét:</strong> Tránh xa cây to đơn độc, cột điện, hồ nước; không cầm vật kim loại; ở trong nhà đóng kín cửa.
+          </div>
+          <div class="survival-item">
+            <strong>🔥 Khi Có Hỏa Hoạn:</strong> Dùng khăn ướt bịt mũi miệng, cúi thấp người men theo tường thoát hiểm, gọi ngay 114.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ĐỊNH VỊ GPS RADAR -->
+  <div id="modalGpsRadar" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>📍 Định Vị Vệ Tinh GPS Radar</h3>
+        <button class="modal-close" data-close="modalGpsRadar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="gps-radar-box">
+          <div class="radar-circle">
+            <div class="radar-scan"></div>
+            <span class="radar-pin">📍</span>
+          </div>
+        </div>
+        <div class="gps-info-grid">
+          <div class="gps-val-row">
+            <span>Vĩ độ (Latitude):</span>
+            <strong id="valGpsLat">21.0285° N</strong>
+          </div>
+          <div class="gps-val-row">
+            <span>Kinh độ (Longitude):</span>
+            <strong id="valGpsLon">105.8542° E</strong>
+          </div>
+          <div class="gps-val-row">
+            <span>Địa danh chuẩn hóa:</span>
+            <strong id="valGpsName">Hà Nội (Hanoi)</strong>
+          </div>
+          <div class="gps-val-row">
+            <span>Độ chính xác (Accuracy):</span>
+            <strong id="valGpsAcc">±10 mét</strong>
+          </div>
+        </div>
+        <button id="btnRefreshGps" class="modal-btn-primary">Quét Lại Vệ Tinh GPS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TRA CỨU 63 TỈNH THÀNH -->
+  <div id="modalSearch63" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>🔍 Tra Cứu 63 Tỉnh Thành Toàn Quốc</h3>
+        <button class="modal-close" data-close="modalSearch63">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-search-box">
+          <input type="text" id="modalInput63" placeholder="Nhập tên tỉnh/thành (VD: Đà Lạt, Nha Trang)...">
+        </div>
+        <div class="quick-chips-row" id="quickChipsRow">
+          <span class="chip" data-city="Hà Nội">Hà Nội</span>
+          <span class="chip" data-city="TP. Hồ Chí Minh">TP.HCM</span>
+          <span class="chip" data-city="Đà Nẵng">Đà Nẵng</span>
+          <span class="chip" data-city="Cần Thơ">Cần Thơ</span>
+          <span class="chip" data-city="Hải Phòng">Hải Phòng</span>
+          <span class="chip" data-city="Đà Lạt">Đà Lạt</span>
+        </div>
+        <div id="list63Container" class="list-63-provinces"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CHI TIẾT KHÍ TƯỢNG -->
+  <div id="modalDetails" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>📊 Chi Tiết Khí Tượng &amp; Môi Trường</h3>
+        <button class="modal-close" data-close="modalDetails">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-card-grid">
+          <div class="info-stat-card">
+            <span class="info-icon">🧭</span>
+            <div>
+              <div class="info-label">Áp Suất Khí Quyển</div>
+              <div id="valDetailPressure" class="info-val">1012 mbar</div>
+            </div>
+          </div>
+          <div class="info-stat-card">
+            <span class="info-icon">💧</span>
+            <div>
+              <div class="info-label">Nhiệt Độ Điểm Sương</div>
+              <div id="valDetailDew" class="info-val">22°C</div>
+            </div>
+          </div>
+          <div class="info-stat-card">
+            <span class="info-icon">👁️</span>
+            <div>
+              <div class="info-label">Tầm Nhìn Xa</div>
+              <div id="valDetailVis" class="info-val">10 km</div>
+            </div>
+          </div>
+          <div class="info-stat-card">
+            <span class="info-icon">💨</span>
+            <div>
+              <div class="info-label">Hướng Gió</div>
+              <div id="valDetailWindDir" class="info-val">Đông Đông Nam (ESE)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: HỒ SƠ CÁ NHÂN (USER PROFILE) -->
+  <div id="modalProfile" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>👤 Hồ Sơ Cá Nhân</h3>
+        <button class="modal-close" data-close="modalProfile">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="profile-header-box">
+          <div class="profile-avatar">👨‍💻</div>
+          <div class="profile-info">
+            <h4 id="profUsername">admin</h4>
+            <span id="profRoleBadge" class="role-badge">Quản Trị Viên (Admin)</span>
+            <p id="profEmail">admin@dubaothoitiet.vn</p>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button id="btnChangePassword" class="app-btn-outline">🔑 Đổi Mật Khẩu</button>
+          <button id="btnLogoutProfile" class="app-btn-danger">🚪 Đăng Xuất</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: QUẢN TRỊ NGƯỜI DÙNG (ADMIN USER MANAGEMENT) -->
+  <div id="modalUserManagement" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>👑 Quản Trị Người Dùng (Admin)</h3>
+        <button class="modal-close" data-close="modalUserManagement">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="admin-note">*Quyền dành riêng cho Admin: Tra cứu danh sách và xóa tài khoản người dùng vi phạm khỏi SQLite cục bộ.</p>
+        <div id="adminUserList" class="admin-user-list">
+          <div class="admin-user-item">
+            <div>
+              <strong>👑 admin</strong> (admin@dubaothoitiet.vn)
+              <div class="user-sub">Vai trò: Admin (Hệ thống bảo vệ)</div>
+            </div>
+            <span class="protected-badge">Bảo vệ</span>
+          </div>
+          <div class="admin-user-item">
+            <div>
+              <strong>👤 user_demo</strong> (demo@gmail.com)
+              <div class="user-sub">Vai trò: Người dùng thường</div>
+            </div>
+            <button class="btn-delete-user" title="Xóa tài khoản">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ĐĂNG NHẬP / ĐĂNG KÝ -->
+  <div id="modalLoginRegister" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3 id="txtAuthTitle">Đăng Nhập Tài Khoản</h3>
+        <button class="modal-close" data-close="modalLoginRegister">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="auth-tabs">
+          <button id="tabLogin" class="tab-btn active">Đăng Nhập</button>
+          <button id="tabRegister" class="tab-btn">Đăng Ký</button>
+        </div>
+        
+        <!-- Form Đăng Nhập -->
+        <div id="formLogin" class="auth-form">
+          <input type="text" id="loginUsername" class="auth-input" placeholder="Tên đăng nhập (VD: admin)">
+          <input type="password" id="loginPassword" class="auth-input" placeholder="Mật khẩu">
+          <div class="remember-row">
+            <label><input type="checkbox" id="chkRemember" checked> Ghi nhớ mật khẩu</label>
+          </div>
+          <button id="btnDoLogin" class="modal-btn-primary">Đăng Nhập</button>
+          <button id="btnGuestLogin" class="modal-btn-guest">Bỏ qua đăng nhập (Chế độ Khách)</button>
+        </div>
+
+        <!-- Form Đăng Ký -->
+        <div id="formRegister" class="auth-form" style="display: none;">
+          <input type="text" id="regUsername" class="auth-input" placeholder="Tên đăng nhập mới">
+          <input type="email" id="regEmail" class="auth-input" placeholder="Email liên hệ">
+          <input type="password" id="regPassword" class="auth-input" placeholder="Mật khẩu (ít nhất 6 ký tự)">
+          <input type="password" id="regConfirmPassword" class="auth-input" placeholder="Nhập lại mật khẩu">
+          <button id="btnDoRegister" class="modal-btn-primary">Tạo Tài Khoản Mới</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CÀI ĐẶT HỆ THỐNG -->
+  <div id="modalSettings" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>⚙️ Cài Đặt Hệ Thống</h3>
+        <button class="modal-close" data-close="modalSettings">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <div>
+            <strong>Giao diện Tối (Dark Mode)</strong>
+            <div class="setting-sub">Đổi màu nền tối bảo vệ mắt ban đêm</div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="toggleDarkMode">
+            <span class="slider round"></span>
+          </label>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <strong>Đơn vị Nhiệt độ</strong>
+            <div class="setting-sub">Độ C (°C) hoặc Độ F (°F)</div>
+          </div>
+          <select id="selectTempUnit" class="setting-select">
+            <option value="C" selected>Độ C (°C)</option>
+            <option value="F">Độ F (°F)</option>
+          </select>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <strong>Ngôn ngữ Ứng dụng</strong>
+            <div class="setting-sub">Tiếng Việt hoặc English</div>
+          </div>
+          <select id="selectLang" class="setting-select">
+            <option value="vi" selected>Tiếng Việt (VI)</option>
+            <option value="en">English (EN)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="./app.js"></script>
 </body>

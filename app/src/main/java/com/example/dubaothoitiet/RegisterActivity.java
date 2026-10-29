@@ -49,6 +49,22 @@ public class RegisterActivity extends BaseActivity {
         rbRoleAdmin = findViewById(R.id.rbRoleAdmin);
         btnSubmitRegister = findViewById(R.id.btnSubmitRegister);
         tvBackToLogin = findViewById(R.id.tvBackToLogin);
+
+        if (isEnglish()) {
+            TextView tvRegisterTitle = findViewById(R.id.tvRegisterTitle);
+            if (tvRegisterTitle != null) tvRegisterTitle.setText("📝 Create New Account");
+            if (etRegUsername != null) etRegUsername.setHint("Username (*)");
+            if (etRegFullName != null) etRegFullName.setHint("Full Name (*)");
+            if (etRegEmail != null) etRegEmail.setHint("Email address");
+            if (etRegPhone != null) etRegPhone.setHint("Phone number");
+            if (etRegLocation != null) etRegLocation.setHint("City / Living Area");
+            if (etRegPassword != null) etRegPassword.setHint("Password (* min 6 chars)");
+            if (etRegConfirmPassword != null) etRegConfirmPassword.setHint("Confirm password (*)");
+            if (rbRoleUser != null) rbRoleUser.setText("Regular User (User)");
+            if (rbRoleAdmin != null) rbRoleAdmin.setText("System Administrator (Admin)");
+            if (btnSubmitRegister != null) btnSubmitRegister.setText("✅ Register Account");
+            if (tvBackToLogin != null) tvBackToLogin.setText("⬅️ Already have an account? Back to Login");
+        }
     }
 
     private void setupListeners() {

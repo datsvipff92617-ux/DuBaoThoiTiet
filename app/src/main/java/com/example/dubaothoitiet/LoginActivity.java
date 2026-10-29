@@ -53,6 +53,21 @@ public class LoginActivity extends BaseActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
         tvSkipLogin = findViewById(R.id.tvSkipLogin);
+
+        if (isEnglish()) {
+            TextView tvLoginAppTitle = findViewById(R.id.tvLoginAppTitle);
+            TextView tvLoginTitle = findViewById(R.id.tvLoginTitle);
+            TextView tvDemoHint = findViewById(R.id.tvDemoHint);
+
+            if (tvLoginAppTitle != null) tvLoginAppTitle.setText("☀️ Weather Forecast");
+            if (tvLoginTitle != null) tvLoginTitle.setText("Login");
+            if (etUsername != null) etUsername.setHint("Username");
+            if (etPassword != null) etPassword.setHint("Password");
+            if (btnLogin != null) btnLogin.setText("Login");
+            if (btnRegister != null) btnRegister.setText("📝 Create New Account (Register)");
+            if (tvDemoHint != null) tvDemoHint.setText("💡 You can register an account (Admin or User), or use demo: admin / 123456");
+            if (tvSkipLogin != null) tvSkipLogin.setText("🚀 Skip login (Explore as Guest) →");
+        }
     }
 
     private void setupListeners() {
@@ -74,7 +89,7 @@ public class LoginActivity extends BaseActivity {
                     .putString(KEY_USERNAME, "Khách")
                     .putString(KEY_ROLE, "guest")
                     .apply();
-            Toast.makeText(this, "Đang vào ứng dụng với tư cách Khách", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Entering app as Guest" : "Đang vào ứng dụng với tư cách Khách", Toast.LENGTH_SHORT).show();
             goToMainActivity();
         });
     }

@@ -135,7 +135,7 @@ public class SunMoonActivity extends BaseActivity {
             String cityName = loc.optString("name", "");
             String country = loc.optString("country", "Vietnam");
 
-            String displayLoc = (!displayName.isEmpty() && !displayName.equals("Hà Nội"))
+            String displayLoc = (displayName != null && !displayName.trim().isEmpty())
                     ? displayName
                     : WeatherUtils.cleanLocationName(cityName);
 

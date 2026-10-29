@@ -59,10 +59,13 @@ public class WeatherUtils {
 
         String trimmed = name.trim();
 
-        // Xử lý lỗi mã hóa ký tự Latin-1 / UTF-8 đặc trưng từ WeatherAPI tại Việt Nam
+        // Xử lý lỗi mã hóa ký tự Latin-1 / UTF-8 đặc trưng hoặc trạm đo thôn xóm từ WeatherAPI tại Việt Nam
+        String lower = trimmed.toLowerCase();
         if (trimmed.contains("Ã") || trimmed.contains("\u0081") || trimmed.contains("\u0090")
                 || trimmed.contains("lnh Thon") || trimmed.contains("Inh Thon")
-                || trimmed.toLowerCase().contains("inh thon") || trimmed.toLowerCase().contains("dinh thon")) {
+                || lower.contains("inh thon") || lower.contains("dinh thon")
+                || lower.contains("xom trong") || lower.contains("xom ngoai")
+                || lower.contains("xóm trong") || lower.contains("xóm ngoài")) {
             return "Hà Nội";
         }
 

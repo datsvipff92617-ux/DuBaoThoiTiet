@@ -266,7 +266,9 @@ public class VietnamLocations {
         // 1. Kiểm tra trực tiếp các từ viết tắt / alias thông dụng của Việt Nam
         if (raw.contains("Ã") || raw.contains("lnh Thon") || raw.contains("Inh Thon")
                 || stripped.contains("inh thon") || stripped.contains("dinh thon")
-                || compact.equals("dinhthon") || compact.equals("inhthon")) {
+                || stripped.contains("xom trong") || stripped.contains("xom ngoai")
+                || compact.equals("dinhthon") || compact.equals("inhthon")
+                || compact.equals("xomtrong") || compact.equals("xomngoai")) {
             return "Ha Noi, Vietnam";
         }
         if (compact.equals("tphcm") || compact.equals("hcm") || compact.equals("hcmc")
@@ -389,7 +391,9 @@ public class VietnamLocations {
 
         if (apiName.contains("Ã") || apiName.contains("lnh Thon") || apiName.contains("Inh Thon")
                 || lower.contains("inh thon") || lower.contains("dinh thon")
-                || compact.contains("inhthon") || compact.contains("dinhthon")) {
+                || lower.contains("xom trong") || lower.contains("xom ngoai")
+                || compact.contains("inhthon") || compact.contains("dinhthon")
+                || compact.contains("xomtrong") || compact.contains("xomngoai")) {
             return "Hà Nội";
         }
 
@@ -489,6 +493,10 @@ public class VietnamLocations {
 
         if (compact.equals("lichsutimkiem") || trimmed.equalsIgnoreCase("Lịch sử tìm kiếm") || trimmed.equalsIgnoreCase("Lich su tim kiem")) {
             return "Search History";
+        }
+        if (compact.equals("xomtrong") || compact.equals("xomngoai")
+                || compact.equals("dinhthon") || compact.equals("inhthon")) {
+            return "Hanoi";
         }
 
         if (compact.equals("tphcm") || compact.equals("hcm") || compact.equals("hcmc")

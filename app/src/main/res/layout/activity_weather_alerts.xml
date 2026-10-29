@@ -236,6 +236,7 @@
             android:layout_marginBottom="24dp">
 
             <TextView
+                android:id="@+id/tvSafetyAdviceTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🛡️ Hướng Dẫn Phòng Tránh An Toàn"
@@ -245,6 +246,7 @@
                 android:layout_marginBottom="8dp"/>
 
             <TextView
+                android:id="@+id/tvSafetyAdviceBody"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Thường xuyên kiểm tra dự báo thời tiết trước khi ra khỏi nhà.\n• Khi có dông sét, tuyệt đối không trú mưa dưới gốc cây to, cột điện.\n• Chuẩn bị sạc dự phòng và đèn pin khi có tin bão áp thấp.\n• Gọi tổng đài cứu nạn 114 khi gặp tình huống khẩn cấp."

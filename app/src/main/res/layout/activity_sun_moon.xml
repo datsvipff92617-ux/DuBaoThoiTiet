@@ -82,6 +82,7 @@
             android:layout_marginBottom="14dp">
 
             <TextView
+                android:id="@+id/tvTitleSunCycle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="☀️ CHU KỲ MẶT TRỜI"
@@ -106,6 +107,7 @@
                     android:padding="8dp">
 
                     <TextView
+                        android:id="@+id/tvLabelSunrise"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌅 Bình Minh"
@@ -133,6 +135,7 @@
                     android:padding="8dp">
 
                     <TextView
+                        android:id="@+id/tvLabelSunset"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌇 Hoàng Hôn"
@@ -171,6 +174,7 @@
             android:layout_marginBottom="14dp">
 
             <TextView
+                android:id="@+id/tvTitleMoonCycle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🌙 CHU KỲ MẶT TRĂNG &amp; THỜI KỲ ÂM LỊCH"
@@ -195,6 +199,7 @@
                     android:padding="8dp">
 
                     <TextView
+                        android:id="@+id/tvLabelMoonrise"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌕 Trăng Mọc"
@@ -221,6 +226,7 @@
                     android:padding="8dp">
 
                     <TextView
+                        android:id="@+id/tvLabelMoonset"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌘 Trăng Lặn"
@@ -269,6 +275,7 @@
             android:layout_marginBottom="24dp">
 
             <TextView
+                android:id="@+id/tvTitleAstroAdvice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔭 LỜI KHUYÊN QUAN SÁT &amp; NHIẾP ẢNH"

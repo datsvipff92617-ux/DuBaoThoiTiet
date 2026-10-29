@@ -162,9 +162,9 @@ public class Forecast3DaysActivity extends BaseActivity {
                 double maxWind = dayData.optDouble("maxwind_kph", 10.0);
                 double uv = dayData.optDouble("uv", 5.0);
 
-                String tempStr = String.format(Locale.getDefault(), "%.0f° / %.0f°C", maxTemp, minTemp);
+                String tempStr = SettingsActivity.formatTemp(this, maxTemp) + " / " + SettingsActivity.formatTemp(this, minTemp);
                 String rainStr = (en ? "💧 Rain: " : "💧 Mưa: ") + dailyChanceOfRain + "%";
-                String windStr = String.format(Locale.getDefault(), (en ? "💨 Wind: %.0f km/h" : "💨 Gió: %.0f km/h"), maxWind);
+                String windStr = (en ? "💨 Wind: " : "💨 Gió: ") + SettingsActivity.formatWindSpeed(this, maxWind);
                 String uvStr = String.format(Locale.getDefault(), "☀️ UV: %.0f (%s)", uv, getUVLevel(uv));
                 String adviceStr = getAdviceForDay(dailyChanceOfRain, maxTemp, uv);
 

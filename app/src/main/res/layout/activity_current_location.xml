@@ -130,6 +130,7 @@
             android:layout_marginBottom="14dp">
 
             <TextView
+                android:id="@+id/tvCurrentLocEnvParamsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thông Số Môi Trường Xung Quanh"

@@ -85,8 +85,10 @@ public class CurrentLocationActivity extends BaseActivity {
         tvCurrentLocCloud = findViewById(R.id.tvCurrentLocCloud);
 
         btnRefreshLocation = findViewById(R.id.btnRefreshLocation);
-        if (btnRefreshLocation != null && isEnglish()) {
-            btnRefreshLocation.setText("🔄 Refresh Location");
+        TextView tvCurrentLocEnvParamsTitle = findViewById(R.id.tvCurrentLocEnvParamsTitle);
+        if (isEnglish()) {
+            if (btnRefreshLocation != null) btnRefreshLocation.setText("🔄 Automatically Relocate with GPS");
+            if (tvCurrentLocEnvParamsTitle != null) tvCurrentLocEnvParamsTitle.setText("Surrounding Environmental Metrics");
         }
     }
 
@@ -289,14 +291,14 @@ public class CurrentLocationActivity extends BaseActivity {
             String conditionText = current.getJSONObject("condition").getString("text");
 
             boolean en = isEnglish();
-            tvCurrentLocTemp.setText(String.format(Locale.getDefault(), "%.0f°C", tempC));
+            tvCurrentLocTemp.setText(SettingsActivity.formatTemp(this, tempC));
             tvCurrentLocCondition.setText("🌥️ " + conditionText);
-            tvCurrentLocFeelsLike.setText(String.format(Locale.getDefault(), (en ? "Feels like: %.0f°C" : "Cảm giác thực tế: %.0f°C"), feelsLike));
+            tvCurrentLocFeelsLike.setText((en ? "Feels like: " : "Cảm giác thực tế: ") + SettingsActivity.formatTemp(this, feelsLike));
 
             tvCurrentLocHumidity.setText((en ? "💧 Humidity: " : "💧 Độ ẩm: ") + humidity + "%");
-            tvCurrentLocWind.setText(String.format(Locale.getDefault(), (en ? "💨 Wind: %.1f km/h" : "💨 Gió: %.1f km/h"), windKph));
+            tvCurrentLocWind.setText((en ? "💨 Wind: " : "💨 Gió: ") + SettingsActivity.formatWindSpeed(this, windKph));
             tvCurrentLocUV.setText(String.format(Locale.getDefault(), (en ? "☀️ UV Index: %.0f" : "☀️ Chỉ số UV: %.0f"), uv));
-            tvCurrentLocPressure.setText(String.format(Locale.getDefault(), (en ? "⏱️ Pressure: %.0f mb" : "⏱️ Áp suất: %.0f mb"), pressureMb));
+            tvCurrentLocPressure.setText((en ? "⏱️ Pressure: " : "⏱️ Áp suất: ") + SettingsActivity.formatPressure(this, pressureMb));
             tvCurrentLocVisibility.setText(String.format(Locale.getDefault(), (en ? "👁️ Visibility: %.1f km" : "👁️ Tầm nhìn: %.1f km"), visKm));
             tvCurrentLocCloud.setText((en ? "☁️ Cloud Cover: " : "☁️ Độ che phủ: ") + cloud + "%");
 

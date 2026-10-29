@@ -31,6 +31,7 @@
                 app:tint="@android:color/white" />
 
             <TextView
+                android:id="@+id/tvProfileHeaderTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -99,6 +100,7 @@
             android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/tvProfileBasicInfoTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thông Tin Cơ Bản"
@@ -109,6 +111,7 @@
 
             <!-- Họ tên -->
             <TextView
+                android:id="@+id/tvLabelFullName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Họ và tên"
@@ -128,6 +131,7 @@
 
             <!-- Email -->
             <TextView
+                android:id="@+id/tvLabelEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Email"
@@ -147,6 +151,7 @@
 
             <!-- Phone -->
             <TextView
+                android:id="@+id/tvLabelPhone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Số điện thoại"
@@ -166,6 +171,7 @@
 
             <!-- Location -->
             <TextView
+                android:id="@+id/tvLabelLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Khu vực sinh sống"
@@ -203,6 +209,7 @@
             android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/tvProfileChangePassTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🔐 Đổi Mật Khẩu"

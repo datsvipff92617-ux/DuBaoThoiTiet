@@ -64,7 +64,10 @@ public class UserManagementActivity extends BaseActivity {
         etSearchUser = findViewById(R.id.etSearchUser);
         lvUsers = findViewById(R.id.lvUsers);
 
+        TextView tvUserMgmtTitle = findViewById(R.id.tvUserMgmtTitle);
+
         if (isEnglish()) {
+            if (tvUserMgmtTitle != null) tvUserMgmtTitle.setText("👥 User Management");
             if (etSearchUser != null) etSearchUser.setHint("Search username, email or full name...");
             if (tvEmptyUsers != null) tvEmptyUsers.setText("No users found matching your search");
         }

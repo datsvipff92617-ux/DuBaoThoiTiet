@@ -184,7 +184,7 @@ public class ForecastActivity extends BaseActivity {
                 TextView rainTextView = forecastItem.findViewById(R.id.forecastRain);
 
                 dateTextView.setText(displayDate);
-                tempTextView.setText(String.format(Locale.getDefault(), "%.0f°C / %.0f°C", maxTemp, minTemp));
+                tempTextView.setText(SettingsActivity.formatTemp(this, maxTemp) + " / " + SettingsActivity.formatTemp(this, minTemp));
                 conditionTextView.setText(conditionText);
                 rainTextView.setText((en ? "☔ Rain: " : "☔ Mưa: ") + rainChance + "%");
 

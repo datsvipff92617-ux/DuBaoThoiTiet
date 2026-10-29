@@ -50,8 +50,9 @@ public class UserAdapter extends ArrayAdapter<User> {
             TextView tvContact = convertView.findViewById(R.id.tvUserItemContact);
             Button btnDelete = convertView.findViewById(R.id.btnDeleteUser);
 
+            boolean en = SettingsActivity.isEnglish(context);
             tvUsername.setText(user.getUsername());
-            tvFullName.setText(user.getFullName() != null && !user.getFullName().isEmpty() ? user.getFullName() : "Chưa đặt họ tên");
+            tvFullName.setText(user.getFullName() != null && !user.getFullName().isEmpty() ? user.getFullName() : (en ? "No full name set" : "Chưa đặt họ tên"));
 
             String contact = "";
             if (user.getEmail() != null && !user.getEmail().isEmpty()) contact += user.getEmail();
@@ -63,7 +64,7 @@ public class UserAdapter extends ArrayAdapter<User> {
                 if (!contact.isEmpty()) contact += " | ";
                 contact += user.getLocation();
             }
-            tvContact.setText(contact.isEmpty() ? "Chưa có thông tin liên hệ" : contact);
+            tvContact.setText(contact.isEmpty() ? (en ? "No contact information" : "Chưa có thông tin liên hệ") : contact);
 
             if (user.isAdmin()) {
                 tvAvatar.setText("👑");
@@ -74,6 +75,7 @@ public class UserAdapter extends ArrayAdapter<User> {
                 tvAvatar.setText("👤");
                 tvRole.setText("USER");
                 tvRole.setTextColor(Color.parseColor("#80D8FF"));
+                btnDelete.setText(en ? "Delete" : "Xóa");
                 btnDelete.setVisibility(View.VISIBLE);
                 btnDelete.setOnClickListener(v -> {
                     if (listener != null) {

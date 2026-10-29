@@ -63,8 +63,9 @@ public class SunMoonActivity extends BaseActivity {
     private void initViews() {
         btnBackSunMoon = findViewById(R.id.btnBackSunMoon);
         TextView tvSunMoonHeaderTitle = findViewById(R.id.tvSunMoonHeaderTitle);
+        boolean en = isEnglish();
         if (tvSunMoonHeaderTitle != null) {
-            tvSunMoonHeaderTitle.setText(isEnglish() ? "🌅 Astronomy & Moon Phases" : "🌅 Thiên Văn & Tuần Trăng");
+            tvSunMoonHeaderTitle.setText(en ? "🌅 Astronomy & Moon Phases" : "🌅 Thiên Văn & Tuần Trăng");
         }
         tvSunMoonCity = findViewById(R.id.tvSunMoonCity);
         tvSunMoonDate = findViewById(R.id.tvSunMoonDate);
@@ -78,6 +79,25 @@ public class SunMoonActivity extends BaseActivity {
         tvMoonPhase = findViewById(R.id.tvMoonPhase);
         tvMoonIllumination = findViewById(R.id.tvMoonIllumination);
         tvAstroAdvice = findViewById(R.id.tvAstroAdvice);
+
+        TextView tvTitleSunCycle = findViewById(R.id.tvTitleSunCycle);
+        TextView tvLabelSunrise = findViewById(R.id.tvLabelSunrise);
+        TextView tvLabelSunset = findViewById(R.id.tvLabelSunset);
+        TextView tvTitleMoonCycle = findViewById(R.id.tvTitleMoonCycle);
+        TextView tvLabelMoonrise = findViewById(R.id.tvLabelMoonrise);
+        TextView tvLabelMoonset = findViewById(R.id.tvLabelMoonset);
+        TextView tvTitleAstroAdvice = findViewById(R.id.tvTitleAstroAdvice);
+
+        if (en) {
+            if (tvSunMoonDate != null) tvSunMoonDate.setText("Real-time astronomical data for today");
+            if (tvTitleSunCycle != null) tvTitleSunCycle.setText("☀️ SOLAR CYCLE");
+            if (tvLabelSunrise != null) tvLabelSunrise.setText("🌅 Sunrise");
+            if (tvLabelSunset != null) tvLabelSunset.setText("🌇 Sunset");
+            if (tvTitleMoonCycle != null) tvTitleMoonCycle.setText("🌙 LUNAR CYCLE & PHASES");
+            if (tvLabelMoonrise != null) tvLabelMoonrise.setText("🌕 Moonrise");
+            if (tvLabelMoonset != null) tvLabelMoonset.setText("🌘 Moonset");
+            if (tvTitleAstroAdvice != null) tvTitleAstroAdvice.setText("🔭 OBSERVATION & PHOTOGRAPHY ADVICE");
+        }
     }
 
     private void setupListeners() {

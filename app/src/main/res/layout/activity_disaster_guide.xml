@@ -117,6 +117,7 @@
             android:layout_marginBottom="14dp">
 
             <TextView
+                android:id="@+id/tvDisasterSec1Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="⚡ 1. PHÒNG TRÁNH DÔNG LỐC &amp; SẤM SÉT NGUY HIỂM"
@@ -126,6 +127,7 @@
                 android:layout_marginBottom="8dp"/>
 
             <TextView
+                android:id="@+id/tvDisasterSec1Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Quy tắc 30-30: Thấy chớp và nghe sấm cách nhau dưới 30 giây thì phải tìm nơi trú ẩn ngay.\n• Tuyệt đối KHÔNG trú mưa dưới gốc cây to, cột điện, biển quảng cáo kim loại.\n• Đang ở ngoài đồng hoặc sân rộng: Ngồi xổm, chụm 2 chân, không nằm rạp xuống đất.\n• Trong nhà: Rút phích cắm TV, máy tính, tránh dùng điện thoại cắm sạc."
@@ -144,6 +146,7 @@
             android:layout_marginBottom="14dp">
 
             <TextView
+                android:id="@+id/tvDisasterSec2Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🌀 2. ỨNG PHÓ BÃO MẠNH &amp; ÁP THẤP NHIỆT ĐỚI"
@@ -153,6 +156,7 @@
                 android:layout_marginBottom="8dp"/>
 
             <TextView
+                android:id="@+id/tvDisasterSec2Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Chằng chống mái nhà, dán băng keo chữ X lên cửa kính chống vỡ.\n• Chuẩn bị sẵn túi đồ sinh tồn: Đèn pin, pin dự phòng, nước uống, đồ ăn khô 3 ngày.\n• Chặt tỉa cành cây xung quanh nhà có nguy cơ gãy đổ.\n• Luôn theo dõi bản tin dự báo trên app để nắm hướng đi và cấp độ của bão."
@@ -171,6 +175,7 @@
             android:layout_marginBottom="14dp">
 
             <TextView
+                android:id="@+id/tvDisasterSec3Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🌊 3. AN TOÀN TRONG MÙA MƯA NGẬP LỤT ĐÔ THỊ"
@@ -180,6 +185,7 @@
                 android:layout_marginBottom="8dp"/>
 
             <TextView
+                android:id="@+id/tvDisasterSec3Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Cảnh giác nắp cống hố ga bị mất nắp do áp lực nước trồi lên.\n• Ngắt cầu dao điện tổng trong nhà nếu nước dâng cao qua ổ cắm tầng 1.\n• Không cố lái xe máy/ô tô qua đoạn đường ngập sâu quá nửa bánh xe (nguy cơ thủy kích hỏng máy).\n• Tránh xa các cột điện chiếu sáng đường phố (nguy cơ rò rỉ điện ngầm dưới nước)."
@@ -198,6 +204,7 @@
             android:layout_marginBottom="24dp">
 
             <TextView
+                android:id="@+id/tvDisasterSec4Title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="☀️ 4. PHÒNG TRÁNH NẮNG NÓNG GAY GẮT &amp; SAY NẮNG"
@@ -207,6 +214,7 @@
                 android:layout_marginBottom="8dp"/>
 
             <TextView
+                android:id="@+id/tvDisasterSec4Body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="• Hạn chế làm việc nặng hoặc ra ngoài trong khung giờ 11h00 - 15h00.\n• Uống đủ 2 - 2.5 lít nước mỗi ngày, bổ sung khoáng chất Oresol khi đổ nhiều mồ hôi.\n• Dấu hiệu say nắng / sốc nhiệt: Chóng mặt, buồn nôn, da nóng đỏ nhưng không ra mồ hôi -> Cần đưa ngay vào bóng râm và chườm mát vùng cổ, nách."

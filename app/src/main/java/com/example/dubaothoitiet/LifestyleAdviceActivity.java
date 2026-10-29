@@ -76,6 +76,22 @@ public class LifestyleAdviceActivity extends BaseActivity {
         tvAdviceSport = findViewById(R.id.tvAdviceSport);
         tvAdviceLaundry = findViewById(R.id.tvAdviceLaundry);
         tvAdviceCarWash = findViewById(R.id.tvAdviceCarWash);
+
+        TextView tvTitleClothing = findViewById(R.id.tvTitleClothing);
+        TextView tvTitleUmbrella = findViewById(R.id.tvTitleUmbrella);
+        TextView tvTitleSunscreen = findViewById(R.id.tvTitleSunscreen);
+        TextView tvTitleSport = findViewById(R.id.tvTitleSport);
+        TextView tvTitleLaundry = findViewById(R.id.tvTitleLaundry);
+        TextView tvTitleCarWash = findViewById(R.id.tvTitleCarWash);
+
+        if (isEnglish()) {
+            if (tvTitleClothing != null) tvTitleClothing.setText("👕 Recommended Clothing");
+            if (tvTitleUmbrella != null) tvTitleUmbrella.setText("☂️ Carry Umbrella / Raincoat");
+            if (tvTitleSunscreen != null) tvTitleSunscreen.setText("🧴 Sunscreen & Skin Protection");
+            if (tvTitleSport != null) tvTitleSport.setText("🏃 Outdoor Exercise & Sports");
+            if (tvTitleLaundry != null) tvTitleLaundry.setText("🧺 Laundry & Clothes Drying");
+            if (tvTitleCarWash != null) tvTitleCarWash.setText("🚗 Motorbike / Car Wash");
+        }
     }
 
     private void setupListeners() {
@@ -117,19 +133,21 @@ public class LifestyleAdviceActivity extends BaseActivity {
             String cond = current.getJSONObject("condition").getString("text").toLowerCase();
             boolean en = isEnglish();
 
+            String tempFormatted = SettingsActivity.formatTemp(this, temp);
+
             // 1. Trang phục
             if (temp >= 32) {
-                tvAdviceClothing.setText(en ? "High temperature (" + String.format("%.0f", temp) + "°C): Wear lightweight, breathable cotton or linen clothes, light colors to reflect heat."
-                        : "Nhiệt độ cao (" + String.format("%.0f", temp) + "°C): Nên mặc áo thun cộc tay, quần áo chất liệu cotton hoặc lanh mỏng nhẹ, màu sáng để tránh hấp thụ nhiệt.");
+                tvAdviceClothing.setText(en ? "High temperature (" + tempFormatted + "): Wear lightweight, breathable cotton or linen clothes, light colors to reflect heat."
+                        : "Nhiệt độ cao (" + tempFormatted + "): Nên mặc áo thun cộc tay, quần áo chất liệu cotton hoặc lanh mỏng nhẹ, màu sáng để tránh hấp thụ nhiệt.");
             } else if (temp >= 24) {
-                tvAdviceClothing.setText(en ? "Pleasant and cool (" + String.format("%.0f", temp) + "°C): Suitable for light shirts, t-shirts or casual summer wear."
-                        : "Nhiệt độ mát mẻ dễ chịu (" + String.format("%.0f", temp) + "°C): Thích hợp mặc áo sơ mi, áo phông hoặc váy hè nhẹ nhàng.");
+                tvAdviceClothing.setText(en ? "Pleasant and cool (" + tempFormatted + "): Suitable for light shirts, t-shirts or casual summer wear."
+                        : "Nhiệt độ mát mẻ dễ chịu (" + tempFormatted + "): Thích hợp mặc áo sơ mi, áo phông hoặc váy hè nhẹ nhàng.");
             } else if (temp >= 18) {
-                tvAdviceClothing.setText(en ? "A bit chilly (" + String.format("%.0f", temp) + "°C): Carry a light cardigan or windbreaker jacket when going outdoors."
-                        : "Trời hơi se lạnh (" + String.format("%.0f", temp) + "°C): Nên khoác thêm áo cardigan hoặc áo khoác gió mỏng khi đi xe máy.");
+                tvAdviceClothing.setText(en ? "A bit chilly (" + tempFormatted + "): Carry a light cardigan or windbreaker jacket when going outdoors."
+                        : "Trời hơi se lạnh (" + tempFormatted + "): Nên khoác thêm áo cardigan hoặc áo khoác gió mỏng khi đi xe máy.");
             } else {
-                tvAdviceClothing.setText(en ? "Cold weather (" + String.format("%.0f", temp) + "°C): Wear a warm down jacket, scarf and gloves outdoors."
-                        : "Trời rét buốt (" + String.format("%.0f", temp) + "°C): Hãy mặc áo phao ấm, quàng khăn len và đeo găng tay khi ra ngoài.");
+                tvAdviceClothing.setText(en ? "Cold weather (" + tempFormatted + "): Wear a warm down jacket, scarf and gloves outdoors."
+                        : "Trời rét buốt (" + tempFormatted + "): Hãy mặc áo phao ấm, quàng khăn len và đeo găng tay khi ra ngoài.");
             }
 
             // 2. Mang ô / áo mưa

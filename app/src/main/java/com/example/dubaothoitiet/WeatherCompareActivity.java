@@ -156,10 +156,10 @@ public class WeatherCompareActivity extends BaseActivity {
                 hum1 = hum;
                 uv1 = uv;
                 tvCompareCity1Name.setText(cityName);
-                tvCompareCity1Temp.setText(String.format(Locale.getDefault(), "%.0f°C", temp));
+                tvCompareCity1Temp.setText(SettingsActivity.formatTemp(this, temp));
                 tvCompareCity1Condition.setText(cond);
                 tvCompareCity1Humidity.setText(hum + "%");
-                tvCompareCity1Wind.setText(String.format(Locale.getDefault(), "%.0f km/h", wind));
+                tvCompareCity1Wind.setText(SettingsActivity.formatWindSpeed(this, wind));
                 tvCompareCity1UV.setText(String.format(Locale.getDefault(), "%.0f", uv));
             } else {
                 name2 = cityName;
@@ -167,10 +167,10 @@ public class WeatherCompareActivity extends BaseActivity {
                 hum2 = hum;
                 uv2 = uv;
                 tvCompareCity2Name.setText(cityName);
-                tvCompareCity2Temp.setText(String.format(Locale.getDefault(), "%.0f°C", temp));
+                tvCompareCity2Temp.setText(SettingsActivity.formatTemp(this, temp));
                 tvCompareCity2Condition.setText(cond);
                 tvCompareCity2Humidity.setText(hum + "%");
-                tvCompareCity2Wind.setText(String.format(Locale.getDefault(), "%.0f km/h", wind));
+                tvCompareCity2Wind.setText(SettingsActivity.formatWindSpeed(this, wind));
                 tvCompareCity2UV.setText(String.format(Locale.getDefault(), "%.0f", uv));
             }
 
@@ -188,13 +188,17 @@ public class WeatherCompareActivity extends BaseActivity {
             String coolerCity = (temp1 > temp2) ? name2 : name1;
             boolean en = isEnglish();
 
+            String diffStr = "F".equalsIgnoreCase(SettingsActivity.getTempUnit(this))
+                    ? String.format(Locale.getDefault(), "%.1f°F", diff * 9.0 / 5.0)
+                    : String.format(Locale.getDefault(), "%.1f°C", diff);
+
             StringBuilder sb = new StringBuilder();
             if (en) {
                 if (diff >= 1.0) {
                     sb.append(coolerCity).append(" is cooler than ").append(hotterCity)
-                            .append(" by about ").append(String.format(Locale.getDefault(), "%.1f°C", diff)).append(". ");
+                            .append(" by about ").append(diffStr).append(". ");
                 } else {
-                    sb.append("Both locations have comparable temperatures (difference under 1°C). ");
+                    sb.append("Both locations have comparable temperatures (difference under 1°). ");
                 }
 
                 if (uv1 != null && uv2 != null) {
@@ -208,9 +212,9 @@ public class WeatherCompareActivity extends BaseActivity {
             } else {
                 if (diff >= 1.0) {
                     sb.append(coolerCity).append(" đang mát mẻ hơn ").append(hotterCity)
-                            .append(" khoảng ").append(String.format(Locale.getDefault(), "%.1f°C", diff)).append(". ");
+                            .append(" khoảng ").append(diffStr).append(". ");
                 } else {
-                    sb.append("Hai khu vực có mức nhiệt độ tương đương nhau (chênh lệch dưới 1°C). ");
+                    sb.append("Hai khu vực có mức nhiệt độ tương đương nhau (chênh lệch dưới 1°). ");
                 }
 
                 if (uv1 != null && uv2 != null) {

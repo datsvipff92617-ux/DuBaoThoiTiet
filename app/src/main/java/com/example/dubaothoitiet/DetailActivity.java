@@ -124,30 +124,30 @@ public class DetailActivity extends BaseActivity {
             JSONObject current = json.getJSONObject("current");
 
             detailHumidity.setText(current.getInt("humidity") + "%");
-            detailWind.setText(String.format("%.1f km/h", current.getDouble("wind_kph")));
+            detailWind.setText(SettingsActivity.formatWindSpeed(this, current.getDouble("wind_kph")));
 
             double uv = current.getDouble("uv");
             detailUV.setText(String.format("%.0f - %s", uv, getUVLevel(uv)));
 
-            detailPressure.setText(String.format("%.0f mb", current.getDouble("pressure_mb")));
+            detailPressure.setText(SettingsActivity.formatPressure(this, current.getDouble("pressure_mb")));
             detailVisibility.setText(String.format("%.1f km", current.getDouble("vis_km")));
-            detailFeelsLike.setText(String.format("%.0f°C", current.getDouble("feelslike_c")));
+            detailFeelsLike.setText(SettingsActivity.formatTemp(this, current.getDouble("feelslike_c")));
             detailCloudCover.setText(current.getInt("cloud") + "%");
 
             if (current.has("dewpoint_c")) {
-                detailDewPoint.setText(String.format("%.0f°C", current.getDouble("dewpoint_c")));
+                detailDewPoint.setText(SettingsActivity.formatTemp(this, current.getDouble("dewpoint_c")));
             } else {
                 detailDewPoint.setText("-");
             }
 
             if (current.has("heatindex_c")) {
-                detailHeatIndex.setText(String.format("%.0f°C", current.getDouble("heatindex_c")));
+                detailHeatIndex.setText(SettingsActivity.formatTemp(this, current.getDouble("heatindex_c")));
             } else {
                 detailHeatIndex.setText("-");
             }
 
             if (current.has("windchill_c")) {
-                detailWindChill.setText(String.format("%.0f°C", current.getDouble("windchill_c")));
+                detailWindChill.setText(SettingsActivity.formatTemp(this, current.getDouble("windchill_c")));
             } else {
                 detailWindChill.setText("-");
             }

@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,14 +63,18 @@ public class WeatherAlertsActivity extends BaseActivity {
         loadAlertsData();
     }
 
+    private TextView tvRainAlertTitle, tvHeatAlertTitle, tvUvAlertTitle, tvWindAlertTitle;
+    private TextView tvSafetyAdviceTitle, tvSafetyAdviceBody;
+
     private void initViews(String displayCity) {
         btnBackAlerts = findViewById(R.id.btnBackAlerts);
         TextView tvAlertsHeaderTitle = findViewById(R.id.tvAlertsHeaderTitle);
+        boolean en = isEnglish();
         if (tvAlertsHeaderTitle != null) {
-            tvAlertsHeaderTitle.setText(isEnglish() ? "⚠️ Weather Alerts" : "⚠️ Cảnh Báo Khí Tượng");
+            tvAlertsHeaderTitle.setText(en ? "⚠️ Weather Alerts" : "⚠️ Cảnh Báo Khí Tượng");
         }
         tvAlertsCity = findViewById(R.id.tvAlertsCity);
-        tvAlertsCity.setText((isEnglish() ? "Scanning alerts for: " : "Đang kiểm tra cảnh báo tại ") + displayCity);
+        tvAlertsCity.setText((en ? "Scanning alerts for: " : "Đang kiểm tra cảnh báo tại ") + displayCity);
 
         tvAlertLevelIcon = findViewById(R.id.tvAlertLevelIcon);
         tvAlertLevelTitle = findViewById(R.id.tvAlertLevelTitle);
@@ -79,6 +84,22 @@ public class WeatherAlertsActivity extends BaseActivity {
         tvHeatAlertStatus = findViewById(R.id.tvHeatAlertStatus);
         tvUvAlertStatus = findViewById(R.id.tvUvAlertStatus);
         tvWindAlertStatus = findViewById(R.id.tvWindAlertStatus);
+
+        tvRainAlertTitle = findViewById(R.id.tvRainAlertTitle);
+        tvHeatAlertTitle = findViewById(R.id.tvHeatAlertTitle);
+        tvUvAlertTitle = findViewById(R.id.tvUvAlertTitle);
+        tvWindAlertTitle = findViewById(R.id.tvWindAlertTitle);
+        tvSafetyAdviceTitle = findViewById(R.id.tvSafetyAdviceTitle);
+        tvSafetyAdviceBody = findViewById(R.id.tvSafetyAdviceBody);
+
+        if (en) {
+            if (tvRainAlertTitle != null) tvRainAlertTitle.setText("🌧️ Heavy Rain & Thunderstorms");
+            if (tvHeatAlertTitle != null) tvHeatAlertTitle.setText("🔥 Extreme Heat & Heatstroke");
+            if (tvUvAlertTitle != null) tvUvAlertTitle.setText("☀️ UV Radiation Index");
+            if (tvWindAlertTitle != null) tvWindAlertTitle.setText("💨 Wind Gusts & Tropical Depressions");
+            if (tvSafetyAdviceTitle != null) tvSafetyAdviceTitle.setText("🛡️ Safety & Disaster Mitigation Advice");
+            if (tvSafetyAdviceBody != null) tvSafetyAdviceBody.setText("• Regularly check weather forecasts before heading outside.\n• During thunderstorms & lightning, never take shelter under large trees or power poles.\n• Prepare a portable power bank and flashlight when storm warnings are issued.\n• Dial emergency rescue hotline 114 during critical situations.");
+        }
     }
 
     private void setupListeners() {
@@ -146,48 +167,54 @@ public class WeatherAlertsActivity extends BaseActivity {
             }
 
             // 2. Phân tích nhiệt độ & nắng nóng
+            String formattedTemp = SettingsActivity.formatTemp(this, temp);
             if (temp >= 37) {
-                tvHeatAlertStatus.setText(en ? "🔴 CRITICAL: Extreme heatwave (" + String.format("%.0f", temp) + "°C), severe risk of heatstroke and fire hazard!" : "🔴 NGUY CẤP: Nắng nóng đặc biệt gay gắt (" + String.format("%.0f", temp) + "°C), nguy cơ sốc nhiệt và cháy nổ rất cao!");
+                tvHeatAlertStatus.setText(en ? "🔴 CRITICAL: Extreme heatwave (" + formattedTemp + "), severe risk of heatstroke and fire hazard!" : "🔴 NGUY CẤP: Nắng nóng đặc biệt gay gắt (" + formattedTemp + "), nguy cơ sốc nhiệt và cháy nổ rất cao!");
                 tvHeatAlertStatus.setTextColor(Color.parseColor("#FF5252"));
                 riskCount += 2;
             } else if (temp >= 35) {
-                tvHeatAlertStatus.setText(en ? "🟡 Caution: Broad heatwave (" + String.format("%.0f", temp) + "°C), limit outdoor work around noon." : "🟡 Chú ý: Nắng nóng diện rộng (" + String.format("%.0f", temp) + "°C), hạn chế làm việc ngoài trời giữa trưa.");
+                tvHeatAlertStatus.setText(en ? "🟡 Caution: Broad heatwave (" + formattedTemp + "), limit outdoor work around noon." : "🟡 Chú ý: Nắng nóng diện rộng (" + formattedTemp + "), hạn chế làm việc ngoài trời giữa trưa.");
                 tvHeatAlertStatus.setTextColor(Color.parseColor("#FFD54F"));
                 riskCount += 1;
             } else if (temp <= 12) {
-                tvHeatAlertStatus.setText(en ? "🟡 Severe Cold Warning: Low temperatures (" + String.format("%.0f", temp) + "°C), keep the elderly and children warm." : "🟡 Cảnh báo rét đậm: Nhiệt độ xuống thấp (" + String.format("%.0f", temp) + "°C), chú ý giữ ấm cho người già và trẻ nhỏ.");
+                tvHeatAlertStatus.setText(en ? "🟡 Severe Cold Warning: Low temperatures (" + formattedTemp + "), keep the elderly and children warm." : "🟡 Cảnh báo rét đậm: Nhiệt độ xuống thấp (" + formattedTemp + "), chú ý giữ ấm cho người già và trẻ nhỏ.");
                 tvHeatAlertStatus.setTextColor(Color.parseColor("#FFD54F"));
                 riskCount += 1;
             } else {
-                tvHeatAlertStatus.setText(en ? "🟢 Normal: Moderate temperature (" + String.format("%.0f", temp) + "°C), pleasant conditions." : "🟢 Bình thường: Nhiệt độ vừa phải (" + String.format("%.0f", temp) + "°C), cơ thể thích nghi tốt.");
+                tvHeatAlertStatus.setText(en ? "🟢 Normal: Moderate temperature (" + formattedTemp + "), pleasant conditions." : "🟢 Bình thường: Nhiệt độ vừa phải (" + formattedTemp + "), cơ thể thích nghi tốt.");
                 tvHeatAlertStatus.setTextColor(Color.parseColor("#81C784"));
             }
 
             // 3. Phân tích tia UV
+            String uvFormatted = String.format(Locale.getDefault(), "%.0f", uv);
             if (uv >= 8) {
-                tvUvAlertStatus.setText(en ? "🔴 DANGER: Maximum UV index (" + String.format("%.0f", uv) + "), rapidly harms skin and eyes!" : "🔴 NGUY HIỂM: Chỉ số UV cực đại (" + String.format("%.0f", uv) + "), gây bỏng da và hại mắt nhanh chóng!");
+                String msg = en ? ("🔴 DANGER: Maximum UV index (" + uvFormatted + "), rapidly harms skin and eyes!") : ("🔴 NGUY HIỂM: Chỉ số UV cực đại (" + uvFormatted + "), gây bỏng da và hại mắt nhanh chóng!");
+                tvUvAlertStatus.setText(msg);
                 tvUvAlertStatus.setTextColor(Color.parseColor("#FF5252"));
                 riskCount += 2;
             } else if (uv >= 6) {
-                tvUvAlertStatus.setText(en ? "🟡 Caution: High UV index (" + String.format("%.0f", uv) + "), apply sunscreen and wear sunglasses." : "🟡 Chú ý: Chỉ số UV mức cao (" + String.format("%.0f", uv) + "), cần bôi kem chống nắng và đeo kính râm.");
+                String msg = en ? ("🟡 Caution: High UV index (" + uvFormatted + "), apply sunscreen and wear sunglasses.") : ("🟡 Chú ý: Chỉ số UV mức cao (" + uvFormatted + "), cần bôi kem chống nắng và đeo kính râm.");
+                tvUvAlertStatus.setText(msg);
                 tvUvAlertStatus.setTextColor(Color.parseColor("#FFD54F"));
                 riskCount += 1;
             } else {
-                tvUvAlertStatus.setText(en ? "🟢 Normal: Safe UV levels (" + String.format("%.0f", uv) + ")." : "🟢 Bình thường: Chỉ số UV ở mức an toàn (" + String.format("%.0f", uv) + ").");
+                String msg = en ? ("🟢 Normal: Safe UV levels (" + uvFormatted + ").") : ("🟢 Bình thường: Chỉ số UV ở mức an toàn (" + uvFormatted + ").");
+                tvUvAlertStatus.setText(msg);
                 tvUvAlertStatus.setTextColor(Color.parseColor("#81C784"));
             }
 
             // 4. Phân tích gió giật & bão
+            String formattedWind = SettingsActivity.formatWindSpeed(this, wind);
             if (wind >= 50) {
-                tvWindAlertStatus.setText(en ? "🔴 GALE ALARM: Strong gale gusts " + String.format("%.0f", wind) + " km/h, beware of falling trees and roofs!" : "🔴 BÁO ĐỘNG GIÓ BÃO: Tốc độ gió giật mạnh " + String.format("%.0f", wind) + " km/h, đề phòng cây đổ và tốc mái!");
+                tvWindAlertStatus.setText(en ? "🔴 GALE ALARM: Strong gale gusts " + formattedWind + ", beware of falling trees and roofs!" : "🔴 BÁO ĐỘNG GIÓ BÃO: Tốc độ gió giật mạnh " + formattedWind + ", đề phòng cây đổ và tốc mái!");
                 tvWindAlertStatus.setTextColor(Color.parseColor("#FF5252"));
                 riskCount += 2;
             } else if (wind >= 30) {
-                tvWindAlertStatus.setText(en ? "🟡 Caution: Moderate breeze (" + String.format("%.0f", wind) + " km/h), drive carefully over bridges." : "🟡 Chú ý: Gió cấp 4-5 (" + String.format("%.0f", wind) + " km/h), người đi xe máy qua cầu cần cẩn trọng.");
+                tvWindAlertStatus.setText(en ? "🟡 Caution: Moderate breeze (" + formattedWind + "), drive carefully over bridges." : "🟡 Chú ý: Gió cấp 4-5 (" + formattedWind + "), người đi xe máy qua cầu cần cẩn trọng.");
                 tvWindAlertStatus.setTextColor(Color.parseColor("#FFD54F"));
                 riskCount += 1;
             } else {
-                tvWindAlertStatus.setText(en ? "🟢 Normal: Gentle wind (" + String.format("%.0f", wind) + " km/h), outdoor activities are safe." : "🟢 Bình thường: Gió êm (" + String.format("%.0f", wind) + " km/h), các hoạt động ngoài trời diễn ra an toàn.");
+                tvWindAlertStatus.setText(en ? "🟢 Normal: Gentle wind (" + formattedWind + "), outdoor activities are safe." : "🟢 Bình thường: Gió êm (" + formattedWind + "), các hoạt động ngoài trời diễn ra an toàn.");
                 tvWindAlertStatus.setTextColor(Color.parseColor("#81C784"));
             }
 

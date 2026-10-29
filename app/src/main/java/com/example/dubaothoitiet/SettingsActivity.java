@@ -214,6 +214,12 @@ public class SettingsActivity extends BaseActivity {
         AppCompatDelegate.setDefaultNightMode(theme);
     }
 
+    public static boolean isEnglish(Context context) {
+        if (context == null) return false;
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        return "en".equals(prefs.getString(KEY_LANGUAGE, "vi"));
+    }
+
     public static String getTempUnit(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         return prefs.getString(KEY_TEMP_UNIT, "C");

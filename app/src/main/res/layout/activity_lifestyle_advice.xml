@@ -64,6 +64,7 @@
             android:layout_marginBottom="12dp">
 
             <TextView
+                android:id="@+id/tvTitleClothing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="👕 Trang Phục Nên Mặc"
@@ -91,6 +92,7 @@
             android:layout_marginBottom="12dp">
 
             <TextView
+                android:id="@+id/tvTitleUmbrella"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="☂️ Mang Theo Ô / Áo Mưa"
@@ -118,6 +120,7 @@
             android:layout_marginBottom="12dp">
 
             <TextView
+                android:id="@+id/tvTitleSunscreen"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🧴 Bảo Vệ Da &amp; Chống Nắng"
@@ -145,6 +148,7 @@
             android:layout_marginBottom="12dp">
 
             <TextView
+                android:id="@+id/tvTitleSport"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🏃 Thể Dục Thể Thao Ngoài Trời"
@@ -172,6 +176,7 @@
             android:layout_marginBottom="12dp">
 
             <TextView
+                android:id="@+id/tvTitleLaundry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🧺 Giặt &amp; Phơi Quần Áo"
@@ -199,6 +204,7 @@
             android:layout_marginBottom="24dp">
 
             <TextView
+                android:id="@+id/tvTitleCarWash"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🚗 Rửa Xe Máy &amp; Ô Tô"

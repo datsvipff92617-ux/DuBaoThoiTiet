@@ -61,7 +61,27 @@ public class UserProfileActivity extends BaseActivity {
 
         btnLogoutProfile = findViewById(R.id.btnLogoutProfile);
 
+        TextView tvProfileHeaderTitle = findViewById(R.id.tvProfileHeaderTitle);
+        TextView tvProfileBasicInfoTitle = findViewById(R.id.tvProfileBasicInfoTitle);
+        TextView tvLabelFullName = findViewById(R.id.tvLabelFullName);
+        TextView tvLabelEmail = findViewById(R.id.tvLabelEmail);
+        TextView tvLabelPhone = findViewById(R.id.tvLabelPhone);
+        TextView tvLabelLocation = findViewById(R.id.tvLabelLocation);
+        TextView tvProfileChangePassTitle = findViewById(R.id.tvProfileChangePassTitle);
+
         if (isEnglish()) {
+            if (tvProfileHeaderTitle != null) tvProfileHeaderTitle.setText("👤 User Profile");
+            if (tvProfileBasicInfoTitle != null) tvProfileBasicInfoTitle.setText("Basic Information");
+            if (tvLabelFullName != null) tvLabelFullName.setText("Full Name");
+            if (tvLabelEmail != null) tvLabelEmail.setText("Email");
+            if (tvLabelPhone != null) tvLabelPhone.setText("Phone Number");
+            if (tvLabelLocation != null) tvLabelLocation.setText("Living Area / City");
+            if (tvProfileChangePassTitle != null) tvProfileChangePassTitle.setText("🔐 Change Password");
+
+            if (etOldPassword != null) etOldPassword.setHint("Current Password");
+            if (etNewPassword != null) etNewPassword.setHint("New Password (min 6 chars)");
+            if (etConfirmNewPassword != null) etConfirmNewPassword.setHint("Confirm New Password");
+
             if (btnSaveProfile != null) btnSaveProfile.setText("💾 Save Changes");
             if (btnChangePassword != null) btnChangePassword.setText("🔑 Change Password");
             if (btnLogoutProfile != null) btnLogoutProfile.setText("🚪 Log Out");

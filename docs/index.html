@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Dự Báo Thời Tiết - Ứng Dụng Khí Tượng Trực Tuyến</title>
+  <meta name="description" content="Ứng dụng dự báo thời tiết trực tuyến thông minh, định vị GPS vệ tinh và tra cứu chính xác 63 tỉnh thành Việt Nam.">
+  
+  <!-- iOS Safari PWA Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Thời Tiết">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1163/1163657.png">
+  
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1163/1163657.png">
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <main class="app-container">
+    
+    <!-- TOP HEADER -->
+    <header class="top-header">
+      <div class="brand-wrapper">
+        <span class="brand-logo">🌤️</span>
+        <h1 class="brand-title">Dự Báo Thời Tiết</h1>
+      </div>
+      <div class="top-controls">
+        <button id="btnGps" class="control-btn" title="Lấy vị trí GPS hiện tại">📍</button>
+        <button id="btnUnit" class="control-btn" title="Đổi đơn vị °C / °F">°C</button>
+        <button id="btnTheme" class="control-btn" title="Đổi giao diện Sáng / Tối">🌙 Tối</button>
+        <button id="btnLang" class="control-btn" title="Đổi ngôn ngữ Tiếng Việt / English">VI</button>
+      </div>
+    </header>
+
+    <!-- SEARCH BAR & DROPDOWN -->
+    <section class="search-wrapper" id="searchWrapper">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Tìm kiếm: TP.HCM, Hà Nội, Đà Nẵng..." 
+          autocomplete="off"
+          spellcheck="false"
+        >
+        <button id="btnClearSearch" class="btn-clear" aria-label="Xóa tìm kiếm">✕</button>
+        <button id="btnSearch" class="btn-search">Tìm</button>
+      </div>
+
+      <!-- Autocomplete Dropdown -->
+      <div id="suggestionsDropdown" class="suggestions-dropdown"></div>
+    </section>
+
+    <!-- HERO WEATHER CARD -->
+    <section class="hero-card" id="heroCard">
+      <div class="hero-location-badge" id="heroLocationBadge">
+        <span id="heroLocationName">📍 TP. Hồ Chí Minh</span>
+      </div>
+      <div class="hero-date" id="heroDate">Thứ Năm, 29 Tháng 10, 2026</div>
+      
+      <div class="hero-icon-temp-row">
+        <img id="heroIcon" class="hero-weather-icon" src="https://cdn.weatherapi.com/weather/128x128/day/116.png" alt="Thời tiết">
+        <div id="heroTemp" class="hero-temp">30°C</div>
+      </div>
+
+      <div id="heroCondition" class="hero-condition">Có mây từng đợt</div>
+      
+      <div class="hero-substats">
+        <span id="heroHighLow">H: 33°C • L: 25°C</span>
+        <span id="heroFeelsLike">Cảm giác như 34°C</span>
+      </div>
+    </section>
+
+    <!-- QUICK STATS (4 Ô CHỈ SỐ) -->
+    <section class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-icon">💧</div>
+        <div class="stat-details">
+          <span class="stat-label">Độ Ẩm</span>
+          <span class="stat-val" id="valHumidity">72%</span>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-icon">💨</div>
+        <div class="stat-details">
+          <span class="stat-label">Gió</span>
+          <span class="stat-val" id="valWind">14 km/h</span>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-icon">☀️</div>
+        <div class="stat-details">
+          <span class="stat-label">Chỉ Số UV</span>
+          <span class="stat-val" id="valUV">6 (Cao)</span>
+        </div>
+      </div>
+
+      <div class="stat-item">
+        <div class="stat-icon">🧭</div>
+        <div class="stat-details">
+          <span class="stat-label">Áp Suất</span>
+          <span class="stat-val" id="valPressure">1010 mbar</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 24-HOUR HOURLY FORECAST -->
+    <section class="section-block">
+      <h2 class="section-title">⏱️ Dự Báo 24 Giờ Tiếp Theo</h2>
+      <div class="hourly-scroll" id="hourlyScroll">
+        <!-- Render động từ JavaScript -->
+      </div>
+    </section>
+
+    <!-- 7-DAY FORECAST -->
+    <section class="section-block">
+      <h2 class="section-title">📅 Dự Báo 7 Ngày Tới</h2>
+      <div class="daily-list" id="dailyList">
+        <!-- Render động từ JavaScript -->
+      </div>
+    </section>
+
+    <!-- AIR QUALITY & SUN/MOON -->
+    <section class="extra-grid">
+      <div class="extra-card">
+        <div class="extra-header">🍃 Không Khí (AQI)</div>
+        <div class="extra-main" id="valAqi">AQI: 2</div>
+        <div class="extra-sub" id="valAqiDesc">Tốt (Không khí trong lành)</div>
+      </div>
+
+      <div class="extra-card">
+        <div class="extra-header">🌅 Bình Minh / Hoàng Hôn</div>
+        <div class="extra-main" id="valSunrise">05:48 AM</div>
+        <div class="extra-sub" id="valSunset">17:42 PM • Trăng non</div>
+      </div>
+    </section>
+
+    <!-- IPHONE PWA HELPER BANNER -->
+    <div class="iphone-banner">
+      <div class="iphone-icon">📱</div>
+      <div class="iphone-text">
+        <strong>Mẹo cho iPhone (iOS):</strong> Bấm nút <strong>Chia sẻ (Share) 📤</strong> trên Safari ➔ Chọn <strong>"Thêm vào Màn hình chính"</strong> để dùng app toàn màn hình mượt mà như app tải từ App Store!
+      </div>
+    </div>
+
+    <!-- FOOTER WITH DOWNLOAD LINKS -->
+    <footer class="footer">
+      <p>Ứng dụng Dự Báo Thời Tiết © 2026</p>
+      <p>
+        <a href="https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet.apk">Tải file APK (Android)</a> • 
+        <a href="https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet_v2.2.zip">Tải file ZIP</a>
+      </p>
+    </footer>
+
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -118,6 +118,28 @@ public class MainActivity extends BaseActivity {
         setIntent(intent);
         if (intent != null && intent.hasExtra("city")) {
             currentCity = intent.getStringExtra("city");
+            if (intent.hasExtra("displayName")) {
+                currentExactDisplayName = intent.getStringExtra("displayName");
+            }
+            loadWeatherData(currentCity);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateLoginStatus();
+        updateUnitsDisplay();
+        checkAndApplyLanguage();
+
+        // Đồng bộ vị trí mới nhất khi quay lại từ màn hình khác
+        String savedLoc = LocationHelper.getSavedExactLocation(this);
+        String savedQuery = LocationHelper.getSavedExactQuery(this);
+        if (!savedLoc.isEmpty() && (currentExactDisplayName == null || !currentExactDisplayName.equalsIgnoreCase(savedLoc))) {
+            currentExactDisplayName = savedLoc;
+            if (!savedQuery.isEmpty()) {
+                currentCity = savedQuery;
+            }
             loadWeatherData(currentCity);
         }
     }
@@ -447,25 +469,12 @@ public class MainActivity extends BaseActivity {
                 .show();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        updateLoginStatus();
-        updateUnitsDisplay();
-        checkAndApplyLanguage();
-    }
-
     private void updateUnitsDisplay() {
         if (!hasParsedWeather) return;
         tempText.setText(SettingsActivity.formatTemp(this, lastTempC));
         feelsLikeText.setText(SettingsActivity.formatTemp(this, lastFeelsLikeC));
         windText.setText(SettingsActivity.formatWindSpeed(this, lastWindKph));
         uvText.setText(String.format(Locale.getDefault(), "%.0f - %s", lastUv, getUVLevel(lastUv)));
-    }
-
-    private boolean isEnglish() {
-        SharedPreferences prefs = getSharedPreferences("AppSettings", Context.MODE_PRIVATE);
-        return "en".equalsIgnoreCase(prefs.getString("language", "vi"));
     }
 
     private void checkAndApplyLanguage() {

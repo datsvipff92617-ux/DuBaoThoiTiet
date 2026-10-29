@@ -63,6 +63,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblHumidity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="💧 Độ ẩm"
@@ -86,6 +87,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblWind"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="💨 Tốc độ gió"
@@ -116,13 +118,14 @@
                 android:orientation="horizontal"
                 android:weightSum="2">
 
-                <LinearLayout
+            <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblUV"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="☀️ Chỉ số UV"
@@ -146,6 +149,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblPressure"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌡️ Áp suất"
@@ -183,6 +187,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblVisibility"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="👁️ Tầm nhìn"
@@ -206,6 +211,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblFeelsLike"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🌡️ Cảm giác như"
@@ -243,6 +249,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblCloudCover"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="☁️ Độ che phủ mây"
@@ -266,6 +273,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblDewPoint"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="💧 Điểm sương"
@@ -303,6 +311,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblHeatIndex"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="🔥 Chỉ số nhiệt"
@@ -326,6 +335,7 @@
                     android:orientation="vertical"
                     android:padding="12dp">
                     <TextView
+                        android:id="@+id/lblWindChill"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="❄️ Chỉ số lạnh gió"

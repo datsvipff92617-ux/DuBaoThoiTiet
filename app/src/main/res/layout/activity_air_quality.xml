@@ -31,6 +31,7 @@
                 app:tint="@android:color/white" />
 
             <TextView
+                android:id="@+id/tvAqiHeaderTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -64,6 +65,7 @@
             android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/tvAqiScoreLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Chỉ Số Ô Nhiễm (US EPA)"
@@ -110,6 +112,7 @@
             android:layout_marginBottom="16dp">
 
             <TextView
+                android:id="@+id/tvAqiPollutantsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nồng Độ Các Chất Gây Ô Nhiễm"
@@ -132,6 +135,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/tvLabelPm25"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Bụi mịn PM2.5"
@@ -153,6 +157,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/tvLabelPm10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Bụi thô PM10"
@@ -183,6 +188,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/tvLabelCo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Khí CO"
@@ -204,6 +210,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/tvLabelNo2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Khí NO2"
@@ -233,6 +240,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/tvLabelO3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Khí Ozone (O3)"
@@ -254,6 +262,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/tvLabelSo2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Khí SO2"
@@ -282,6 +291,7 @@
             android:layout_marginBottom="24dp">
 
             <TextView
+                android:id="@+id/tvAqiAdviceTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="🩺 Khuyến Cáo Bảo Vệ Sức Khỏe"

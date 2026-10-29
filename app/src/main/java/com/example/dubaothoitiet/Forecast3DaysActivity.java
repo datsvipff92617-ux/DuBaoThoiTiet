@@ -44,15 +44,24 @@ public class Forecast3DaysActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forecast_3days);
 
-        if (getIntent().hasExtra("city")) {
+        if (!getIntent().hasExtra("city") || getIntent().getStringExtra("city") == null || getIntent().getStringExtra("city").trim().isEmpty()) {
+            cityName = LocationHelper.getSavedExactQuery(this);
+            if (cityName == null || cityName.trim().isEmpty()) {
+                cityName = LocationHelper.getSavedLocation(this);
+            }
+        } else {
             cityName = getIntent().getStringExtra("city");
         }
 
-        if (getIntent().hasExtra("displayName")) {
+        if (getIntent().hasExtra("displayName") && getIntent().getStringExtra("displayName") != null && !getIntent().getStringExtra("displayName").trim().isEmpty()) {
             displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
         } else {
-            displayName = WeatherUtils.cleanLocationName(cityName);
+            displayName = LocationHelper.getSavedExactLocation(this);
+            if (displayName == null || displayName.trim().isEmpty()) {
+                displayName = WeatherUtils.cleanLocationName(cityName);
+            }
         }
+        displayName = WeatherUtils.cleanLocationName(displayName);
 
         initViews();
         setupListeners();
@@ -62,7 +71,11 @@ public class Forecast3DaysActivity extends BaseActivity {
     private void initViews() {
         btnBack3Days = findViewById(R.id.btnBack3Days);
         tvCityName3Days = findViewById(R.id.tvCityName3Days);
-        tvCityName3Days.setText("Khu vực: " + displayName);
+        TextView tvTitle3Days = findViewById(R.id.tvTitle3Days);
+        if (tvTitle3Days != null) {
+            tvTitle3Days.setText(isEnglish() ? "📅 3-Day Forecast" : "📅 Dự Báo 3 Ngày Tới");
+        }
+        tvCityName3Days.setText((isEnglish() ? "Location: " : "Khu vực: ") + displayName);
 
         // Ngày 1
         tvDateDay1 = findViewById(R.id.tvDateDay1);
@@ -99,7 +112,7 @@ public class Forecast3DaysActivity extends BaseActivity {
     private void load3DaysForecast() {
         String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + encodedCity + "&days=3&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=3&aqi=no&alerts=no&lang=" + getCurrentLang();
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(weatherUrl).build();
@@ -107,7 +120,7 @@ public class Forecast3DaysActivity extends BaseActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(Forecast3DaysActivity.this, "Không thể kết nối đến máy chủ thời tiết", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(Forecast3DaysActivity.this, isEnglish() ? "Unable to connect to weather server" : "Không thể kết nối đến máy chủ thời tiết", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -130,6 +143,8 @@ public class Forecast3DaysActivity extends BaseActivity {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
 
+            boolean en = isEnglish();
+
             for (int i = 0; i < Math.min(forecastDays.length(), 3); i++) {
                 JSONObject dayObj = forecastDays.getJSONObject(i);
                 String rawDate = dayObj.getString("date");
@@ -148,35 +163,35 @@ public class Forecast3DaysActivity extends BaseActivity {
                 double uv = dayData.optDouble("uv", 5.0);
 
                 String tempStr = String.format(Locale.getDefault(), "%.0f° / %.0f°C", maxTemp, minTemp);
-                String rainStr = "💧 Mưa: " + dailyChanceOfRain + "%";
-                String windStr = String.format(Locale.getDefault(), "💨 Gió: %.0f km/h", maxWind);
+                String rainStr = (en ? "💧 Rain: " : "💧 Mưa: ") + dailyChanceOfRain + "%";
+                String windStr = String.format(Locale.getDefault(), (en ? "💨 Wind: %.0f km/h" : "💨 Gió: %.0f km/h"), maxWind);
                 String uvStr = String.format(Locale.getDefault(), "☀️ UV: %.0f (%s)", uv, getUVLevel(uv));
                 String adviceStr = getAdviceForDay(dailyChanceOfRain, maxTemp, uv);
 
                 if (i == 0) {
-                    tvDateDay1.setText("Hôm Nay (" + dateStr + ")");
+                    tvDateDay1.setText((en ? "Today (" : "Hôm Nay (") + dateStr + ")");
                     tvTempDay1.setText(tempStr);
                     tvConditionDay1.setText("🌤️ " + conditionText);
                     tvRainDay1.setText(rainStr);
                     tvHumidityDay1.setText(windStr);
                     tvUVDay1.setText(uvStr);
-                    tvAdviceDay1.setText("💡 Lời khuyên: " + adviceStr);
+                    tvAdviceDay1.setText((en ? "💡 Advice: " : "💡 Lời khuyên: ") + adviceStr);
                 } else if (i == 1) {
-                    tvDateDay2.setText("Ngày Mai (" + dateStr + ")");
+                    tvDateDay2.setText((en ? "Tomorrow (" : "Ngày Mai (") + dateStr + ")");
                     tvTempDay2.setText(tempStr);
                     tvConditionDay2.setText("🌤️ " + conditionText);
                     tvRainDay2.setText(rainStr);
                     tvHumidityDay2.setText(windStr);
                     tvUVDay2.setText(uvStr);
-                    tvAdviceDay2.setText("💡 Lời khuyên: " + adviceStr);
+                    tvAdviceDay2.setText((en ? "💡 Advice: " : "💡 Lời khuyên: ") + adviceStr);
                 } else if (i == 2) {
-                    tvDateDay3.setText("Ngày Mốt (" + dateStr + ")");
+                    tvDateDay3.setText((en ? "Day After Tomorrow (" : "Ngày Mốt (") + dateStr + ")");
                     tvTempDay3.setText(tempStr);
                     tvConditionDay3.setText("🌤️ " + conditionText);
                     tvRainDay3.setText(rainStr);
                     tvHumidityDay3.setText(windStr);
                     tvUVDay3.setText(uvStr);
-                    tvAdviceDay3.setText("💡 Lời khuyên: " + adviceStr);
+                    tvAdviceDay3.setText((en ? "💡 Advice: " : "💡 Lời khuyên: ") + adviceStr);
                 }
             }
 
@@ -186,24 +201,46 @@ public class Forecast3DaysActivity extends BaseActivity {
     }
 
     private String getUVLevel(double uv) {
-        if (uv <= 2) return "Thấp";
-        if (uv <= 5) return "Trung bình";
-        if (uv <= 7) return "Cao";
-        if (uv <= 10) return "Rất cao";
-        return "Nguy hại";
+        if (isEnglish()) {
+            if (uv <= 2) return "Low";
+            if (uv <= 5) return "Moderate";
+            if (uv <= 7) return "High";
+            if (uv <= 10) return "Very High";
+            return "Hazardous";
+        } else {
+            if (uv <= 2) return "Thấp";
+            if (uv <= 5) return "Trung bình";
+            if (uv <= 7) return "Cao";
+            if (uv <= 10) return "Rất cao";
+            return "Nguy hại";
+        }
     }
 
     private String getAdviceForDay(int rainChance, double maxTemp, double uv) {
-        if (rainChance >= 60) {
-            return "Khả năng có mưa rất cao, hãy nhớ mang theo ô hoặc áo mưa!";
-        } else if (maxTemp >= 35) {
-            return "Trời nắng nóng gay gắt, hạn chế ra ngoài vào buổi trưa và uống nhiều nước.";
-        } else if (uv >= 8) {
-            return "Tia cực tím cực mạnh, nên bôi kem chống nắng và đeo kính râm.";
-        } else if (maxTemp <= 18) {
-            return "Trời se lạnh, nhớ mặc áo ấm khi ra đường.";
+        if (isEnglish()) {
+            if (rainChance >= 60) {
+                return "Very high chance of rain, remember to bring an umbrella or raincoat!";
+            } else if (maxTemp >= 35) {
+                return "Extremely hot, limit going out at noon and drink plenty of water.";
+            } else if (uv >= 8) {
+                return "Very high UV index, apply sunscreen and wear sunglasses.";
+            } else if (maxTemp <= 18) {
+                return "Chilly weather, dress warmly when going outdoors.";
+            } else {
+                return "Favorable weather for outdoor activities and travel.";
+            }
         } else {
-            return "Thời tiết thuận lợi cho các hoạt động làm việc và vui chơi ngoài trời.";
+            if (rainChance >= 60) {
+                return "Khả năng có mưa rất cao, hãy nhớ mang theo ô hoặc áo mưa!";
+            } else if (maxTemp >= 35) {
+                return "Trời nắng nóng gay gắt, hạn chế ra ngoài vào buổi trưa và uống nhiều nước.";
+            } else if (uv >= 8) {
+                return "Tia cực tím cực mạnh, nên bôi kem chống nắng và đeo kính râm.";
+            } else if (maxTemp <= 18) {
+                return "Trời se lạnh, nhớ mặc áo ấm khi ra đường.";
+            } else {
+                return "Thời tiết thuận lợi cho các hoạt động làm việc và vui chơi ngoài trời.";
+            }
         }
     }
 }

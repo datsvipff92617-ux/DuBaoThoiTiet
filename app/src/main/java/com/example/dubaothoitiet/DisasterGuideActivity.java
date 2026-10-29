@@ -30,6 +30,13 @@ public class DisasterGuideActivity extends BaseActivity {
         btnCall112 = findViewById(R.id.btnCall112);
         btnCall114 = findViewById(R.id.btnCall114);
         btnCall115 = findViewById(R.id.btnCall115);
+
+        if (isEnglish()) {
+            android.widget.TextView tvDisasterHeaderTitle = findViewById(R.id.tvDisasterHeaderTitle);
+            android.widget.TextView tvEmergencyHotlineLabel = findViewById(R.id.tvEmergencyHotlineLabel);
+            if (tvDisasterHeaderTitle != null) tvDisasterHeaderTitle.setText("🚨 Disaster Survival Guide");
+            if (tvEmergencyHotlineLabel != null) tvEmergencyHotlineLabel.setText("📞 EMERGENCY RESCUE HOTLINES (Tap to dial):");
+        }
     }
 
     private void setupListeners() {
@@ -46,7 +53,7 @@ public class DisasterGuideActivity extends BaseActivity {
             intent.setData(Uri.parse("tel:" + phoneNumber));
             startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(this, "Không thể mở trình quay số: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, (isEnglish() ? "Cannot open dialer: " : "Không thể mở trình quay số: ") + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 }

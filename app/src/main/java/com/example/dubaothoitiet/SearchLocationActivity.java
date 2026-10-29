@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 
@@ -55,6 +55,7 @@ public class SearchLocationActivity extends BaseActivity {
         databaseHelper = new DatabaseHelper(this);
 
         initViews();
+        applyLanguage();
         setupListeners();
         setupPopularChips();
         loadHistoryList();
@@ -80,6 +81,24 @@ public class SearchLocationActivity extends BaseActivity {
         containerSuggestions = findViewById(R.id.containerSuggestions);
     }
 
+    private void applyLanguage() {
+        boolean en = isEnglish();
+        TextView tvSearchHeaderTitle = findViewById(R.id.tvSearchHeaderTitle);
+        TextView tvSuggestionHeader = findViewById(R.id.tvSuggestionHeader);
+        TextView tvPopularHeaderTitle = findViewById(R.id.tvPopularHeaderTitle);
+        TextView tvHistoryHeaderTitle = findViewById(R.id.tvHistoryHeaderTitle);
+
+        if (tvSearchHeaderTitle != null) tvSearchHeaderTitle.setText(en ? "🔍 Search Location" : "🔍 Tìm Kiếm Khu Vực");
+        if (etSearchQuery != null) etSearchQuery.setHint(en ? "Enter city or province name..." : "Nhập tên tỉnh/thành phố mong muốn...");
+        if (btnDoSearch != null) btnDoSearch.setText(en ? "Search" : "Tìm");
+        if (tvSuggestionHeader != null) tvSuggestionHeader.setText(en ? "📍 MATCHING SUGGESTIONS:" : "📍 GỢI Ý ĐỊA PHƯƠNG PHÙ HỢP:");
+        if (tvPopularHeaderTitle != null) tvPopularHeaderTitle.setText(en ? "🏙️ Popular Cities & Provinces" : "🏙️ Tỉnh & Thành Phố Phổ Biến");
+        if (tvHistoryHeaderTitle != null) tvHistoryHeaderTitle.setText(en ? "🕒 Search History (SQLite)" : "🕒 Lịch Sử Tìm Kiếm (SQLite)");
+        if (tvClearHistory != null) tvClearHistory.setText(en ? "Clear all" : "Xóa tất cả");
+        if (tvEmptyHistory != null) tvEmptyHistory.setText(en ? "No search history yet" : "Chưa có lịch sử tìm kiếm nào");
+        if (btnSetAsMainCity != null) btnSetAsMainCity.setText(en ? "View Full On Home Screen" : "Xem Đầy Đủ Trên Trang Chủ");
+    }
+
     private void setupListeners() {
         btnBackSearchLoc.setOnClickListener(v -> finish());
 
@@ -89,7 +108,7 @@ public class SearchLocationActivity extends BaseActivity {
                 if (layoutSearchSuggestions != null) layoutSearchSuggestions.setVisibility(View.GONE);
                 performSearch(q);
             } else {
-                Toast.makeText(this, "Vui lòng nhập tên địa phương cần tìm", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, isEnglish() ? "Please enter a location name" : "Vui lòng nhập tên địa phương cần tìm", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -110,13 +129,16 @@ public class SearchLocationActivity extends BaseActivity {
         tvClearHistory.setOnClickListener(v -> {
             databaseHelper.clearSearchHistory();
             loadHistoryList();
-            Toast.makeText(this, "Đã xóa toàn bộ lịch sử", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Cleared search history" : "Đã xóa toàn bộ lịch sử", Toast.LENGTH_SHORT).show();
         });
 
         btnSetAsMainCity.setOnClickListener(v -> {
             if (!currentSelectedCity.isEmpty()) {
+                String cleanSelected = WeatherUtils.cleanLocationName(currentSelectedCity);
+                LocationHelper.saveLocation(this, cleanSelected, cleanSelected, cleanSelected);
                 Intent intent = new Intent(SearchLocationActivity.this, MainActivity.class);
-                intent.putExtra("city", currentSelectedCity);
+                intent.putExtra("city", cleanSelected);
+                intent.putExtra("displayName", cleanSelected);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
                 finish();
@@ -138,19 +160,20 @@ public class SearchLocationActivity extends BaseActivity {
             return;
         }
 
+        int itemTextColor = ContextCompat.getColor(this, R.color.suggestionItemText);
         int count = Math.min(matches.size(), 6);
         for (int i = 0; i < count; i++) {
             VietnamLocations.LocationItem item = matches.get(i);
             TextView tv = new TextView(this);
             tv.setText("📍 " + item.getDisplayString());
-            tv.setTextColor(0xFFFFFFFF);
+            tv.setTextColor(itemTextColor);
             tv.setTextSize(14);
-            tv.setPadding(16, 12, 16, 12);
-            tv.setBackgroundResource(R.drawable.button_normal);
+            tv.setPadding(24, 20, 24, 20);
+            tv.setBackgroundResource(R.drawable.suggestion_item_row_bg);
 
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 0, 0, 6);
+            lp.setMargins(0, 0, 0, 8);
             tv.setLayoutParams(lp);
 
             tv.setOnClickListener(v -> {
@@ -173,10 +196,10 @@ public class SearchLocationActivity extends BaseActivity {
         };
 
         for (int id : chipIds) {
-            Button btn = findViewById(id);
-            if (btn != null) {
-                btn.setOnClickListener(v -> {
-                    String cityName = btn.getText().toString();
+            Button b = findViewById(id);
+            if (b != null) {
+                b.setOnClickListener(v -> {
+                    String cityName = b.getText().toString();
                     etSearchQuery.setText(cityName);
                     if (layoutSearchSuggestions != null) layoutSearchSuggestions.setVisibility(View.GONE);
                     performSearch(cityName);
@@ -187,12 +210,13 @@ public class SearchLocationActivity extends BaseActivity {
 
     private void performSearch(String query) {
         String displayName = VietnamLocations.getCanonicalDisplayName(query);
-        Toast.makeText(this, "Đang tra cứu: " + displayName + "...", Toast.LENGTH_SHORT).show();
+        boolean en = isEnglish();
+        Toast.makeText(this, (en ? "Searching: " : "Đang tra cứu: ") + displayName + "...", Toast.LENGTH_SHORT).show();
 
         String resolved = VietnamLocations.resolveToWeatherQuery(query);
         String encoded = WeatherUtils.encodeQuery(resolved);
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
-                "&q=" + encoded + "&aqi=no&lang=vi";
+                "&q=" + encoded + "&aqi=no&lang=" + getCurrentLang();
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -200,7 +224,7 @@ public class SearchLocationActivity extends BaseActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(SearchLocationActivity.this, "Lỗi kết nối tra cứu", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(SearchLocationActivity.this, en ? "Search connection failed" : "Lỗi kết nối tra cứu", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -214,7 +238,7 @@ public class SearchLocationActivity extends BaseActivity {
                         loadHistoryList();
                     });
                 } else {
-                    runOnUiThread(() -> Toast.makeText(SearchLocationActivity.this, "Không tìm thấy khu vực: " + displayName, Toast.LENGTH_LONG).show());
+                    runOnUiThread(() -> Toast.makeText(SearchLocationActivity.this, (en ? "Location not found: " : "Không tìm thấy khu vực: ") + displayName, Toast.LENGTH_LONG).show());
                 }
             }
         });
@@ -239,13 +263,14 @@ public class SearchLocationActivity extends BaseActivity {
             tvResultCityName.setText(cleanName + ", " + country);
             tvResultTemp.setText(SettingsActivity.formatTemp(this, temp));
             tvResultCondition.setText("🌥️ " + condition);
-            tvResultDetails.setText(String.format(Locale.getDefault(), "Độ ẩm: %d%% | Gió: %s | UV: %.0f",
+            boolean en = isEnglish();
+            tvResultDetails.setText(String.format(Locale.getDefault(), (en ? "Humidity: %d%% | Wind: %s | UV: %.0f" : "Độ ẩm: %d%% | Gió: %s | UV: %.0f"),
                     humidity, SettingsActivity.formatWindSpeed(this, wind), uv));
 
             cardSearchResult.setVisibility(View.VISIBLE);
 
         } catch (Exception e) {
-            Toast.makeText(this, "Lỗi phân tích dữ liệu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Data parse error" : "Lỗi phân tích dữ liệu", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -258,13 +283,14 @@ public class SearchLocationActivity extends BaseActivity {
         } else {
             tvEmptyHistory.setVisibility(View.GONE);
 
+            int itemTextColor = ContextCompat.getColor(this, R.color.suggestionItemText);
             for (String city : history) {
                 TextView tvItem = new TextView(this);
                 tvItem.setText("🔍 " + city);
-                tvItem.setTextColor(0xFFFFFFFF);
+                tvItem.setTextColor(itemTextColor);
                 tvItem.setTextSize(14);
-                tvItem.setPadding(16, 12, 16, 12);
-                tvItem.setBackgroundResource(R.drawable.button_normal);
+                tvItem.setPadding(24, 20, 24, 20);
+                tvItem.setBackgroundResource(R.drawable.suggestion_item_row_bg);
 
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);

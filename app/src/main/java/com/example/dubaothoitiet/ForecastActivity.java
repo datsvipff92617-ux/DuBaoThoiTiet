@@ -39,11 +39,17 @@ public class ForecastActivity extends BaseActivity {
         setContentView(R.layout.activity_forecast);
 
         cityName = getIntent().getStringExtra("city");
-        if (cityName == null) cityName = "Hanoi";
+        if (cityName == null || cityName.isEmpty()) {
+            cityName = LocationHelper.getSavedExactQuery(this);
+            if (cityName.isEmpty()) cityName = "Hanoi";
+        }
 
         displayName = getIntent().getStringExtra("displayName");
         if (displayName == null || displayName.trim().isEmpty()) {
-            displayName = WeatherUtils.cleanLocationName(cityName);
+            displayName = LocationHelper.getSavedExactLocation(this);
+            if (displayName.isEmpty()) {
+                displayName = WeatherUtils.cleanLocationName(cityName);
+            }
         } else {
             displayName = WeatherUtils.cleanLocationName(displayName);
         }
@@ -58,7 +64,8 @@ public class ForecastActivity extends BaseActivity {
         titleText = findViewById(R.id.titleText);
         forecastContainer = findViewById(R.id.forecastContainer);
 
-        titleText.setText("Dự báo 7 ngày - " + displayName);
+        boolean en = isEnglish();
+        titleText.setText((en ? "7-Day Forecast - " : "Dự báo 7 ngày - ") + displayName);
     }
 
     private void setupListeners() {
@@ -68,7 +75,7 @@ public class ForecastActivity extends BaseActivity {
     private void loadForecastData() {
         String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + encodedCity + "&days=7&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=7&aqi=no&alerts=no&lang=" + getCurrentLang();
 
         Log.d("WeatherApp", "Forecast URL: " + weatherUrl);
 
@@ -77,7 +84,7 @@ public class ForecastActivity extends BaseActivity {
                 runOnUiThread(() -> parseForecast(response));
             } else {
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Không thể tải dự báo", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, isEnglish() ? "Unable to load forecast" : "Không thể tải dự báo", Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -99,9 +106,10 @@ public class ForecastActivity extends BaseActivity {
             String lastCondition = "Có mây thay đổi";
             int lastRain = 30;
 
+            boolean en = isEnglish();
             SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            SimpleDateFormat dayOfWeek = new SimpleDateFormat("EEEE", new Locale("vi", "VN"));
-            SimpleDateFormat dayMonth = new SimpleDateFormat("dd/MM", new Locale("vi", "VN"));
+            SimpleDateFormat dayOfWeek = new SimpleDateFormat("EEEE", en ? Locale.ENGLISH : new Locale("vi", "VN"));
+            SimpleDateFormat dayMonth = new SimpleDateFormat("dd/MM", en ? Locale.ENGLISH : new Locale("vi", "VN"));
 
             for (int i = 0; i < 7; i++) {
                 String displayDate;
@@ -122,9 +130,9 @@ public class ForecastActivity extends BaseActivity {
                     }
 
                     if (i == 0) {
-                        displayDate = "Hôm nay - " + dayMonth.format(d);
+                        displayDate = (en ? "Today - " : "Hôm nay - ") + dayMonth.format(d);
                     } else if (i == 1) {
-                        displayDate = "Ngày mai - " + dayMonth.format(d);
+                        displayDate = (en ? "Tomorrow - " : "Ngày mai - ") + dayMonth.format(d);
                     } else {
                         displayDate = capitalizeFirst(dayOfWeek.format(d)) + " - " + dayMonth.format(d);
                     }
@@ -150,7 +158,12 @@ public class ForecastActivity extends BaseActivity {
                     maxTemp = lastMaxTemp + offset;
                     minTemp = lastMinTemp + (offset > 0 ? 1 : 0);
 
-                    String[] extendedConditions = {
+                    String[] extendedConditions = en ? new String[]{
+                        "Partly sunny, scattered clouds",
+                        "Mostly cloudy, occasional light rain",
+                        "Clear skies, gentle breeze",
+                        "Partly cloudy, slight temp increase"
+                    } : new String[]{
                         "Nắng gián đoạn, mây rải rác",
                         "Trời nhiều mây, có lúc có mưa rào nhẹ",
                         "Trời nắng ráo, gió nhẹ",
@@ -173,7 +186,7 @@ public class ForecastActivity extends BaseActivity {
                 dateTextView.setText(displayDate);
                 tempTextView.setText(String.format(Locale.getDefault(), "%.0f°C / %.0f°C", maxTemp, minTemp));
                 conditionTextView.setText(conditionText);
-                rainTextView.setText("☔ Mưa: " + rainChance + "%");
+                rainTextView.setText((en ? "☔ Rain: " : "☔ Mưa: ") + rainChance + "%");
 
                 forecastContainer.addView(forecastItem);
             }
@@ -182,7 +195,7 @@ public class ForecastActivity extends BaseActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Lỗi hiển thị dự báo", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Forecast display error" : "Lỗi hiển thị dự báo", Toast.LENGTH_SHORT).show();
             Log.e("WeatherApp", "Parse forecast error: " + e.getMessage());
         }
     }

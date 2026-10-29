@@ -35,14 +35,20 @@ public class DetailActivity extends BaseActivity {
         setContentView(R.layout.activity_details);
 
         cityName = getIntent().getStringExtra("city");
-        if (cityName == null) cityName = "Hanoi";
-
         String displayName = getIntent().getStringExtra("displayName");
-        if (displayName == null || displayName.trim().isEmpty()) {
-            displayName = WeatherUtils.cleanLocationName(cityName);
-        } else {
-            displayName = WeatherUtils.cleanLocationName(displayName);
+        if (cityName == null || cityName.trim().isEmpty()) {
+            cityName = LocationHelper.getSavedExactQuery(this);
+            if (cityName == null || cityName.trim().isEmpty()) {
+                cityName = LocationHelper.getSavedLocation(this);
+            }
         }
+        if (displayName == null || displayName.trim().isEmpty()) {
+            displayName = LocationHelper.getSavedExactLocation(this);
+            if (displayName == null || displayName.trim().isEmpty()) {
+                displayName = WeatherUtils.cleanLocationName(cityName);
+            }
+        }
+        displayName = WeatherUtils.cleanLocationName(displayName);
 
         initViews(displayName);
         setupListeners();
@@ -63,7 +69,31 @@ public class DetailActivity extends BaseActivity {
         detailHeatIndex = findViewById(R.id.detailHeatIndex);
         detailWindChill = findViewById(R.id.detailWindChill);
 
-        titleText.setText("Chi tiết thời tiết - " + displayCity);
+        titleText.setText((isEnglish() ? "Atmospheric Details - " : "Chi tiết thời tiết - ") + displayCity);
+
+        if (isEnglish()) {
+            TextView lblHumidity = findViewById(R.id.lblHumidity);
+            TextView lblWind = findViewById(R.id.lblWind);
+            TextView lblUV = findViewById(R.id.lblUV);
+            TextView lblPressure = findViewById(R.id.lblPressure);
+            TextView lblVisibility = findViewById(R.id.lblVisibility);
+            TextView lblFeelsLike = findViewById(R.id.lblFeelsLike);
+            TextView lblCloudCover = findViewById(R.id.lblCloudCover);
+            TextView lblDewPoint = findViewById(R.id.lblDewPoint);
+            TextView lblHeatIndex = findViewById(R.id.lblHeatIndex);
+            TextView lblWindChill = findViewById(R.id.lblWindChill);
+
+            if (lblHumidity != null) lblHumidity.setText("💧 Humidity");
+            if (lblWind != null) lblWind.setText("💨 Wind Speed");
+            if (lblUV != null) lblUV.setText("☀️ UV Index");
+            if (lblPressure != null) lblPressure.setText("🌡️ Pressure");
+            if (lblVisibility != null) lblVisibility.setText("👁️ Visibility");
+            if (lblFeelsLike != null) lblFeelsLike.setText("🌡️ Feels Like");
+            if (lblCloudCover != null) lblCloudCover.setText("☁️ Cloud Cover");
+            if (lblDewPoint != null) lblDewPoint.setText("💧 Dew Point");
+            if (lblHeatIndex != null) lblHeatIndex.setText("🔥 Heat Index");
+            if (lblWindChill != null) lblWindChill.setText("❄️ Wind Chill");
+        }
     }
 
     private void setupListeners() {
@@ -73,7 +103,7 @@ public class DetailActivity extends BaseActivity {
     private void loadWeatherDetails() {
         String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + encodedCity + "&days=1&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=1&aqi=no&alerts=no&lang=" + getCurrentLang();
 
         Log.d("WeatherApp", "Details URL: " + weatherUrl);
 
@@ -82,7 +112,7 @@ public class DetailActivity extends BaseActivity {
                 runOnUiThread(() -> parseWeatherDetails(response));
             } else {
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Không thể tải chi tiết", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, isEnglish() ? "Unable to load details" : "Không thể tải chi tiết", Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -126,17 +156,25 @@ public class DetailActivity extends BaseActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Lỗi xử lý dữ liệu chi tiết", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Error processing detail data" : "Lỗi xử lý dữ liệu chi tiết", Toast.LENGTH_SHORT).show();
             Log.e("WeatherApp", "Parse details error: " + e.getMessage());
         }
     }
 
     private String getUVLevel(double uvi) {
-        if (uvi <= 2) return "Thấp";
-        else if (uvi <= 5) return "Trung bình";
-        else if (uvi <= 7) return "Cao";
-        else if (uvi <= 10) return "Rất cao";
-        else return "Cực cao";
+        if (isEnglish()) {
+            if (uvi <= 2) return "Low";
+            else if (uvi <= 5) return "Moderate";
+            else if (uvi <= 7) return "High";
+            else if (uvi <= 10) return "Very High";
+            else return "Extreme";
+        } else {
+            if (uvi <= 2) return "Thấp";
+            else if (uvi <= 5) return "Trung bình";
+            else if (uvi <= 7) return "Cao";
+            else if (uvi <= 10) return "Rất cao";
+            else return "Cực cao";
+        }
     }
 
     private String translateCityName(String city) {

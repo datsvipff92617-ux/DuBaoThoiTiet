@@ -39,14 +39,20 @@ public class HourlyForecastActivity extends BaseActivity {
         setContentView(R.layout.activity_hourly_forecast);
 
         cityName = getIntent().getStringExtra("city");
-        if (cityName == null) cityName = "Hanoi";
-
         displayName = getIntent().getStringExtra("displayName");
-        if (displayName == null || displayName.trim().isEmpty()) {
-            displayName = WeatherUtils.cleanLocationName(cityName);
-        } else {
-            displayName = WeatherUtils.cleanLocationName(displayName);
+        if (cityName == null || cityName.trim().isEmpty()) {
+            cityName = LocationHelper.getSavedExactQuery(this);
+            if (cityName == null || cityName.trim().isEmpty()) {
+                cityName = LocationHelper.getSavedLocation(this);
+            }
         }
+        if (displayName == null || displayName.trim().isEmpty()) {
+            displayName = LocationHelper.getSavedExactLocation(this);
+            if (displayName == null || displayName.trim().isEmpty()) {
+                displayName = WeatherUtils.cleanLocationName(cityName);
+            }
+        }
+        displayName = WeatherUtils.cleanLocationName(displayName);
 
         initViews();
         setupListeners();
@@ -58,7 +64,7 @@ public class HourlyForecastActivity extends BaseActivity {
         titleText = findViewById(R.id.titleText);
         hourlyContainer = findViewById(R.id.hourlyContainer);
 
-        titleText.setText("Dự báo theo giờ - " + displayName);
+        titleText.setText((isEnglish() ? "24-Hour Forecast - " : "Dự báo theo giờ - ") + displayName);
     }
 
     private void setupListeners() {
@@ -68,7 +74,7 @@ public class HourlyForecastActivity extends BaseActivity {
     private void loadHourlyForecast() {
         String encodedCity = WeatherUtils.encodeQuery(cityName);
         String weatherUrl = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + encodedCity + "&days=2&aqi=no&alerts=no&lang=vi";
+                "&q=" + encodedCity + "&days=2&aqi=no&alerts=no&lang=" + getCurrentLang();
 
         Log.d("WeatherApp", "Hourly Forecast URL: " + weatherUrl);
 
@@ -77,7 +83,7 @@ public class HourlyForecastActivity extends BaseActivity {
                 runOnUiThread(() -> parseHourlyForecast(response));
             } else {
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Không thể tải dự báo theo giờ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, isEnglish() ? "Unable to load hourly forecast" : "Không thể tải dự báo theo giờ", Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -149,7 +155,7 @@ public class HourlyForecastActivity extends BaseActivity {
             String hourTime = parts[1].substring(0, 5); // "15:00"
 
             if (isFirst) {
-                timeTextView.setText("Bây giờ");
+                timeTextView.setText(isEnglish() ? "Now" : "Bây giờ");
             } else {
                 timeTextView.setText(hourTime);
             }
@@ -165,7 +171,7 @@ public class HourlyForecastActivity extends BaseActivity {
 
             // Tỷ lệ mưa
             int rainChance = hour.getInt("chance_of_rain");
-            rainTextView.setText("☔ " + rainChance + "%");
+            rainTextView.setText((isEnglish() ? "☔ Rain: " : "☔ Mưa: ") + rainChance + "%");
 
             // Tốc độ gió
             double windSpeed = hour.getDouble("wind_kph");

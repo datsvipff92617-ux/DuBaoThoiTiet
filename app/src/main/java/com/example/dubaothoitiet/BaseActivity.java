@@ -33,6 +33,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    public boolean isEnglish() {
+        android.content.SharedPreferences prefs = getSharedPreferences("AppSettings", android.content.Context.MODE_PRIVATE);
+        return "en".equalsIgnoreCase(prefs.getString("language", "vi"));
+    }
+
+    public String getCurrentLang() {
+        return isEnglish() ? "en" : "vi";
+    }
+
     @Override
     protected void attachBaseContext(android.content.Context newBase) {
 

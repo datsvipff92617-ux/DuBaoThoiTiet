@@ -76,6 +76,16 @@ public class WeatherCompareActivity extends BaseActivity {
         tvCompareCity1UV = findViewById(R.id.tvCompareCity1UV);
         tvCompareCity2UV = findViewById(R.id.tvCompareCity2UV);
         tvCompareConclusion = findViewById(R.id.tvCompareConclusion);
+
+        if (isEnglish()) {
+            TextView tvCompareHeaderTitle = findViewById(R.id.tvCompareHeaderTitle);
+            TextView tvCompareInputLabel = findViewById(R.id.tvCompareInputLabel);
+            if (tvCompareHeaderTitle != null) tvCompareHeaderTitle.setText("⚖️ Compare Weather");
+            if (tvCompareInputLabel != null) tvCompareInputLabel.setText("Choose 2 Locations to Compare");
+            if (etCity1 != null) etCity1.setHint("Location 1 (e.g. Hanoi)");
+            if (etCity2 != null) etCity2.setHint("Location 2 (e.g. Da Nang)");
+            if (btnStartCompare != null) btnStartCompare.setText("Compare Weather");
+        }
     }
 
     private void setupListeners() {
@@ -85,7 +95,7 @@ public class WeatherCompareActivity extends BaseActivity {
             String c1 = etCity1.getText().toString().trim();
             String c2 = etCity2.getText().toString().trim();
             if (c1.isEmpty() || c2.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đủ tên 2 khu vực", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, isEnglish() ? "Please enter both location names" : "Vui lòng nhập đủ tên 2 khu vực", Toast.LENGTH_SHORT).show();
                 return;
             }
             compareCities(c1, c2);
@@ -97,7 +107,7 @@ public class WeatherCompareActivity extends BaseActivity {
         hum1 = hum2 = null;
         uv1 = uv2 = null;
 
-        tvCompareConclusion.setText("Đang phân tích và đối sánh dữ liệu...");
+        tvCompareConclusion.setText(isEnglish() ? "Analyzing and contrasting weather data..." : "Đang phân tích và đối sánh dữ liệu...");
 
         fetchCityData(city1, 1);
         fetchCityData(city2, 2);
@@ -106,7 +116,7 @@ public class WeatherCompareActivity extends BaseActivity {
     private void fetchCityData(String query, int targetSlot) {
         String encoded = WeatherUtils.encodeQuery(query);
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
-                "&q=" + encoded + "&aqi=no&lang=vi";
+                "&q=" + encoded + "&aqi=no&lang=" + getCurrentLang();
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -114,7 +124,7 @@ public class WeatherCompareActivity extends BaseActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(WeatherCompareActivity.this, "Không thể tải dữ liệu: " + query, Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(WeatherCompareActivity.this, (isEnglish() ? "Unable to load data: " : "Không thể tải dữ liệu: ") + query, Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -176,21 +186,40 @@ public class WeatherCompareActivity extends BaseActivity {
             double diff = Math.abs(temp1 - temp2);
             String hotterCity = (temp1 > temp2) ? name1 : name2;
             String coolerCity = (temp1 > temp2) ? name2 : name1;
+            boolean en = isEnglish();
 
             StringBuilder sb = new StringBuilder();
-            if (diff >= 1.0) {
-                sb.append(coolerCity).append(" đang mát mẻ hơn ").append(hotterCity)
-                        .append(" khoảng ").append(String.format(Locale.getDefault(), "%.1f°C", diff)).append(". ");
-            } else {
-                sb.append("Hai khu vực có mức nhiệt độ tương đương nhau (chênh lệch dưới 1°C). ");
-            }
-
-            if (uv1 != null && uv2 != null) {
-                if (uv1 > 7 || uv2 > 7) {
-                    sb.append("Lưu ý: Chỉ số tia UV khá cao tại ");
-                    sb.append(uv1 > uv2 ? name1 : name2).append(", bạn nên chuẩn bị kính râm và kem chống nắng khi di chuyển ngoài trời.");
+            if (en) {
+                if (diff >= 1.0) {
+                    sb.append(coolerCity).append(" is cooler than ").append(hotterCity)
+                            .append(" by about ").append(String.format(Locale.getDefault(), "%.1f°C", diff)).append(". ");
                 } else {
-                    sb.append("Chỉ số tia UV ở mức an toàn cho các hoạt động di chuyển bình thường.");
+                    sb.append("Both locations have comparable temperatures (difference under 1°C). ");
+                }
+
+                if (uv1 != null && uv2 != null) {
+                    if (uv1 > 7 || uv2 > 7) {
+                        sb.append("Note: UV index is relatively high in ");
+                        sb.append(uv1 > uv2 ? name1 : name2).append("; remember sunglasses and sunscreen when going outdoors.");
+                    } else {
+                        sb.append("UV index is within a safe range for normal outdoor travel.");
+                    }
+                }
+            } else {
+                if (diff >= 1.0) {
+                    sb.append(coolerCity).append(" đang mát mẻ hơn ").append(hotterCity)
+                            .append(" khoảng ").append(String.format(Locale.getDefault(), "%.1f°C", diff)).append(". ");
+                } else {
+                    sb.append("Hai khu vực có mức nhiệt độ tương đương nhau (chênh lệch dưới 1°C). ");
+                }
+
+                if (uv1 != null && uv2 != null) {
+                    if (uv1 > 7 || uv2 > 7) {
+                        sb.append("Lưu ý: Chỉ số tia UV khá cao tại ");
+                        sb.append(uv1 > uv2 ? name1 : name2).append(", bạn nên chuẩn bị kính râm và kem chống nắng khi di chuyển ngoài trời.");
+                    } else {
+                        sb.append("Chỉ số tia UV ở mức an toàn cho các hoạt động di chuyển bình thường.");
+                    }
                 }
             }
 

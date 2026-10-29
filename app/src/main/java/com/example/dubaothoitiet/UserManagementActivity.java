@@ -44,7 +44,7 @@ public class UserManagementActivity extends BaseActivity {
         SharedPreferences userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
         String role = userPrefs.getString("role", "user");
         if (!"admin".equalsIgnoreCase(role)) {
-            Toast.makeText(this, "⚠️ Quyền truy cập bị từ chối! Chức năng này chỉ dành riêng cho Quản trị viên (Admin).", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, isEnglish() ? "⚠️ Access Denied! This feature is restricted to Administrators." : "⚠️ Quyền truy cập bị từ chối! Chức năng này chỉ dành riêng cho Quản trị viên (Admin).", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -63,6 +63,11 @@ public class UserManagementActivity extends BaseActivity {
         tvEmptyUsers = findViewById(R.id.tvEmptyUsers);
         etSearchUser = findViewById(R.id.etSearchUser);
         lvUsers = findViewById(R.id.lvUsers);
+
+        if (isEnglish()) {
+            if (etSearchUser != null) etSearchUser.setHint("Search username, email or full name...");
+            if (tvEmptyUsers != null) tvEmptyUsers.setText("No users found matching your search");
+        }
 
         allUsersList = new ArrayList<>();
         displayList = new ArrayList<>();
@@ -92,7 +97,7 @@ public class UserManagementActivity extends BaseActivity {
         allUsersList.clear();
         allUsersList.addAll(databaseHelper.getAllUsers());
 
-        tvUserCountStats.setText("📊 Tổng số tài khoản trong hệ thống: " + allUsersList.size());
+        tvUserCountStats.setText(isEnglish() ? "📊 Total accounts in system: " + allUsersList.size() : "📊 Tổng số tài khoản trong hệ thống: " + allUsersList.size());
         filterUsers(etSearchUser.getText().toString());
     }
 
@@ -119,23 +124,23 @@ public class UserManagementActivity extends BaseActivity {
 
     private void confirmDeleteUser(User user) {
         if (user.getUsername().equalsIgnoreCase(currentLoggedInUsername)) {
-            Toast.makeText(this, "Không thể xóa tài khoản bạn đang đăng nhập!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Cannot delete the account you are currently logged into!" : "Không thể xóa tài khoản bạn đang đăng nhập!", Toast.LENGTH_SHORT).show();
             return;
         }
 
         new AlertDialog.Builder(this)
-                .setTitle("Xác nhận xóa tài khoản")
-                .setMessage("Bạn có chắc chắn muốn xóa tài khoản @" + user.getUsername() + " (" + user.getFullName() + ")?")
-                .setPositiveButton("Xóa vĩnh viễn", (dialog, which) -> {
+                .setTitle(isEnglish() ? "Confirm Account Deletion" : "Xác nhận xóa tài khoản")
+                .setMessage(isEnglish() ? "Are you sure you want to delete @" + user.getUsername() + " (" + user.getFullName() + ")?" : "Bạn có chắc chắn muốn xóa tài khoản @" + user.getUsername() + " (" + user.getFullName() + ")?")
+                .setPositiveButton(isEnglish() ? "Delete Permanently" : "Xóa vĩnh viễn", (dialog, which) -> {
                     boolean success = databaseHelper.deleteUser(user.getId());
                     if (success) {
-                        Toast.makeText(this, "Đã xóa tài khoản @" + user.getUsername(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, isEnglish() ? "Deleted account @" + user.getUsername() : "Đã xóa tài khoản @" + user.getUsername(), Toast.LENGTH_SHORT).show();
                         loadUsers();
                     } else {
-                        Toast.makeText(this, "Không thể xóa tài khoản này!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, isEnglish() ? "Failed to delete account!" : "Không thể xóa tài khoản này!", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton(isEnglish() ? "Cancel" : "Hủy", null)
                 .show();
     }
 }

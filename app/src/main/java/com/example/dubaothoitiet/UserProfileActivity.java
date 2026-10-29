@@ -60,14 +60,21 @@ public class UserProfileActivity extends BaseActivity {
         btnChangePassword = findViewById(R.id.btnChangePassword);
 
         btnLogoutProfile = findViewById(R.id.btnLogoutProfile);
+
+        if (isEnglish()) {
+            if (btnSaveProfile != null) btnSaveProfile.setText("💾 Save Changes");
+            if (btnChangePassword != null) btnChangePassword.setText("🔑 Change Password");
+            if (btnLogoutProfile != null) btnLogoutProfile.setText("🚪 Log Out");
+        }
     }
 
     private void loadUserData() {
         User user = databaseHelper.getUserByUsername(currentUsername);
+        boolean en = isEnglish();
         if (user != null) {
             tvProfileUsername.setText(user.getUsername());
-            tvProfileRole.setText(user.isAdmin() ? "Vai trò: ⭐ Quản trị viên (Admin)" : "Vai trò: 👤 Thành viên");
-            tvProfileCreatedAt.setText("Ngày tham gia: " + (user.getCreatedAt() != null ? user.getCreatedAt() : "Mới đây"));
+            tvProfileRole.setText(user.isAdmin() ? (en ? "Role: ⭐ Administrator (Admin)" : "Vai trò: ⭐ Quản trị viên (Admin)") : (en ? "Role: 👤 Member" : "Vai trò: 👤 Thành viên"));
+            tvProfileCreatedAt.setText((en ? "Joined: " : "Ngày tham gia: ") + (user.getCreatedAt() != null ? user.getCreatedAt() : (en ? "Recently" : "Mới đây")));
 
             etProfileFullName.setText(user.getFullName() != null ? user.getFullName() : "");
             etProfileEmail.setText(user.getEmail() != null ? user.getEmail() : "");
@@ -75,7 +82,7 @@ public class UserProfileActivity extends BaseActivity {
             etProfileLocation.setText(user.getLocation() != null ? user.getLocation() : "");
         } else {
             tvProfileUsername.setText(currentUsername);
-            tvProfileRole.setText("Khách vãng lai");
+            tvProfileRole.setText(en ? "Guest User" : "Khách vãng lai");
         }
     }
 
@@ -96,15 +103,15 @@ public class UserProfileActivity extends BaseActivity {
         String location = etProfileLocation.getText().toString().trim();
 
         if (fullName.isEmpty()) {
-            Toast.makeText(this, "Họ và tên không được để trống", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Full name cannot be empty" : "Họ và tên không được để trống", Toast.LENGTH_SHORT).show();
             return;
         }
 
         boolean success = databaseHelper.updateUserProfile(currentUsername, fullName, email, phone, location);
         if (success) {
-            Toast.makeText(this, "Đã lưu cập nhật thông tin thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Profile saved successfully!" : "Đã lưu cập nhật thông tin thành công!", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "Không thể cập nhật thông tin lúc này", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Could not update profile right now" : "Không thể cập nhật thông tin lúc này", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -114,45 +121,46 @@ public class UserProfileActivity extends BaseActivity {
         String confirmPass = etConfirmNewPassword.getText().toString().trim();
 
         if (oldPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ các trường đổi mật khẩu", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Please fill in all password fields" : "Vui lòng nhập đầy đủ các trường đổi mật khẩu", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (newPass.length() < 6) {
-            Toast.makeText(this, "Mật khẩu mới phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "New password must be at least 6 characters" : "Mật khẩu mới phải có ít nhất 6 ký tự", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!newPass.equals(confirmPass)) {
-            Toast.makeText(this, "Mật khẩu xác nhận không khớp với mật khẩu mới", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Confirmed password does not match" : "Mật khẩu xác nhận không khớp với mật khẩu mới", Toast.LENGTH_SHORT).show();
             return;
         }
 
         boolean success = databaseHelper.changePassword(currentUsername, oldPass, newPass);
         if (success) {
-            Toast.makeText(this, "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Password changed successfully!" : "Đổi mật khẩu thành công!", Toast.LENGTH_SHORT).show();
             etOldPassword.setText("");
             etNewPassword.setText("");
             etConfirmNewPassword.setText("");
         } else {
-            Toast.makeText(this, "Mật khẩu hiện tại không chính xác!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isEnglish() ? "Current password is incorrect!" : "Mật khẩu hiện tại không chính xác!", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void confirmLogout() {
+        boolean en = isEnglish();
         new AlertDialog.Builder(this)
-                .setTitle("Đăng xuất")
-                .setMessage("Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?")
-                .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                .setTitle(en ? "Logout" : "Đăng xuất")
+                .setMessage(en ? "Are you sure you want to log out of this account?" : "Bạn có chắc chắn muốn đăng xuất khỏi tài khoản này?")
+                .setPositiveButton(en ? "Logout" : "Đăng xuất", (dialog, which) -> {
                     preferences.edit().clear().apply();
-                    Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, en ? "Logged out" : "Đã đăng xuất", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(UserProfileActivity.this, LoginActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish();
                 })
-                .setNegativeButton("Hủy", null)
+                .setNegativeButton(en ? "Cancel" : "Hủy", null)
                 .show();
     }
 }

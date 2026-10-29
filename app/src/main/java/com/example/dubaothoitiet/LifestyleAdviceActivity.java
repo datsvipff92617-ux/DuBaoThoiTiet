@@ -36,16 +36,25 @@ public class LifestyleAdviceActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lifestyle_advice);
 
-        if (getIntent().hasExtra("city")) {
+        if (!getIntent().hasExtra("city") || getIntent().getStringExtra("city") == null || getIntent().getStringExtra("city").trim().isEmpty()) {
+            cityName = LocationHelper.getSavedExactQuery(this);
+            if (cityName == null || cityName.trim().isEmpty()) {
+                cityName = LocationHelper.getSavedLocation(this);
+            }
+        } else {
             cityName = getIntent().getStringExtra("city");
         }
 
         String displayName;
-        if (getIntent().hasExtra("displayName")) {
+        if (getIntent().hasExtra("displayName") && getIntent().getStringExtra("displayName") != null && !getIntent().getStringExtra("displayName").trim().isEmpty()) {
             displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
         } else {
-            displayName = WeatherUtils.cleanLocationName(cityName);
+            displayName = LocationHelper.getSavedExactLocation(this);
+            if (displayName == null || displayName.trim().isEmpty()) {
+                displayName = WeatherUtils.cleanLocationName(cityName);
+            }
         }
+        displayName = WeatherUtils.cleanLocationName(displayName);
 
         initViews(displayName);
         setupListeners();
@@ -54,8 +63,12 @@ public class LifestyleAdviceActivity extends BaseActivity {
 
     private void initViews(String displayCity) {
         btnBackLifestyle = findViewById(R.id.btnBackLifestyle);
+        TextView tvLifestyleHeaderTitle = findViewById(R.id.tvLifestyleHeaderTitle);
+        if (tvLifestyleHeaderTitle != null) {
+            tvLifestyleHeaderTitle.setText(isEnglish() ? "👕 Lifestyle & Health Advice" : "👕 Gợi Ý Đời Sống");
+        }
         tvLifestyleCity = findViewById(R.id.tvLifestyleCity);
-        tvLifestyleCity.setText("Gợi ý sinh hoạt cho khu vực: " + displayCity);
+        tvLifestyleCity.setText((isEnglish() ? "Lifestyle suggestions for: " : "Gợi ý sinh hoạt cho khu vực: ") + displayCity);
 
         tvAdviceClothing = findViewById(R.id.tvAdviceClothing);
         tvAdviceUmbrella = findViewById(R.id.tvAdviceUmbrella);
@@ -72,7 +85,7 @@ public class LifestyleAdviceActivity extends BaseActivity {
     private void loadWeatherAndComputeAdvice() {
         String encodedCity = WeatherUtils.encodeQuery(cityName);
         String url = "http://api.weatherapi.com/v1/forecast.json?key=" + API_KEY +
-                "&q=" + encodedCity + "&days=1&lang=vi";
+                "&q=" + encodedCity + "&days=1&lang=" + getCurrentLang();
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -80,7 +93,7 @@ public class LifestyleAdviceActivity extends BaseActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(LifestyleAdviceActivity.this, "Không thể tải gợi ý thời tiết", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(LifestyleAdviceActivity.this, isEnglish() ? "Unable to load lifestyle advice" : "Không thể tải gợi ý thời tiết", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -102,59 +115,78 @@ public class LifestyleAdviceActivity extends BaseActivity {
             int humidity = current.getInt("humidity");
             double uv = current.getDouble("uv");
             String cond = current.getJSONObject("condition").getString("text").toLowerCase();
+            boolean en = isEnglish();
 
             // 1. Trang phục
             if (temp >= 32) {
-                tvAdviceClothing.setText("Nhiệt độ cao (" + String.format("%.0f", temp) + "°C): Nên mặc áo thun cộc tay, quần áo chất liệu cotton hoặc lanh mỏng nhẹ, màu sáng để tránh hấp thụ nhiệt.");
+                tvAdviceClothing.setText(en ? "High temperature (" + String.format("%.0f", temp) + "°C): Wear lightweight, breathable cotton or linen clothes, light colors to reflect heat."
+                        : "Nhiệt độ cao (" + String.format("%.0f", temp) + "°C): Nên mặc áo thun cộc tay, quần áo chất liệu cotton hoặc lanh mỏng nhẹ, màu sáng để tránh hấp thụ nhiệt.");
             } else if (temp >= 24) {
-                tvAdviceClothing.setText("Nhiệt độ mát mẻ dễ chịu (" + String.format("%.0f", temp) + "°C): Thích hợp mặc áo sơ mi, áo phông hoặc váy hè nhẹ nhàng.");
+                tvAdviceClothing.setText(en ? "Pleasant and cool (" + String.format("%.0f", temp) + "°C): Suitable for light shirts, t-shirts or casual summer wear."
+                        : "Nhiệt độ mát mẻ dễ chịu (" + String.format("%.0f", temp) + "°C): Thích hợp mặc áo sơ mi, áo phông hoặc váy hè nhẹ nhàng.");
             } else if (temp >= 18) {
-                tvAdviceClothing.setText("Trời hơi se lạnh (" + String.format("%.0f", temp) + "°C): Nên khoác thêm áo cardigan hoặc áo khoác gió mỏng khi đi xe máy.");
+                tvAdviceClothing.setText(en ? "A bit chilly (" + String.format("%.0f", temp) + "°C): Carry a light cardigan or windbreaker jacket when going outdoors."
+                        : "Trời hơi se lạnh (" + String.format("%.0f", temp) + "°C): Nên khoác thêm áo cardigan hoặc áo khoác gió mỏng khi đi xe máy.");
             } else {
-                tvAdviceClothing.setText("Trời rét buốt (" + String.format("%.0f", temp) + "°C): Hãy mặc áo phao ấm, quàng khăn len và đeo găng tay khi ra ngoài.");
+                tvAdviceClothing.setText(en ? "Cold weather (" + String.format("%.0f", temp) + "°C): Wear a warm down jacket, scarf and gloves outdoors."
+                        : "Trời rét buốt (" + String.format("%.0f", temp) + "°C): Hãy mặc áo phao ấm, quàng khăn len và đeo găng tay khi ra ngoài.");
             }
 
             // 2. Mang ô / áo mưa
-            if (cond.contains("mưa") || cond.contains("dông")) {
-                tvAdviceUmbrella.setText("Trời đang có mưa hoặc dông! Bắt buộc phải mang theo áo mưa hoặc ô gấp trong cốp xe.");
+            if (cond.contains("mưa") || cond.contains("dông") || cond.contains("rain") || cond.contains("thunder") || cond.contains("drizzle")) {
+                tvAdviceUmbrella.setText(en ? "Rain or storm in progress! Be sure to carry an umbrella or raincoat."
+                        : "Trời đang có mưa hoặc dông! Bắt buộc phải mang theo áo mưa hoặc ô gấp trong cốp xe.");
             } else if (humidity >= 85) {
-                tvAdviceUmbrella.setText("Độ ẩm rất cao (" + humidity + "%), trời nhiều mây có thể đổ mưa bất chợt, bạn nên chuẩn bị sẵn ô che mưa.");
+                tvAdviceUmbrella.setText(en ? "High humidity (" + humidity + "%), overcast skies may bring sudden showers. Keep an umbrella handy."
+                        : "Độ ẩm rất cao (" + humidity + "%), trời nhiều mây có thể đổ mưa bất chợt, bạn nên chuẩn bị sẵn ô che mưa.");
             } else {
-                tvAdviceUmbrella.setText("Thời tiết khô ráo, xác suất mưa thấp. Bạn có thể yên tâm di chuyển mà không cần mang áo mưa cồng kềnh.");
+                tvAdviceUmbrella.setText(en ? "Dry weather, low chance of rain. You can travel freely without bulky rain gear."
+                        : "Thời tiết khô ráo, xác suất mưa thấp. Bạn có thể yên tâm di chuyển mà không cần mang áo mưa cồng kềnh.");
             }
 
             // 3. Chống nắng & UV
             if (uv >= 8) {
-                tvAdviceSunscreen.setText("Chỉ số UV cực kỳ cao (" + String.format("%.0f", uv) + "): Cần bôi kem chống nắng SPF 50+, đeo kính râm chống tia cực tím và đội nón rộng vành.");
+                tvAdviceSunscreen.setText(en ? "Very high UV (" + String.format("%.0f", uv) + "): Apply SPF 50+ sunscreen, wear UV-protection sunglasses and wide-brimmed hat."
+                        : "Chỉ số UV cực kỳ cao (" + String.format("%.0f", uv) + "): Cần bôi kem chống nắng SPF 50+, đeo kính râm chống tia cực tím và đội nón rộng vành.");
             } else if (uv >= 5) {
-                tvAdviceSunscreen.setText("Chỉ số UV ở mức trung bình (" + String.format("%.0f", uv) + "): Nên thoa kem chống nắng nhẹ khi tiếp xúc trực tiếp với ánh nắng trên 30 phút.");
+                tvAdviceSunscreen.setText(en ? "Moderate UV (" + String.format("%.0f", uv) + "): Apply light sunscreen if exposed to direct sun for over 30 minutes."
+                        : "Chỉ số UV ở mức trung bình (" + String.format("%.0f", uv) + "): Nên thoa kem chống nắng nhẹ khi tiếp xúc trực tiếp với ánh nắng trên 30 phút.");
             } else {
-                tvAdviceSunscreen.setText("Chỉ số UV thấp và an toàn (" + String.format("%.0f", uv) + "): Ánh nắng dịu nhẹ, cơ thể có thể hấp thụ vitamin D tự nhiên.");
+                tvAdviceSunscreen.setText(en ? "Safe low UV (" + String.format("%.0f", uv) + "): Gentle sunlight, great for natural vitamin D absorption."
+                        : "Chỉ số UV thấp và an toàn (" + String.format("%.0f", uv) + "): Ánh nắng dịu nhẹ, cơ thể có thể hấp thụ vitamin D tự nhiên.");
             }
 
             // 4. Thể dục thể thao ngoài trời
-            if (cond.contains("mưa") || cond.contains("bão")) {
-                tvAdviceSport.setText("Thời tiết có mưa gió, mặt sân trơn trượt nguy hiểm. Nên chuyển sang tập luyện trong nhà hoặc phòng gym.");
+            if (cond.contains("mưa") || cond.contains("bão") || cond.contains("rain") || cond.contains("storm")) {
+                tvAdviceSport.setText(en ? "Wet and slippery conditions outside. Prefer indoor workouts or gym training."
+                        : "Thời tiết có mưa gió, mặt sân trơn trượt nguy hiểm. Nên chuyển sang tập luyện trong nhà hoặc phòng gym.");
             } else if (temp >= 35) {
-                tvAdviceSport.setText("Nhiệt độ ngoài trời rất cao, chỉ nên chạy bộ hoặc tập thể thao vào sáng sớm (5h00 - 6h30) hoặc tối muộn.");
+                tvAdviceSport.setText(en ? "Hot outdoor temperatures. Only jog or exercise early in the morning (5:00 - 6:30 AM) or late evening."
+                        : "Nhiệt độ ngoài trời rất cao, chỉ nên chạy bộ hoặc tập thể thao vào sáng sớm (5h00 - 6h30) hoặc tối muộn.");
             } else {
-                tvAdviceSport.setText("Thời tiết tuyệt đẹp để chạy bộ, đạp xe hoặc chơi thể thao ngoài trời cùng bạn bè vào buổi chiều (16h30 - 18h00).");
+                tvAdviceSport.setText(en ? "Splendid weather for jogging, cycling, or outdoor sports with friends in the late afternoon."
+                        : "Thời tiết tuyệt đẹp để chạy bộ, đạp xe hoặc chơi thể thao ngoài trời cùng bạn bè vào buổi chiều (16h30 - 18h00).");
             }
 
             // 5. Giặt & Phơi quần áo
-            if (humidity <= 65 && temp >= 26 && !cond.contains("mưa")) {
-                tvAdviceLaundry.setText("Độ ẩm thấp, nắng ráo thông thoáng: Hôm nay là ngày cực kỳ lý tưởng để giặt chăn mền, quần áo sẽ khô thơm chỉ sau 3-4 tiếng!");
-            } else if (cond.contains("mưa") || humidity >= 80) {
-                tvAdviceLaundry.setText("Độ ẩm cao hoặc có mưa: Quần áo sẽ lâu khô và dễ bị ẩm mốc, nên vắt kỹ và phơi trong phòng có quạt gió hoặc máy sấy.");
+            if (humidity <= 65 && temp >= 26 && !cond.contains("mưa") && !cond.contains("rain")) {
+                tvAdviceLaundry.setText(en ? "Low humidity and sunny breeze: Ideal day to do laundry and blankets, dries fresh in 3-4 hours!"
+                        : "Độ ẩm thấp, nắng ráo thông thoáng: Hôm nay là ngày cực kỳ lý tưởng để giặt chăn mền, quần áo sẽ khô thơm chỉ sau 3-4 tiếng!");
+            } else if (cond.contains("mưa") || humidity >= 80 || cond.contains("rain")) {
+                tvAdviceLaundry.setText(en ? "High humidity or rain: Clothes will dry slowly. Dry indoors with a fan or tumble dryer."
+                        : "Độ ẩm cao hoặc có mưa: Quần áo sẽ lâu khô và dễ bị ẩm mốc, nên vắt kỹ và phơi trong phòng có quạt gió hoặc máy sấy.");
             } else {
-                tvAdviceLaundry.setText("Quần áo phơi ngoài ban công sẽ khô trong ngày, nhớ thu dọn trước khi trời tắt nắng.");
+                tvAdviceLaundry.setText(en ? "Clothes hung on the balcony will dry during the day. Collect before sundown."
+                        : "Quần áo phơi ngoài ban công sẽ khô trong ngày, nhớ thu dọn trước khi trời tắt nắng.");
             }
 
             // 6. Rửa xe
-            if (cond.contains("mưa")) {
-                tvAdviceCarWash.setText("Đang có mưa, rửa xe lúc này sẽ nhanh chóng bị bẩn lại. Hãy đợi thời tiết khô ráo những ngày tới nhé!");
+            if (cond.contains("mưa") || cond.contains("rain")) {
+                tvAdviceCarWash.setText(en ? "It is raining or damp; washing cars now will quickly get dirty again. Wait for dry days ahead!"
+                        : "Đang có mưa, rửa xe lúc này sẽ nhanh chóng bị bẩn lại. Hãy đợi thời tiết khô ráo những ngày tới nhé!");
             } else {
-                tvAdviceCarWash.setText("Dự báo trời khô ráo, không có mưa: Đây là thời điểm rất thích hợp để rửa xe máy, ô tô cho sạch sẽ.");
+                tvAdviceCarWash.setText(en ? "Dry forecast with no rain expected: Great time to wash your motorbike or car!"
+                        : "Dự báo trời khô ráo, không có mưa: Đây là thời điểm rất thích hợp để rửa xe máy, ô tô cho sạch sẽ.");
             }
 
         } catch (Exception e) {

@@ -250,6 +250,15 @@ public class LocationHelper {
         return prefs.getString(KEY_EXACT_NAME, "");
     }
 
+    public static String getSavedLocation(Context context) {
+        return getSavedExactLocation(context);
+    }
+
+    public static String getSavedExactQuery(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        return prefs.getString(KEY_EXACT_QUERY, "");
+    }
+
     /**
      * Nhận diện xem GPS có đang ở tọa độ mặc định của máy ảo Android Studio (Mountain View, California) không.
      * Mặc định máy ảo của Google luôn phát tọa độ 37.4220, -122.0840 nếu người dùng chưa chỉnh GPS trên máy ảo.

@@ -66,6 +66,10 @@ public class CurrentLocationActivity extends BaseActivity {
 
     private void initViews() {
         btnBackCurrentLoc = findViewById(R.id.btnBackCurrentLoc);
+        TextView tvCurrentLocHeaderTitle = findViewById(R.id.tvCurrentLocHeaderTitle);
+        if (tvCurrentLocHeaderTitle != null) {
+            tvCurrentLocHeaderTitle.setText(isEnglish() ? "📍 Your Location" : "📍 Vị Trí Của Bạn");
+        }
         tvGpsStatus = findViewById(R.id.tvGpsStatus);
         tvCurrentLocCity = findViewById(R.id.tvCurrentLocCity);
         tvCurrentLocCoords = findViewById(R.id.tvCurrentLocCoords);
@@ -81,6 +85,9 @@ public class CurrentLocationActivity extends BaseActivity {
         tvCurrentLocCloud = findViewById(R.id.tvCurrentLocCloud);
 
         btnRefreshLocation = findViewById(R.id.btnRefreshLocation);
+        if (btnRefreshLocation != null && isEnglish()) {
+            btnRefreshLocation.setText("🔄 Refresh Location");
+        }
     }
 
     private void setupListeners() {
@@ -106,7 +113,7 @@ public class CurrentLocationActivity extends BaseActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 fetchDeviceLocation();
             } else {
-                tvGpsStatus.setText("⚠️ Chưa cấp quyền GPS. Đang sử dụng khu vực sinh sống tại Việt Nam.");
+                tvGpsStatus.setText(isEnglish() ? "⚠️ GPS permission denied. Using default Vietnam location." : "⚠️ Chưa cấp quyền GPS. Đang sử dụng khu vực sinh sống tại Việt Nam.");
                 loadFallbackLocation();
             }
         }
@@ -114,7 +121,7 @@ public class CurrentLocationActivity extends BaseActivity {
 
     @SuppressLint("MissingPermission")
     private void fetchDeviceLocation() {
-        tvGpsStatus.setText("🛰️ Đang quét tín hiệu định vị vệ tinh GPS...");
+        tvGpsStatus.setText(isEnglish() ? "🛰️ Scanning GPS satellite signal..." : "🛰️ Đang quét tín hiệu định vị vệ tinh GPS...");
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (locationManager == null) {
@@ -166,11 +173,13 @@ public class CurrentLocationActivity extends BaseActivity {
 
         // Nếu là tọa độ mặc định của máy ảo Android Studio (Mountain View California)
         if (LocationHelper.isEmulatorDefaultCoordinates(lat, lon)) {
-            tvGpsStatus.setText("🌐 Máy ảo: Đang tự động nhận diện vị trí thực tế của bạn...");
+            tvGpsStatus.setText(isEnglish() ? "🌐 Emulator: Detecting your actual location..." : "🌐 Máy ảo: Đang tự động nhận diện vị trí thực tế của bạn...");
             LocationHelper.fetchLocationByIP(this, (shortName, fullAddress, weatherQuery) -> {
                 exactResolvedLocationName = shortName;
                 exactResolvedFullAddress = fullAddress;
-                tvGpsStatus.setText("🟢 Đã tự động định vị vị trí thực tế của bạn!");
+                // Đồng bộ vị trí lưu trữ toàn ứng dụng
+                LocationHelper.saveLocation(this, exactResolvedLocationName, exactResolvedFullAddress, weatherQuery);
+                tvGpsStatus.setText(isEnglish() ? "🟢 Automatically located your actual position!" : "🟢 Đã tự động định vị vị trí thực tế của bạn!");
                 tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
                 tvCurrentLocCoords.setText(exactResolvedFullAddress);
                 loadWeatherByCityName(weatherQuery);
@@ -178,8 +187,8 @@ public class CurrentLocationActivity extends BaseActivity {
             return;
         }
 
-        tvGpsStatus.setText("🟢 Đã định vị thành công qua GPS vệ tinh!");
-        tvCurrentLocCoords.setText(String.format(Locale.getDefault(), "Tọa độ: %.4f°N, %.4f°E", lat, lon));
+        tvGpsStatus.setText(isEnglish() ? "🟢 GPS satellite located successfully!" : "🟢 Đã định vị thành công qua GPS vệ tinh!");
+        tvCurrentLocCoords.setText(String.format(Locale.getDefault(), (isEnglish() ? "Coordinates: %.4f°N, %.4f°E" : "Tọa độ: %.4f°N, %.4f°E"), lat, lon));
 
         // 1. Phân giải địa chỉ tự động theo tọa độ GPS thực tế
         resolveAddressFromCoordinates(lat, lon);
@@ -192,18 +201,22 @@ public class CurrentLocationActivity extends BaseActivity {
         LocationHelper.resolvePreciseLocation(this, lat, lon, (shortName, fullAddress, weatherQuery) -> {
             exactResolvedLocationName = shortName;
             exactResolvedFullAddress = fullAddress;
-            tvGpsStatus.setText("🟢 Định vị chuẩn xác theo GPS thực tế!");
+            // Đồng bộ vị trí lưu trữ toàn ứng dụng
+            LocationHelper.saveLocation(this, exactResolvedLocationName, exactResolvedFullAddress, weatherQuery);
+            tvGpsStatus.setText(isEnglish() ? "🟢 Precise GPS location locked!" : "🟢 Định vị chuẩn xác theo GPS thực tế!");
             tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
-            tvCurrentLocCoords.setText(exactResolvedFullAddress + "\n(Tọa độ: " + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
+            tvCurrentLocCoords.setText(exactResolvedFullAddress + "\n(" + (isEnglish() ? "Coordinates: " : "Tọa độ: ") + String.format(Locale.getDefault(), "%.4f°N, %.4f°E", lat, lon) + ")");
         });
     }
 
     private void loadFallbackLocation() {
-        tvGpsStatus.setText("🌐 Đang tự động định vị vị trí thực tế qua mạng Internet...");
+        tvGpsStatus.setText(isEnglish() ? "🌐 Locating via Internet network..." : "🌐 Đang tự động định vị vị trí thực tế qua mạng Internet...");
         LocationHelper.fetchLocationByIP(this, (shortName, fullAddress, weatherQuery) -> {
             exactResolvedLocationName = shortName;
             exactResolvedFullAddress = fullAddress;
-            tvGpsStatus.setText("🟢 Đã tự động định vị theo vị trí thực tế!");
+            // Đồng bộ vị trí lưu trữ toàn ứng dụng
+            LocationHelper.saveLocation(this, exactResolvedLocationName, exactResolvedFullAddress, weatherQuery);
+            tvGpsStatus.setText(isEnglish() ? "🟢 Located your actual location!" : "🟢 Đã tự động định vị theo vị trí thực tế!");
             tvCurrentLocCity.setText("📍 " + exactResolvedLocationName);
             tvCurrentLocCoords.setText(exactResolvedFullAddress);
             loadWeatherByCityName(weatherQuery);
@@ -222,7 +235,7 @@ public class CurrentLocationActivity extends BaseActivity {
 
     private void callWeatherApi(String query) {
         String url = "http://api.weatherapi.com/v1/current.json?key=" + API_KEY +
-                "&q=" + query + "&aqi=no&lang=vi";
+                "&q=" + query + "&aqi=no&lang=" + getCurrentLang();
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -230,7 +243,7 @@ public class CurrentLocationActivity extends BaseActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(CurrentLocationActivity.this, "Lỗi kết nối API", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(CurrentLocationActivity.this, isEnglish() ? "API connection error" : "Lỗi kết nối API", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -263,7 +276,6 @@ public class CurrentLocationActivity extends BaseActivity {
                 tvCurrentLocCity.setText("📍 " + fullLocation);
             }
 
-
             JSONObject current = json.getJSONObject("current");
             double tempC = current.getDouble("temp_c");
             double feelsLike = current.getDouble("feelslike_c");
@@ -276,18 +288,19 @@ public class CurrentLocationActivity extends BaseActivity {
 
             String conditionText = current.getJSONObject("condition").getString("text");
 
+            boolean en = isEnglish();
             tvCurrentLocTemp.setText(String.format(Locale.getDefault(), "%.0f°C", tempC));
             tvCurrentLocCondition.setText("🌥️ " + conditionText);
-            tvCurrentLocFeelsLike.setText(String.format(Locale.getDefault(), "Cảm giác thực tế: %.0f°C", feelsLike));
+            tvCurrentLocFeelsLike.setText(String.format(Locale.getDefault(), (en ? "Feels like: %.0f°C" : "Cảm giác thực tế: %.0f°C"), feelsLike));
 
-            tvCurrentLocHumidity.setText("💧 Độ ẩm: " + humidity + "%");
-            tvCurrentLocWind.setText(String.format(Locale.getDefault(), "💨 Gió: %.1f km/h", windKph));
-            tvCurrentLocUV.setText(String.format(Locale.getDefault(), "☀️ Chỉ số UV: %.0f", uv));
-            tvCurrentLocPressure.setText(String.format(Locale.getDefault(), "⏱️ Áp suất: %.0f mb", pressureMb));
-            tvCurrentLocVisibility.setText(String.format(Locale.getDefault(), "👁️ Tầm nhìn: %.1f km", visKm));
-            tvCurrentLocCloud.setText("☁️ Độ che phủ: " + cloud + "%");
+            tvCurrentLocHumidity.setText((en ? "💧 Humidity: " : "💧 Độ ẩm: ") + humidity + "%");
+            tvCurrentLocWind.setText(String.format(Locale.getDefault(), (en ? "💨 Wind: %.1f km/h" : "💨 Gió: %.1f km/h"), windKph));
+            tvCurrentLocUV.setText(String.format(Locale.getDefault(), (en ? "☀️ UV Index: %.0f" : "☀️ Chỉ số UV: %.0f"), uv));
+            tvCurrentLocPressure.setText(String.format(Locale.getDefault(), (en ? "⏱️ Pressure: %.0f mb" : "⏱️ Áp suất: %.0f mb"), pressureMb));
+            tvCurrentLocVisibility.setText(String.format(Locale.getDefault(), (en ? "👁️ Visibility: %.1f km" : "👁️ Tầm nhìn: %.1f km"), visKm));
+            tvCurrentLocCloud.setText((en ? "☁️ Cloud Cover: " : "☁️ Độ che phủ: ") + cloud + "%");
 
-            Toast.makeText(this, "Đã cập nhật vị trí & thời tiết thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, en ? "Location & weather updated successfully!" : "Đã cập nhật vị trí & thời tiết thành công!", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             Log.e("CurrentLocation", "Lỗi phân tích: " + e.getMessage());

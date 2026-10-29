@@ -32,4 +32,5 @@
     <color name="suggestionItemText">#FFFFFF</color>
     <color name="suggestionItemSubtext">#94A3B8</color>
     <color name="suggestionDivider">#334155</color>
+    <color name="suggestionItemRowBg">#334155</color>
 </resources>

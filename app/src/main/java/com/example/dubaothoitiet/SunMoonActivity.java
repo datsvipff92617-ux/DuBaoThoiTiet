@@ -36,14 +36,24 @@ public class SunMoonActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sun_moon);
 
-        if (getIntent() != null && getIntent().hasExtra("city")) {
+        if (getIntent() != null && getIntent().hasExtra("city") && getIntent().getStringExtra("city") != null && !getIntent().getStringExtra("city").trim().isEmpty()) {
             currentCity = getIntent().getStringExtra("city");
+        } else {
+            currentCity = LocationHelper.getSavedExactQuery(this);
+            if (currentCity == null || currentCity.trim().isEmpty()) {
+                currentCity = LocationHelper.getSavedLocation(this);
+            }
         }
-        if (getIntent() != null && getIntent().hasExtra("displayName")) {
+
+        if (getIntent() != null && getIntent().hasExtra("displayName") && getIntent().getStringExtra("displayName") != null && !getIntent().getStringExtra("displayName").trim().isEmpty()) {
             displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
         } else {
-            displayName = WeatherUtils.cleanLocationName(currentCity);
+            displayName = LocationHelper.getSavedExactLocation(this);
+            if (displayName == null || displayName.trim().isEmpty()) {
+                displayName = WeatherUtils.cleanLocationName(currentCity);
+            }
         }
+        displayName = WeatherUtils.cleanLocationName(displayName);
 
         initViews();
         setupListeners();
@@ -52,6 +62,10 @@ public class SunMoonActivity extends BaseActivity {
 
     private void initViews() {
         btnBackSunMoon = findViewById(R.id.btnBackSunMoon);
+        TextView tvSunMoonHeaderTitle = findViewById(R.id.tvSunMoonHeaderTitle);
+        if (tvSunMoonHeaderTitle != null) {
+            tvSunMoonHeaderTitle.setText(isEnglish() ? "🌅 Astronomy & Moon Phases" : "🌅 Thiên Văn & Tuần Trăng");
+        }
         tvSunMoonCity = findViewById(R.id.tvSunMoonCity);
         tvSunMoonDate = findViewById(R.id.tvSunMoonDate);
 
@@ -73,7 +87,7 @@ public class SunMoonActivity extends BaseActivity {
     private void loadAstronomyData(String city) {
         String encodedCity = WeatherUtils.encodeQuery(city);
         String url = "http://api.weatherapi.com/v1/astronomy.json?key=" + API_KEY +
-                "&q=" + encodedCity + "&lang=vi";
+                "&q=" + encodedCity + "&lang=" + getCurrentLang();
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url(url).build();
@@ -81,7 +95,7 @@ public class SunMoonActivity extends BaseActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                runOnUiThread(() -> Toast.makeText(SunMoonActivity.this, "Lỗi kết nối dữ liệu thiên văn", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> Toast.makeText(SunMoonActivity.this, isEnglish() ? "Astronomy data connection error" : "Lỗi kết nối dữ liệu thiên văn", Toast.LENGTH_SHORT).show());
             }
 
             @Override
@@ -121,25 +135,38 @@ public class SunMoonActivity extends BaseActivity {
             tvMoonrise.setText(moonrise);
             tvMoonset.setText(moonset);
 
-            tvMoonPhase.setText("Tuần trăng: " + WeatherUtils.translateMoonPhase(moonPhase));
-            tvMoonIllumination.setText("💡 Độ sáng bề mặt trăng: " + moonIllumination + "%");
+            boolean en = isEnglish();
+            tvMoonPhase.setText(en ? ("Moon Phase: " + moonPhase) : ("Tuần trăng: " + WeatherUtils.translateMoonPhase(moonPhase)));
+            tvMoonIllumination.setText((en ? "💡 Moon Illumination: " : "💡 Độ sáng bề mặt trăng: ") + moonIllumination + "%");
 
             if (isSunUp == 1) {
-                tvSunStatus.setText("☀️ Ban ngày: Mặt trời đang chiếu sáng.");
+                tvSunStatus.setText(en ? "☀️ Daytime: The sun is shining." : "☀️ Ban ngày: Mặt trời đang chiếu sáng.");
             } else {
-                tvSunStatus.setText("🌙 Ban đêm: Mặt trời đã lặn dưới đường chân trời.");
+                tvSunStatus.setText(en ? "🌙 Nighttime: The sun has set below the horizon." : "🌙 Ban đêm: Mặt trời đã lặn dưới đường chân trời.");
             }
 
             // Gợi ý ngắm thiên văn
             StringBuilder advice = new StringBuilder();
-            advice.append("• Khung giờ vàng chụp ảnh bình minh: 15-30 phút trước ").append(sunrise).append(".\n");
-            advice.append("• Khung giờ vàng chụp ảnh hoàng hôn: 20-30 phút quanh mốc ").append(sunset).append(".\n");
-            if (moonIllumination > 80) {
-                advice.append("• Trăng rất sáng (").append(moonIllumination).append("%), rất đẹp để ngắm trăng nhưng khó quan sát các chòm sao mờ.");
-            } else if (moonIllumination < 20) {
-                advice.append("• Trăng non hoặc khuyết mờ (").append(moonIllumination).append("%), điều kiện lý tưởng nhất trong tháng để ngắm dải ngân hà và sao băng!");
+            if (en) {
+                advice.append("• Golden hour for sunrise photos: 15-30 mins before ").append(sunrise).append(".\n");
+                advice.append("• Golden hour for sunset photos: 20-30 mins around ").append(sunset).append(".\n");
+                if (moonIllumination > 80) {
+                    advice.append("• Very bright moon (").append(moonIllumination).append("%), wonderful for moon-gazing but harder to view dim constellations.");
+                } else if (moonIllumination < 20) {
+                    advice.append("• New or faint crescent moon (").append(moonIllumination).append("%), ideal night of the month to stargaze and view the Milky Way!");
+                } else {
+                    advice.append("• Moderate moonlight, comfortable weather for outdoor nighttime picnics.");
+                }
             } else {
-                advice.append("• Ánh trăng vừa phải, thời tiết thích hợp cho các hoạt động dã ngoại đêm ngoài trời.");
+                advice.append("• Khung giờ vàng chụp ảnh bình minh: 15-30 phút trước ").append(sunrise).append(".\n");
+                advice.append("• Khung giờ vàng chụp ảnh hoàng hôn: 20-30 phút quanh mốc ").append(sunset).append(".\n");
+                if (moonIllumination > 80) {
+                    advice.append("• Trăng rất sáng (").append(moonIllumination).append("%), rất đẹp để ngắm trăng nhưng khó quan sát các chòm sao mờ.");
+                } else if (moonIllumination < 20) {
+                    advice.append("• Trăng non hoặc khuyết mờ (").append(moonIllumination).append("%), điều kiện lý tưởng nhất trong tháng để ngắm dải ngân hà và sao băng!");
+                } else {
+                    advice.append("• Ánh trăng vừa phải, thời tiết thích hợp cho các hoạt động dã ngoại đêm ngoài trời.");
+                }
             }
             tvAstroAdvice.setText(advice.toString());
 

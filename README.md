@@ -8,12 +8,14 @@
 
 Bạn có thể tải trực tiếp file cài đặt APK về điện thoại thông minh Android qua các đường dẫn bên dưới:
 
-* **👉 Link Tải Bản Cập Nhật Mới Nhất (GitHub Releases v2.2):**  
+* **🌐 Link Trải Nghiệm Trực Tiếp Trên Web (Dành Cho iPhone / iPad / Máy Tính):**  
+  [https://datsvipff92617-ux.github.io/DuBaoThoiTiet/](https://datsvipff92617-ux.github.io/DuBaoThoiTiet/)
+* **👉 Link Tải Bản Cập Nhật Mới Nhất APK (Android):**  
   [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet.apk](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet.apk)
+* **📦 Link Tải File Nén ZIP (Bản v2.2):**  
+  [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet_v2.2.zip](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases/download/v2.2/DuBaoThoiTiet_v2.2.zip)
 * **👉 Link Trang Releases GitHub:**  
   [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/releases)
-* **👉 Link Tải Từ GitHub Actions (Artifacts):**  
-  [https://github.com/datsvipff92617-ux/DuBaoThoiTiet/actions](https://github.com/datsvipff92617-ux/DuBaoThoiTiet/actions)
 
 > **Hướng dẫn cài đặt trên điện thoại:**
 > 1. Dùng trình duyệt trên điện thoại (Chrome / Cốc Cốc / Samsung Internet) mở một trong các liên kết trên và tải file `DuBaoThoiTiet.apk`.

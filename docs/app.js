@@ -212,6 +212,15 @@ async function fetchWeather(query, exactDisplayName = null) {
   }
 }
 
+function cleanLocationName(name) {
+  if (!name) return "Hà Nội";
+  const s = String(name).trim();
+  if (s.includes("Ã") || s.includes("Inh Thon") || s.includes("lnh Thon") || s.toLowerCase().includes("inh thon") || s.toLowerCase().includes("dinh thon")) {
+    return "Hà Nội";
+  }
+  return s;
+}
+
 // Hiển thị dữ liệu lên giao diện
 function renderWeatherData(data, displayName) {
   const current = data.current;
@@ -222,7 +231,8 @@ function renderWeatherData(data, displayName) {
   currentTempC = current.temp_c;
 
   // Hero Card
-  document.getElementById("heroLocationName").textContent = `📍 ${displayName || location.name}`;
+  const finalDisplay = displayName ? cleanLocationName(displayName) : cleanLocationName(location.name);
+  document.getElementById("heroLocationName").textContent = `📍 ${finalDisplay}`;
   
   const now = new Date();
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };

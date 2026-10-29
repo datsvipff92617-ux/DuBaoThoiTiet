@@ -36,6 +36,7 @@ public class Forecast3DaysActivity extends BaseActivity {
     private TextView tvDateDay3, tvTempDay3, tvConditionDay3, tvRainDay3, tvHumidityDay3, tvUVDay3, tvAdviceDay3;
 
     private String cityName = "Hanoi";
+    private String displayName = "Hà Nội";
     private final String API_KEY = "35d141f7fec24768b87114757252510";
 
     @Override
@@ -47,6 +48,12 @@ public class Forecast3DaysActivity extends BaseActivity {
             cityName = getIntent().getStringExtra("city");
         }
 
+        if (getIntent().hasExtra("displayName")) {
+            displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
+        } else {
+            displayName = WeatherUtils.cleanLocationName(cityName);
+        }
+
         initViews();
         setupListeners();
         load3DaysForecast();
@@ -55,7 +62,7 @@ public class Forecast3DaysActivity extends BaseActivity {
     private void initViews() {
         btnBack3Days = findViewById(R.id.btnBack3Days);
         tvCityName3Days = findViewById(R.id.tvCityName3Days);
-        tvCityName3Days.setText("Khu vực: " + cityName);
+        tvCityName3Days.setText("Khu vực: " + displayName);
 
         // Ngày 1
         tvDateDay1 = findViewById(R.id.tvDateDay1);

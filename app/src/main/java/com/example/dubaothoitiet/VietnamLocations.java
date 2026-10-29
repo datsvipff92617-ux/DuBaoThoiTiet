@@ -252,6 +252,11 @@ public class VietnamLocations {
         String stripped = stripAccents(raw).toLowerCase(Locale.ROOT);
 
         // 1. Kiểm tra trực tiếp các từ viết tắt / alias thông dụng của Việt Nam
+        if (raw.contains("Ã") || raw.contains("lnh Thon") || raw.contains("Inh Thon")
+                || stripped.contains("inh thon") || stripped.contains("dinh thon")
+                || compact.equals("dinhthon") || compact.equals("inhthon")) {
+            return "Ha Noi, Vietnam";
+        }
         if (compact.equals("tphcm") || compact.equals("hcm") || compact.equals("hcmc")
                 || compact.equals("sg") || compact.equals("saigon") || compact.equals("tphochiminh")
                 || compact.equals("hochiminh") || compact.equals("thanhphohochiminh")) {
@@ -369,6 +374,12 @@ public class VietnamLocations {
         if (apiName == null) return "Hà Nội";
         String lower = stripAccents(apiName.trim().toLowerCase(Locale.ROOT));
         String compact = toCompactKey(apiName);
+
+        if (apiName.contains("Ã") || apiName.contains("lnh Thon") || apiName.contains("Inh Thon")
+                || lower.contains("inh thon") || lower.contains("dinh thon")
+                || compact.contains("inhthon") || compact.contains("dinhthon")) {
+            return "Hà Nội";
+        }
 
         if (lower.contains("ho chi minh") || lower.contains("sai gon") || compact.contains("hochiminh") || compact.contains("saigon")) {
             return "TP. Hồ Chí Minh";

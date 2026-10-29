@@ -30,6 +30,7 @@ public class HourlyForecastActivity extends BaseActivity {
     private LinearLayout hourlyContainer;
 
     private String cityName;
+    private String displayName;
     private final String API_KEY = "35d141f7fec24768b87114757252510";
 
     @Override
@@ -39,6 +40,13 @@ public class HourlyForecastActivity extends BaseActivity {
 
         cityName = getIntent().getStringExtra("city");
         if (cityName == null) cityName = "Hanoi";
+
+        displayName = getIntent().getStringExtra("displayName");
+        if (displayName == null || displayName.trim().isEmpty()) {
+            displayName = WeatherUtils.cleanLocationName(cityName);
+        } else {
+            displayName = WeatherUtils.cleanLocationName(displayName);
+        }
 
         initViews();
         setupListeners();
@@ -50,8 +58,7 @@ public class HourlyForecastActivity extends BaseActivity {
         titleText = findViewById(R.id.titleText);
         hourlyContainer = findViewById(R.id.hourlyContainer);
 
-        String displayCity = translateCityName(cityName);
-        titleText.setText("Dự báo theo giờ - " + displayCity);
+        titleText.setText("Dự báo theo giờ - " + displayName);
     }
 
     private void setupListeners() {

@@ -42,15 +42,22 @@ public class AirQualityActivity extends BaseActivity {
             cityName = getIntent().getStringExtra("city");
         }
 
-        initViews();
+        String displayName;
+        if (getIntent().hasExtra("displayName")) {
+            displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
+        } else {
+            displayName = WeatherUtils.cleanLocationName(cityName);
+        }
+
+        initViews(displayName);
         setupListeners();
         loadAirQualityData();
     }
 
-    private void initViews() {
+    private void initViews(String displayCity) {
         btnBackAqi = findViewById(R.id.btnBackAqi);
         tvAqiCity = findViewById(R.id.tvAqiCity);
-        tvAqiCity.setText("Khu vực: " + cityName);
+        tvAqiCity.setText("Khu vực: " + displayCity);
 
         tvAqiIndexNumber = findViewById(R.id.tvAqiIndexNumber);
         tvAqiStatus = findViewById(R.id.tvAqiStatus);

@@ -223,6 +223,7 @@ public class MainActivity extends BaseActivity {
             btnForecast3Days.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, Forecast3DaysActivity.class);
                 intent.putExtra("city", currentCity);
+                intent.putExtra("displayName", getResolvedDisplayName());
                 startActivity(intent);
             });
         }
@@ -231,6 +232,7 @@ public class MainActivity extends BaseActivity {
         btnForecast.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ForecastActivity.class);
             intent.putExtra("city", currentCity);
+            intent.putExtra("displayName", getResolvedDisplayName());
             startActivity(intent);
         });
 
@@ -238,6 +240,7 @@ public class MainActivity extends BaseActivity {
         btnHourly.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, HourlyForecastActivity.class);
             intent.putExtra("city", currentCity);
+            intent.putExtra("displayName", getResolvedDisplayName());
             startActivity(intent);
         });
 
@@ -270,6 +273,7 @@ public class MainActivity extends BaseActivity {
             btnAirQuality.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, AirQualityActivity.class);
                 intent.putExtra("city", currentCity);
+                intent.putExtra("displayName", getResolvedDisplayName());
                 startActivity(intent);
             });
         }
@@ -279,6 +283,7 @@ public class MainActivity extends BaseActivity {
             btnWeatherAlerts.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, WeatherAlertsActivity.class);
                 intent.putExtra("city", currentCity);
+                intent.putExtra("displayName", getResolvedDisplayName());
                 startActivity(intent);
             });
         }
@@ -288,6 +293,7 @@ public class MainActivity extends BaseActivity {
             btnLifestyle.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, LifestyleAdviceActivity.class);
                 intent.putExtra("city", currentCity);
+                intent.putExtra("displayName", getResolvedDisplayName());
                 startActivity(intent);
             });
         }
@@ -296,6 +302,7 @@ public class MainActivity extends BaseActivity {
         btnDetails.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
             intent.putExtra("city", currentCity);
+            intent.putExtra("displayName", getResolvedDisplayName());
             startActivity(intent);
         });
 
@@ -320,6 +327,7 @@ public class MainActivity extends BaseActivity {
             btnSunMoon.setOnClickListener(v -> {
                 Intent intent = new Intent(MainActivity.this, SunMoonActivity.class);
                 intent.putExtra("city", currentCity);
+                intent.putExtra("displayName", getResolvedDisplayName());
                 startActivity(intent);
             });
         }
@@ -634,6 +642,13 @@ public class MainActivity extends BaseActivity {
         return VietnamLocations.getDisplayNameForApiResult(city);
     }
 
+    private String getResolvedDisplayName() {
+        if (currentExactDisplayName != null && !currentExactDisplayName.trim().isEmpty()) {
+            return WeatherUtils.cleanLocationName(currentExactDisplayName);
+        }
+        return WeatherUtils.cleanLocationName(translateCityName(currentCity));
+    }
+
     private void performSearch() {
         String city = searchEditText.getText().toString().trim();
         if (!city.isEmpty()) {
@@ -703,8 +718,16 @@ public class MainActivity extends BaseActivity {
             JSONObject json = new JSONObject(jsonData);
 
             JSONObject location = json.getJSONObject("location");
-            currentCity = location.getString("name");
-            currentCountry = location.getString("country");
+            String apiCity = location.optString("name", "");
+            currentCountry = location.optString("country", "Vietnam");
+
+            // Chỉ cập nhật currentCity nếu không phải là tọa độ GPS và tên từ API không bị lỗi mã hóa
+            if (!WeatherUtils.isCoordinateQuery(currentCity)) {
+                String cleaned = WeatherUtils.cleanLocationName(apiCity);
+                if (!cleaned.equals("Vị trí hiện tại") && !cleaned.equals("Vị trí của bạn")) {
+                    currentCity = cleaned;
+                }
+            }
 
             JSONObject current = json.getJSONObject("current");
             JSONObject condition = current.getJSONObject("condition");
@@ -715,9 +738,7 @@ public class MainActivity extends BaseActivity {
             lastUv = current.getDouble("uv");
             hasParsedWeather = true;
 
-            String displayCity = (currentExactDisplayName != null && !currentExactDisplayName.trim().isEmpty())
-                    ? currentExactDisplayName
-                    : translateCityName(currentCity);
+            String displayCity = getResolvedDisplayName();
 
             cityNameText.setText("📍 " + displayCity);
 
@@ -850,19 +871,19 @@ public class MainActivity extends BaseActivity {
 
         if (LocationHelper.isEmulatorDefaultCoordinates(lat, lon)) {
             LocationHelper.fetchLocationByIP(this, (shortName, fullAddress, weatherQuery) -> {
-                currentExactDisplayName = shortName;
+                currentExactDisplayName = WeatherUtils.cleanLocationName(shortName);
                 currentCity = weatherQuery;
                 loadWeatherData(weatherQuery);
-                Toast.makeText(this, "📍 Vị trí thực tế của bạn: " + shortName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "📍 Vị trí thực tế của bạn: " + currentExactDisplayName, Toast.LENGTH_SHORT).show();
             });
             return;
         }
 
         LocationHelper.resolvePreciseLocation(this, lat, lon, (shortName, fullAddress, weatherQuery) -> {
-            currentExactDisplayName = shortName;
+            currentExactDisplayName = WeatherUtils.cleanLocationName(shortName);
             currentCity = weatherQuery;
             loadWeatherData(weatherQuery);
-            Toast.makeText(this, "📍 Vị trí của bạn: " + shortName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "📍 Vị trí của bạn: " + currentExactDisplayName, Toast.LENGTH_SHORT).show();
         });
     }
 

@@ -40,15 +40,22 @@ public class LifestyleAdviceActivity extends BaseActivity {
             cityName = getIntent().getStringExtra("city");
         }
 
-        initViews();
+        String displayName;
+        if (getIntent().hasExtra("displayName")) {
+            displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
+        } else {
+            displayName = WeatherUtils.cleanLocationName(cityName);
+        }
+
+        initViews(displayName);
         setupListeners();
         loadWeatherAndComputeAdvice();
     }
 
-    private void initViews() {
+    private void initViews(String displayCity) {
         btnBackLifestyle = findViewById(R.id.btnBackLifestyle);
         tvLifestyleCity = findViewById(R.id.tvLifestyleCity);
-        tvLifestyleCity.setText("Gợi ý sinh hoạt cho khu vực: " + cityName);
+        tvLifestyleCity.setText("Gợi ý sinh hoạt cho khu vực: " + displayCity);
 
         tvAdviceClothing = findViewById(R.id.tvAdviceClothing);
         tvAdviceUmbrella = findViewById(R.id.tvAdviceUmbrella);

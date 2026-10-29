@@ -29,6 +29,7 @@ public class SunMoonActivity extends BaseActivity {
 
     private final String API_KEY = "35d141f7fec24768b87114757252510";
     private String currentCity = "Hà Nội";
+    private String displayName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +38,11 @@ public class SunMoonActivity extends BaseActivity {
 
         if (getIntent() != null && getIntent().hasExtra("city")) {
             currentCity = getIntent().getStringExtra("city");
+        }
+        if (getIntent() != null && getIntent().hasExtra("displayName")) {
+            displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
+        } else {
+            displayName = WeatherUtils.cleanLocationName(currentCity);
         }
 
         initViews();
@@ -92,15 +98,14 @@ public class SunMoonActivity extends BaseActivity {
         try {
             JSONObject root = new JSONObject(jsonData);
             JSONObject loc = root.getJSONObject("location");
-            String cityName = loc.getString("name");
-            String country = loc.getString("country");
+            String cityName = loc.optString("name", "");
+            String country = loc.optString("country", "Vietnam");
 
-            if (cityName.equalsIgnoreCase("Ho Chi Minh City")) cityName = "TP. Hồ Chí Minh";
-            else if (cityName.equalsIgnoreCase("Ha Noi")) cityName = "Hà Nội";
-            else if (cityName.equalsIgnoreCase("Da Nang")) cityName = "Đà Nẵng";
-            else if (cityName.equalsIgnoreCase("Da Lat")) cityName = "Đà Lạt";
+            String displayLoc = (!displayName.isEmpty() && !displayName.equals("Hà Nội"))
+                    ? displayName
+                    : WeatherUtils.cleanLocationName(cityName);
 
-            tvSunMoonCity.setText(cityName + " (" + country + ")");
+            tvSunMoonCity.setText(displayLoc + " (" + country + ")");
 
             JSONObject astro = root.getJSONObject("astronomy").getJSONObject("astro");
             String sunrise = astro.getString("sunrise");

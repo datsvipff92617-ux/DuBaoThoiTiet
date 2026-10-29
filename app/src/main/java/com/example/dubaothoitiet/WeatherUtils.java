@@ -42,21 +42,32 @@ public class WeatherUtils {
     }
 
     /**
-     * Làm sạch tên địa phương, khử lỗi Mojibake từ API (ví dụ: Ãlnh Thon -> Đình Thôn)
+     * Kiểm tra chuỗi có phải là cặp tọa độ vĩ/kinh (ví dụ "21.0182,105.7765") hay không
+     */
+    public static boolean isCoordinateQuery(String query) {
+        if (query == null) return false;
+        return query.trim().matches("^-?\\d+(\\.\\d+)?,\\s*-?\\d+(\\.\\d+)?$");
+    }
+
+    /**
+     * Làm sạch tên địa phương, khử lỗi Mojibake từ API (ví dụ: Ã Inh Thon / Ãlnh Thon -> Hà Nội)
      */
     public static String cleanLocationName(String name) {
         if (name == null || name.trim().isEmpty()) {
-            return "Vị trí của bạn";
+            return "Hà Nội";
         }
 
         String trimmed = name.trim();
 
         // Xử lý lỗi mã hóa ký tự Latin-1 / UTF-8 đặc trưng từ WeatherAPI tại Việt Nam
-        if (trimmed.contains("Ã") || trimmed.contains("\u0081") || trimmed.contains("lnh Thon")) {
-            if (trimmed.toLowerCase().contains("thon") || trimmed.toLowerCase().contains("lnh")) {
-                return "Đình Thôn, Nam Từ Liêm, Hà Nội";
-            }
+        if (trimmed.contains("Ã") || trimmed.contains("\u0081") || trimmed.contains("\u0090")
+                || trimmed.contains("lnh Thon") || trimmed.contains("Inh Thon")
+                || trimmed.toLowerCase().contains("inh thon") || trimmed.toLowerCase().contains("dinh thon")) {
             return "Hà Nội";
+        }
+
+        if (isCoordinateQuery(trimmed)) {
+            return "Vị trí hiện tại";
         }
 
         return VietnamLocations.getDisplayNameForApiResult(trimmed);
@@ -90,4 +101,3 @@ public class WeatherUtils {
         }
     }
 }
-

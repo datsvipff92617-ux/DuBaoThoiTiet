@@ -37,12 +37,19 @@ public class DetailActivity extends BaseActivity {
         cityName = getIntent().getStringExtra("city");
         if (cityName == null) cityName = "Hanoi";
 
-        initViews();
+        String displayName = getIntent().getStringExtra("displayName");
+        if (displayName == null || displayName.trim().isEmpty()) {
+            displayName = WeatherUtils.cleanLocationName(cityName);
+        } else {
+            displayName = WeatherUtils.cleanLocationName(displayName);
+        }
+
+        initViews(displayName);
         setupListeners();
         loadWeatherDetails();
     }
 
-    private void initViews() {
+    private void initViews(String displayCity) {
         btnBack = findViewById(R.id.btnBack);
         titleText = findViewById(R.id.titleText);
         detailHumidity = findViewById(R.id.detailHumidity);
@@ -56,7 +63,6 @@ public class DetailActivity extends BaseActivity {
         detailHeatIndex = findViewById(R.id.detailHeatIndex);
         detailWindChill = findViewById(R.id.detailWindChill);
 
-        String displayCity = translateCityName(cityName);
         titleText.setText("Chi tiết thời tiết - " + displayCity);
     }
 

@@ -41,15 +41,22 @@ public class WeatherAlertsActivity extends BaseActivity {
             cityName = getIntent().getStringExtra("city");
         }
 
-        initViews();
+        String displayName;
+        if (getIntent().hasExtra("displayName")) {
+            displayName = WeatherUtils.cleanLocationName(getIntent().getStringExtra("displayName"));
+        } else {
+            displayName = WeatherUtils.cleanLocationName(cityName);
+        }
+
+        initViews(displayName);
         setupListeners();
         loadAlertsData();
     }
 
-    private void initViews() {
+    private void initViews(String displayCity) {
         btnBackAlerts = findViewById(R.id.btnBackAlerts);
         tvAlertsCity = findViewById(R.id.tvAlertsCity);
-        tvAlertsCity.setText("Đang kiểm tra cảnh báo tại " + cityName);
+        tvAlertsCity.setText("Đang kiểm tra cảnh báo tại " + displayCity);
 
         tvAlertLevelIcon = findViewById(R.id.tvAlertLevelIcon);
         tvAlertLevelTitle = findViewById(R.id.tvAlertLevelTitle);
